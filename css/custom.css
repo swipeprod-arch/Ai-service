@@ -1,0 +1,50 @@
+/* FIX: шапка не растягивается из-за длинного названия */
+#allrecords .nav .brand span:last-child{
+  white-space: nowrap;      /* запрет переноса */
+  line-height: 1;           /* компактнее по высоте */
+}
+
+/* если ты вставил перенос вручную через  — убираем его */
+#allrecords .nav .brand br{ display:none; }
+/* FIX: шапка в одну линию, ничего не уезжает вниз */
+#allrecords .nav .nav-inner{
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+}
+
+/* Название: 1 строка + троеточие, чтобы не ломало меню */
+#allrecords .nav .brand{
+  min-width: 0 !important;
+  flex: 0 1 380px !important;   /* можно уменьшить до 260px если надо */
+}
+
+#allrecords .nav .brand span:last-child{
+  display: block !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.1 !important;
+}
+
+/* Меню и кнопки: не переносим */
+#allrecords .nav .nav-links{
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+}
+
+#allrecords .nav .nav-links a{
+  white-space: nowrap !important;
+}
+
+#allrecords .nav .nav-cta{
+  white-space: nowrap !important;
+  display: flex !important;
+  gap: 10px !important;
+  align-items: center !important;
+}
+
+/* Главная: убрать кнопки "Выбрать категорию" и "Оставить заявку" под поиском */
+#allrecords .hero .h-actions{
+  display:none !important;
+}
+

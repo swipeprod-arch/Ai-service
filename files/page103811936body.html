@@ -1,0 +1,851 @@
+<!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="103811936" data-tilda-page-alias="add" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1689498121" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!-- ====== /add • кабинет исполнителя (NO MODERATION) ====== --> <script>
+(async function(){
+  async function waitSb(){
+    for(let i=0;i<40;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r => setTimeout(r,150));
+    }
+    return null;
+  }
+  const sb = await waitSb();
+  if(!sb) return;
+
+  const { data } = await sb.auth.getSession();
+  const user = data?.session?.user;
+
+  if(!user){
+    const here = location.pathname + location.search + location.hash;
+    location.replace("/auth?redirect=" + encodeURIComponent(here));
+  }
+})();
+</script> <header class="nav"> <div class="container nav-inner"> <a class="brand" href="/"> <span class="logo" aria-hidden="true"></span> <span>AI-Биржа (MVP)</span> </a> <nav class="nav-links" aria-label="Навигация"> <a href="/services">Услуги</a> <a href="/experts">Исполнители</a> <a href="/cases">Кейсы</a> <a href="/how">Как это работает</a> <a href="/faq">FAQ</a> </nav> <div class="nav-cta"> <a class="btn" href="/experts">В каталог</a> <a class="btn primary" href="/apply">Оставить заявку</a> </div> </div> </header> <main> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Кабинет</div> <h1 class="h-title" style="font-size:34px;margin-bottom:8px">Добавить / обновить карточку</h1> <p class="h-sub">Модерации нет: карточка появляется в каталоге сразу после сохранения.</p> <div class="two"> <div class="form"> <div class="field"> <label>Имя / Ник</label> <input id="f_name" placeholder="Например: Алексей" /> </div> <div class="field"> <label>Категория</label> <select id="f_category"> <option value="video">AI-Видео</option> <option value="design">AI-Дизайн</option> <option value="bots">AI-Боты</option> <option value="marketplaces">WB/Ozon</option> <option value="sites">AI-Сайты</option> </select> </div> <div class="field"> <label>Роль / специализация (теги через запятую)</label> <input id="f_role" placeholder="Например: reels, монтаж, субтитры, озвучка" /> <div class="small">Пиши через запятую — в каталоге покажем отдельными плашками.</div> </div> <div class="field"> <label>Краткая информация (в превью карточки)</label> <textarea id="f_short" placeholder="1–2 предложения по делу."></textarea> <div class="small">Совет: коротко, конкретно, без воды.</div> </div> <div class="field"> <label>Описание (подробнее)</label> <textarea id="f_desc" placeholder="Опиши, что делаешь, сроки, результат"></textarea> </div> <div class="two"> <div class="field"> <label>Цена (пример)</label> <input id="f_price" placeholder="от 15 000 ₽" /> </div> <div class="field"> <label>Срок (пример)</label> <input id="f_time" placeholder="5–7 дней" /> </div> </div> <div class="field"> <label>Telegram (для кнопки “Написать сообщение”)</label> <div class="prefix-wrap"> <span class="prefix">@</span> <input id="f_tg" placeholder="username" inputmode="text" autocomplete="off" /> </div> <div class="small">Пиши только ник. Если вставишь ссылку — я сам вытащу ник.</div> </div> <div class="two"> <div class="field"> <label>Instagram</label> <input id="f_ig" placeholder="@username или https://instagram.com/username" /> </div> <div class="field"> <label>Сайт</label> <input id="f_site" placeholder="site.ru или https://site.ru" /> </div> </div> <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px"> <button class="btn primary" id="btnSave" type="button">Сохранить</button> <button class="btn" id="btnLogout" type="button">Выйти</button> </div> <div class="small" id="saveMsg" style="margin-top:8px"></div> </div> <div class="form"> <h2 class="section-title" style="margin:0 0 8px">Медиа</h2> <p class="section-sub" style="margin:0 0 10px">Загрузи фото/видео и выбери превью.</p> <div class="field"> <label>Загрузка файлов</label> <input id="mediaInput" type="file" multiple accept="image/*,video/*" /> <div class="small">Можно несколько файлов.</div> </div> <div style="display:flex;gap:10px;flex-wrap:wrap"> <button class="btn primary" id="btnUpload" type="button">Загрузить</button> <button class="btn" id="btnRefresh" type="button">Обновить список</button> </div> <hr class="sep"> <div class="small" style="margin-bottom:8px">Нажми “Сделать превью” — это станет обложкой карточки.</div> <div class="media-grid" id="mediaGrid"></div> <div class="small" id="mediaMsg" style="margin-top:10px"></div> </div> </div> </div> </div> </section> </main> <style>
+/* белый текст на синей */
+.btn.primary, .btn.primary *{ color:#fff !important; -webkit-text-fill-color:#fff !important; }
+
+.prefix-wrap{ position:relative; }
+.prefix-wrap .prefix{
+  position:absolute; left:14px; top:50%; transform:translateY(-50%);
+  font-weight:900; opacity:.7;
+}
+.prefix-wrap input{ padding-left:30px !important; }
+
+/* медиа */
+.media-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:12px;
+}
+@media (max-width: 720px){ .media-grid{ grid-template-columns: 1fr; } }
+
+.media-card{
+  border-radius: 16px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.7);
+  background: var(--surface);
+  box-shadow: 10px 10px 22px rgba(163,177,198,.25), -10px -10px 22px rgba(255,255,255,.85);
+  padding:10px;
+}
+.media-prev{
+  width:100%;
+  aspect-ratio: 16/10;
+  border-radius: 14px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.7);
+  background: rgba(255,255,255,.35);
+  margin-bottom:10px;
+}
+.media-prev img, .media-prev video{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+.media-row{
+  display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+}
+.badge2{
+  font-size:12px;font-weight:900;padding:6px 10px;border-radius:999px;
+  background: rgba(30,120,255,.12);border:1px solid rgba(30,120,255,.22);
+  color: rgba(20,40,75,.85);
+}
+</style> <script>
+window.addEventListener('DOMContentLoaded', async function(){
+  const BUCKET = "experts-media";
+
+  function esc(s){
+    return String(s || "").replace(/[&<>"']/g, m => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
+  async function waitSb(){
+    for(let i=0;i<60;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r => setTimeout(r,150));
+    }
+    return null;
+  }
+
+  function normTagsCSV(s){
+    const arr = String(s||"").split(",").map(x=>x.trim()).filter(Boolean);
+    return arr.join(", ");
+  }
+
+  function extractUsernameFromUrl(url){
+    const u = String(url||"").trim();
+    // t.me/username или https://t.me/username
+    const m = u.match(/(?:t\.me|telegram\.me)\/([A-Za-z0-9_]{3,})/i);
+    if(m && m[1]) return m[1];
+    return "";
+  }
+
+  function normTelegram(input){
+    let v = String(input||"").trim();
+    if(!v) return "";
+    // если дали ссылку
+    if(v.includes("t.me/") || v.includes("telegram.me/")){
+      const u = extractUsernameFromUrl(v);
+      if(u) return "@"+u;
+    }
+    v = v.replace(/^@+/, "").trim();
+    // выкидываем пробелы
+    v = v.replace(/\s+/g,"");
+    return v ? "@"+v : "";
+  }
+
+  function normInstagram(input){
+    let v = String(input||"").trim();
+    if(!v) return "";
+    // если ссылка — оставляем ссылку
+    if(/^https?:\/\//i.test(v)) return v;
+    v = v.replace(/^@+/, "").trim().replace(/\s+/g,"");
+    return v ? ("https://www.instagram.com/"+v+"/") : "";
+  }
+
+  function displayInstagram(v){
+    v = String(v||"").trim();
+    const m = v.match(/instagram\.com\/([A-Za-z0-9_.]+)/i);
+    if(m && m[1]) return "@"+m[1].replace(/\/.*/,"");
+    return v;
+  }
+
+  function normWebsite(input){
+    let v = String(input||"").trim();
+    if(!v) return "";
+    if(/^https?:\/\//i.test(v)) return v;
+    return "https://"+v;
+  }
+
+  function displayTelegramUsername(v){
+    v = String(v||"").trim();
+    if(!v) return "";
+    if(v.includes("t.me/") || v.includes("telegram.me/")) {
+      const u = extractUsernameFromUrl(v);
+      return u || "";
+    }
+    return v.replace(/^@+/, "");
+  }
+
+  const sb = await waitSb();
+  const saveMsg  = document.getElementById('saveMsg');
+  const mediaMsg = document.getElementById('mediaMsg');
+  const grid     = document.getElementById('mediaGrid');
+
+  if(!sb){ saveMsg.textContent = "Supabase не подключен."; return; }
+
+  const { data: authData } = await sb.auth.getUser();
+  const user = authData?.user;
+  if(!user){ saveMsg.textContent = "Ты не залогинен. Открой /auth и войди."; return; }
+
+  let myExpert = null;
+
+  async function loadMyCard(){
+    const { data, error } = await sb
+      .from("experts")
+      .select("id, user_id, name, category, role, short_info, description, price_from, delivery_time, telegram, instagram, website, cover_path, cover_type, status, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending:false })
+      .limit(1);
+
+    if(error){ saveMsg.textContent = "Ошибка загрузки карточки: " + error.message; return; }
+    myExpert = (data && data[0]) ? data[0] : null;
+
+    if(myExpert){
+      document.getElementById('f_name').value = myExpert.name || "";
+      document.getElementById('f_category').value = myExpert.category || "video";
+      document.getElementById('f_role').value = myExpert.role || "";
+      document.getElementById('f_short').value = myExpert.short_info || "";
+      document.getElementById('f_desc').value = myExpert.description || "";
+      document.getElementById('f_price').value = myExpert.price_from || "";
+      document.getElementById('f_time').value = myExpert.delivery_time || "";
+      document.getElementById('f_tg').value = displayTelegramUsername(myExpert.telegram || "");
+      document.getElementById('f_ig').value = displayInstagram(myExpert.instagram || "");
+      document.getElementById('f_site').value = myExpert.website || "";
+      saveMsg.innerHTML = 'Карточка есть. Статус: <b>' + esc(myExpert.status || 'approved') + '</b>';
+    } else {
+      saveMsg.textContent = "Карточки ещё нет — заполни форму и нажми “Сохранить”.";
+    }
+  }
+
+  // автоподчистка полей
+  document.getElementById('f_role').addEventListener('blur', function(){
+    this.value = normTagsCSV(this.value);
+  });
+  document.getElementById('f_tg').addEventListener('blur', function(){
+    this.value = displayTelegramUsername(normTelegram(this.value));
+  });
+  document.getElementById('f_ig').addEventListener('blur', function(){
+    const normalized = normInstagram(this.value);
+    this.value = displayInstagram(normalized);
+  });
+  document.getElementById('f_site').addEventListener('blur', function(){
+    const normalized = normWebsite(this.value);
+    this.value = normalized;
+  });
+
+  async function saveCard(){
+    const payload = {
+      user_id: user.id,
+      name: document.getElementById('f_name').value.trim(),
+      category: document.getElementById('f_category').value,
+      role: normTagsCSV(document.getElementById('f_role').value),
+      short_info: document.getElementById('f_short').value.trim(),
+      description: document.getElementById('f_desc').value.trim(),
+      price_from: document.getElementById('f_price').value.trim(),
+      delivery_time: document.getElementById('f_time').value.trim(),
+      telegram: normTelegram(document.getElementById('f_tg').value),
+      instagram: normInstagram(document.getElementById('f_ig').value),
+      website: normWebsite(document.getElementById('f_site').value),
+      status: "approved"
+    };
+
+    if(!payload.name){ saveMsg.textContent = "Заполни имя/ник."; return; }
+
+    if(myExpert && myExpert.id){
+      const { error } = await sb.from("experts").update(payload).eq("id", myExpert.id);
+      if(error){ saveMsg.textContent = "Ошибка сохранения: " + error.message; return; }
+      saveMsg.textContent = "Сохранено ✅ Карточка обновлена и сразу видна в каталоге.";
+    } else {
+      const { data, error } = await sb.from("experts").insert(payload).select("id").single();
+      if(error){ saveMsg.textContent = "Ошибка создания: " + error.message; return; }
+      myExpert = { id: data.id, ...payload };
+      saveMsg.textContent = "Готово ✅ Карточка создана и сразу видна в каталоге.";
+    }
+
+    await loadMyCard();
+    await loadMedia();
+  }
+
+  async function loadMedia(){
+    grid.innerHTML = "";
+    if(!myExpert || !myExpert.id){ mediaMsg.textContent = "Сначала сохрани карточку."; return; }
+
+    mediaMsg.textContent = "Загружаю медиа...";
+    const { data, error } = await sb
+      .from("expert_media")
+      .select("id, media_type, storage_path, created_at")
+      .eq("expert_id", myExpert.id)
+      .order("created_at", { ascending:false });
+
+    if(error){ mediaMsg.textContent = "Ошибка медиа: " + error.message; return; }
+    if(!data || data.length===0){ mediaMsg.textContent = "Пока медиа нет."; return; }
+
+    const paths = data.map(m => m.storage_path);
+    const { data: urls } = await sb.storage.from(BUCKET).createSignedUrls(paths, 60*60);
+    const urlByPath = new Map();
+    (urls || []).forEach(x => { if(x?.path && x?.signedUrl) urlByPath.set(x.path, x.signedUrl); });
+
+    grid.innerHTML = data.map(m => {
+      const u = urlByPath.get(m.storage_path);
+      const isCover = (myExpert.cover_path && myExpert.cover_path === m.storage_path);
+      return `
+       <div class="media-prev ${m.media_type==="video" ? "is-video" : ""}">
+  ${m.media_type==="video"
+    ? `<video src="${u}" controls muted playsinline preload="metadata"></video>`
+    : `<img src="${u}" alt="">`
+  }
+</div> <div class="media-row"> <span class="badge2">${isCover ? "PREVIEW ✅" : (m.media_type==="video" ? "Видео" : "Фото")}</span> <div style="display:flex;gap:8px;flex-wrap:wrap"> <button class="btn primary" type="button" data-setcover="${esc(m.storage_path)}" data-type="${esc(m.media_type)}">Сделать превью</button> <button class="btn" type="button" data-del="${esc(m.id)}">Удалить</button> </div> </div> </div>
+      `;
+    }).join("");
+
+    grid.querySelectorAll("[data-setcover]").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const path = btn.getAttribute("data-setcover");
+        const type = btn.getAttribute("data-type");
+        const { error } = await sb.from("experts")
+          .update({ cover_path: path, cover_type: type })
+          .eq("id", myExpert.id);
+
+        if(error){ mediaMsg.textContent = "Ошибка превью: " + error.message; return; }
+        mediaMsg.textContent = "Превью обновлено ✅";
+        await loadMyCard();
+        await loadMedia();
+      });
+    });
+
+    grid.querySelectorAll("[data-del]").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const mediaId = btn.getAttribute("data-del");
+
+        const { data: row, error: rerr } = await sb
+          .from("expert_media")
+          .select("id, storage_path")
+          .eq("id", mediaId)
+          .single();
+
+        if(rerr){ mediaMsg.textContent = "Ошибка: " + rerr.message; return; }
+
+        await sb.storage.from(BUCKET).remove([row.storage_path]);
+        const { error: derr } = await sb.from("expert_media").delete().eq("id", mediaId);
+        if(derr){ mediaMsg.textContent = "Ошибка удаления: " + derr.message; return; }
+
+        if(myExpert.cover_path === row.storage_path){
+          await sb.from("experts").update({ cover_path: null, cover_type: null }).eq("id", myExpert.id);
+        }
+
+        mediaMsg.textContent = "Удалено ✅";
+        await loadMyCard();
+        await loadMedia();
+      });
+    });
+
+    mediaMsg.textContent = "";
+  }
+
+  async function uploadMedia(){
+    if(!myExpert || !myExpert.id){ mediaMsg.textContent = "Сначала сохрани карточку."; return; }
+
+    const input = document.getElementById('mediaInput');
+    const files = Array.from(input.files || []);
+    if(files.length===0){ mediaMsg.textContent = "Выбери файлы."; return; }
+
+    mediaMsg.textContent = "Загружаю...";
+    for(const file of files){
+      const isVideo = file.type.startsWith("video/");
+      const ext = (file.name.split(".").pop() || (isVideo ? "mp4" : "jpg")).toLowerCase();
+      const path = `experts/${myExpert.id}/${Date.now()}_${Math.random().toString(16).slice(2)}.${ext}`;
+
+      const { error: uerr } = await sb.storage.from(BUCKET).upload(path, file, { upsert:false });
+      if(uerr){ mediaMsg.textContent = "Ошибка загрузки: " + uerr.message; return; }
+
+    const { error: ierr } = await sb.from("expert_media").insert({
+  user_id: user.id,
+  expert_id: myExpert.id,
+  media_type: isVideo ? "video" : "image",
+  storage_path: path
+});
+
+      if(ierr){ mediaMsg.textContent = "Ошибка записи медиа: " + ierr.message; return; }
+    }
+
+    input.value = "";
+    mediaMsg.textContent = "Загружено ✅";
+    await loadMyCard();
+    await loadMedia();
+  }
+
+  document.getElementById('btnSave').addEventListener('click', saveCard);
+  document.getElementById('btnUpload').addEventListener('click', uploadMedia);
+  document.getElementById('btnRefresh').addEventListener('click', loadMedia);
+  document.getElementById('btnLogout').addEventListener('click', async () => {
+    await sb.auth.signOut();
+    location.reload();
+  });
+
+  await loadMyCard();
+  await loadMedia();
+});
+</script> <style>
+/* ===== Adaptive media preview (9:16 / 16:9 / 1:1) ===== */
+
+/* переопределяем старый фиксированный 16:10 */
+.media-card .media-prev{
+  aspect-ratio: 16 / 9;        /* дефолт: горизонтальное */
+  height: auto !important;
+  max-height: 560px;           /* чтобы вертикалка не уходила бесконечно вниз */
+  background: #000;            /* красивые поля для contain */
+}
+
+/* ориентации */
+.media-card .media-prev.ratio-portrait{ aspect-ratio: 9 / 16; }
+.media-card .media-prev.ratio-landscape{ aspect-ratio: 16 / 9; }
+.media-card .media-prev.ratio-square{ aspect-ratio: 1 / 1; }
+
+/* ВАЖНО: НЕ РЕЖЕМ */
+.media-card .media-prev video,
+.media-card .media-prev img{
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important; /* не обрезает */
+  display: block;
+  background: #000;
+}
+</style> <script>
+(function(){
+  function applyRatio(prev, w, h){
+    if(!w || !h) return;
+
+    prev.classList.remove("ratio-portrait","ratio-landscape","ratio-square");
+
+    const r = w / h;
+
+    // горизонтальное
+    if (r > 1.15){
+      prev.classList.add("ratio-landscape");
+      prev.style.aspectRatio = "16 / 9";
+      return;
+    }
+
+    // вертикальное
+    if (r < 0.87){
+      prev.classList.add("ratio-portrait");
+      prev.style.aspectRatio = "9 / 16";
+      return;
+    }
+
+    // почти квадрат
+    prev.classList.add("ratio-square");
+    prev.style.aspectRatio = "1 / 1";
+  }
+
+  function initPrev(prev){
+    if(!prev || prev.dataset.ratioInit) return;
+    prev.dataset.ratioInit = "1";
+
+    const v = prev.querySelector("video");
+    const img = prev.querySelector("img");
+
+    if(v){
+      const run = () => applyRatio(prev, v.videoWidth, v.videoHeight);
+      if(v.readyState >= 1) run();
+      else v.addEventListener("loadedmetadata", run, { once:true });
+      return;
+    }
+
+    if(img){
+      const run = () => applyRatio(prev, img.naturalWidth, img.naturalHeight);
+      if(img.complete) run();
+      else img.addEventListener("load", run, { once:true });
+    }
+  }
+
+  function scan(){
+    document.querySelectorAll(".media-card .media-prev").forEach(initPrev);
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    scan();
+
+    // лёгкий observer ТОЛЬКО на #mediaGrid (не тормозит сайт)
+    const grid = document.getElementById("mediaGrid");
+    if(!grid) return;
+
+    const mo = new MutationObserver(() => scan());
+    mo.observe(grid, { childList:true, subtree:true });
+  });
+})();
+</script> <!-- FIX: вертикальные видео не режем, делаем 9:16 / 16:9 авто --> <style>
+/* СИЛЬНОЕ перекрытие именно для превью медиа */
+#allrecords #mediaGrid video,
+.t-records #mediaGrid video,
+#allrecords .media-prev video,
+.t-records .media-prev video,
+#allrecords .media-preview video,
+.t-records .media-preview video{
+  object-fit: contain !important;
+  width: 100% !important;
+  height: 100% !important;
+  background:#000 !important;
+}
+
+/* Контейнер превью — пусть принимает нужный ratio */
+#allrecords #mediaGrid .media-prev,
+.t-records #mediaGrid .media-prev,
+#allrecords .media-prev,
+.t-records .media-prev,
+#allrecords .media-preview,
+.t-records .media-preview{
+  background:#000 !important;
+  height:auto !important;
+  max-height:560px !important;
+}
+</style> <script>
+(function(){
+  function pickRatio(w,h){
+    if(!w || !h) return null;
+    const r = w / h;
+    if(r < 0.87) return "9 / 16";     // вертикалка
+    if(r > 1.15) return "16 / 9";     // горизонталка
+    return "1 / 1";                  // почти квадрат
+  }
+
+  function applyToVideo(v){
+    if(!v || v.dataset.ratioFixed) return;
+
+    const wrap =
+      v.closest(".media-prev") ||
+      v.closest(".media-preview") ||
+      v.parentElement;
+
+    // принудительно, инлайном (самое сильное)
+    v.style.objectFit = "contain";
+    v.style.width = "100%";
+    v.style.height = "100%";
+    v.style.background = "#000";
+
+    function set(){
+      const ratio = pickRatio(v.videoWidth, v.videoHeight);
+      if(!ratio) return;
+
+      if(wrap){
+        wrap.style.aspectRatio = ratio;
+        wrap.style.background = "#000";
+        wrap.style.height = "auto";
+        wrap.style.maxHeight = "560px";
+        wrap.style.overflow = "hidden"; // чтобы радиус не ломался
+      }
+
+      v.dataset.ratioFixed = "1";
+    }
+
+    // важно: метаданные могут грузиться не сразу
+    if(v.readyState >= 1) set();
+    else v.addEventListener("loadedmetadata", set, { once:true });
+
+    // на всякий случай: если браузер дал размеры чуть позже
+    setTimeout(set, 300);
+    setTimeout(set, 1200);
+  }
+
+  function scan(){
+    // 1) основная галерея в кабинете
+    const grid = document.getElementById("mediaGrid");
+    if(grid){
+      grid.querySelectorAll("video").forEach(applyToVideo);
+    }
+    // 2) если где-то есть ещё превью-видео (обложка и т.п.)
+    document.querySelectorAll(".media-prev video, .media-preview video").forEach(applyToVideo);
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    scan();
+
+    // лёгкий “досмотр” 3 секунды, чтобы поймать динамически дорисованные блоки (без лагов)
+    let n = 0;
+    const t = setInterval(function(){
+      scan();
+      n++;
+      if(n >= 8) clearInterval(t);
+    }, 400);
+  });
+})();
+</script> <!-- FIX: вертикальные ФОТО не режем (как Reels/Shorts) --> <style>
+/* СИЛЬНОЕ перекрытие для фото в медиа-превью */
+#allrecords #mediaGrid img,
+.t-records #mediaGrid img,
+#allrecords .media-prev img,
+.t-records .media-prev img,
+#allrecords .media-preview img,
+.t-records .media-preview img{
+  object-fit: contain !important;
+  width: 100% !important;
+  height: 100% !important;
+  background:#000 !important;
+}
+</style> <script>
+(function(){
+  function pickRatio(w,h){
+    if(!w || !h) return null;
+    const r = w / h;
+    if(r < 0.87) return "9 / 16";     // вертикалка
+    if(r > 1.15) return "16 / 9";     // горизонталка
+    return "1 / 1";                  // почти квадрат
+  }
+
+  function applyToImg(img){
+    if(!img || img.dataset.ratioFixed) return;
+
+    const wrap =
+      img.closest(".media-prev") ||
+      img.closest(".media-preview") ||
+      img.parentElement;
+
+    // принудительно (инлайн сильнее всех css)
+    img.style.objectFit = "contain";
+    img.style.width = "100%";
+    img.style.height = "100%";
+    img.style.background = "#000";
+
+    function set(){
+      const ratio = pickRatio(img.naturalWidth, img.naturalHeight);
+      if(!ratio) return;
+
+      if(wrap){
+        wrap.style.aspectRatio = ratio;
+        wrap.style.background = "#000";
+        wrap.style.height = "auto";
+        wrap.style.maxHeight = "560px";
+        wrap.style.overflow = "hidden";
+      }
+
+      img.dataset.ratioFixed = "1";
+    }
+
+    if(img.complete) set();
+    else img.addEventListener("load", set, { once:true });
+
+    setTimeout(set, 300);
+    setTimeout(set, 1200);
+  }
+
+  function scanImages(){
+    const grid = document.getElementById("mediaGrid");
+    if(grid) grid.querySelectorAll("img").forEach(applyToImg);
+
+    document.querySelectorAll(".media-prev img, .media-preview img").forEach(applyToImg);
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    scanImages();
+
+    // лёгкий догон на 3 секунды (чтобы поймать дорисовку)
+    let n=0;
+    const t=setInterval(function(){
+      scanImages();
+      n++;
+      if(n>=8) clearInterval(t);
+    }, 400);
+  });
+})();
+</script> <script>
+(function(){
+  const AUTH_PAGE = "/auth"; // страница входа/регистрации в Tilda
+  const BTN_TEXT = "Разместить портфолио";
+
+  function findBtnByText(txt){
+    const all = Array.from(document.querySelectorAll("a,button"));
+    const norm = s => (s||"").replace(/\s+/g," ").trim().toLowerCase();
+    const t = norm(txt);
+    return all.find(el => norm(el.textContent).includes(t)) || null;
+  }
+
+  async function waitSb(){
+    for(let i=0;i<40;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r=>setTimeout(r,150));
+    }
+    return null;
+  }
+
+  async function isAuthed(){
+    const sb = await waitSb();
+    if(!sb) return false;
+    const { data } = await sb.auth.getSession();
+    return !!data?.session?.user;
+  }
+
+  function goAuth(){
+    const redirect = encodeURIComponent(location.href);
+    location.href = AUTH_PAGE + "?redirect=" + redirect;
+  }
+
+  window.addEventListener("DOMContentLoaded", async () => {
+    const btn = findBtnByText(BTN_TEXT);
+    if(!btn) return;
+
+    btn.addEventListener("click", async (e) => {
+      const ok = await isAuthed();
+      if(!ok){
+        e.preventDefault();
+        e.stopPropagation();
+        if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+        goAuth();
+      }
+      // если ok=true — кнопка работает как раньше (создание карточки)
+    }, true);
+  });
+})();
+</script> <style>
+  /* /add: уведомления */
+  #allrecords .ai-add-alert{
+    margin: 0 0 14px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,.7);
+    background: rgba(255,255,255,.45);
+    box-shadow: 10px 10px 22px rgba(163,177,198,.22), -10px -10px 22px rgba(255,255,255,.88);
+    backdrop-filter: blur(10px);
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    justify-content:space-between;
+  }
+  #allrecords .ai-add-alert b{ font-weight: 900; }
+  #allrecords .ai-add-alert .x{
+    width:40px;height:40px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.75);
+    background: rgba(238,243,250,.85);
+    box-shadow: 10px 10px 22px rgba(163,177,198,.22), -10px -10px 22px rgba(255,255,255,.88);
+    cursor:pointer;
+    flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+    user-select:none;
+  }
+  #allrecords .ai-add-alert .t{
+    color: rgba(19,35,63,.78);
+    line-height: 1.45;
+  }
+  #allrecords .ai-add-alert.info{
+    border-left: 6px solid rgba(0,120,255,.55);
+  }
+  #allrecords .ai-add-alert.ok{
+    border-left: 6px solid rgba(0,200,120,.55);
+  }
+</style> <script>
+(function(){
+  async function waitSb(){
+    for(let i=0;i<40;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r => setTimeout(r,150));
+    }
+    return null;
+  }
+
+  function findTopAnchor(){
+    // куда вставлять плашки: стараемся в самый верх основного контента
+    return (
+      document.querySelector('main .section .container') ||
+      document.querySelector('main .container') ||
+      document.querySelector('.section .container') ||
+      document.querySelector('.container') ||
+      document.querySelector('#allrecords') ||
+      document.body
+    );
+  }
+
+  function makeAlert(type, html){
+    const el = document.createElement('div');
+    el.className = 'ai-add-alert ' + type;
+    el.innerHTML = `
+      <div class="t">${html}</div> <div class="x" title="Закрыть" aria-label="Закрыть">✕</div>
+    `;
+    el.querySelector('.x').addEventListener('click', ()=> el.remove());
+    return el;
+  }
+
+  function injectOnce(id, node, anchor){
+    if(document.getElementById(id)) return;
+    node.id = id;
+    anchor.insertBefore(node, anchor.firstChild);
+  }
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    const anchor = findTopAnchor();
+
+    // 1) Всегда показываем подсказку сверху /add
+    const info = makeAlert(
+      'info',
+      `Перед тем как загружать фото/видео, <b>впиши данные о себе</b> и нажми кнопку <b>«Сохранить»</b>.
+      После сохранения создастся карточка — и тогда можно загружать медиа.`
+    );
+    injectOnce('aiAddInfoNotice', info, anchor);
+
+    // 2) Плашка “успешный вход” — только если пришли по письму (flash из /auth)
+    const emailFlash = (localStorage.getItem("AI_BIRZHA_LOGIN_FLASH") || "").trim();
+    const ts = parseInt(localStorage.getItem("AI_BIRZHA_LOGIN_FLASH_TS") || "0", 10);
+    const fresh = ts && (Date.now() - ts) < 5 * 60 * 1000; // 5 минут
+
+    if(emailFlash && fresh){
+      const ok = makeAlert('ok', `Вы успешно вошли под логином: <b>${emailFlash}</b>`);
+      injectOnce('aiAddLoginNotice', ok, anchor);
+
+      localStorage.removeItem("AI_BIRZHA_LOGIN_FLASH");
+      localStorage.removeItem("AI_BIRZHA_LOGIN_FLASH_TS");
+      return;
+    }
+
+    // 3) Если flash не пришёл, но пользователь уже авторизован — можно тоже показать (не обязательно)
+    const sb = await waitSb();
+    if(!sb) return;
+
+    const { data } = await sb.auth.getSession();
+    const email = data?.session?.user?.email;
+    if(email){
+      // показываем один раз за сессию браузера
+      if(!sessionStorage.getItem("AI_BIRZHA_ADD_SHOWN_AUTH")){
+        const ok2 = makeAlert('ok', `Вы вошли как: <b>${email}</b>`);
+        injectOnce('aiAddLoginNotice', ok2, anchor);
+        sessionStorage.setItem("AI_BIRZHA_ADD_SHOWN_AUTH", "1");
+      }
+    }
+  });
+})();
+</script> <style>
+  /* Кнопка "Открыть ссылку..." сразу под "Обновить список" */
+  #allrecords .ai-open-card-wrap{
+    margin-top: 12px;
+    width: 100%;
+    flex-basis: 100%;
+    display: flex;
+    justify-content: flex-start;
+  }
+</style> <script>
+(function(){
+  async function waitSb(){
+    for(let i=0;i<40;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r => setTimeout(r,150));
+    }
+    return null;
+  }
+
+  function findRefreshBtn(){
+    const els = Array.from(document.querySelectorAll('button, a, input[type="button"], input[type="submit"]'));
+    return els.find(el => {
+      const t = (el.textContent || el.value || "").trim().toLowerCase();
+      return t === "обновить список";
+    }) || null;
+  }
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    const sb = await waitSb();
+    if(!sb) return;
+
+    const { data: sess } = await sb.auth.getSession();
+    const uid = sess?.session?.user?.id;
+    if(!uid) return; // не вошёл — кнопку не показываем
+
+    const wrap = document.createElement('div');
+    wrap.className = 'ai-open-card-wrap';
+    wrap.innerHTML = `<button class="btn primary" type="button" id="aiOpenMyCardBtn">Открыть ссылку на мою карточку</button>`;
+
+    const refreshBtn = findRefreshBtn();
+    if(refreshBtn){
+      // ставим ПРЯМО под "Обновить список"
+      refreshBtn.insertAdjacentElement('afterend', wrap);
+    }else{
+      // запасной вариант — в конец контейнера
+      (document.querySelector('#allrecords') || document.body).appendChild(wrap);
+    }
+
+    document.getElementById('aiOpenMyCardBtn').addEventListener('click', async () => {
+      const { data, error } = await sb
+        .from("experts")
+        .select("id,created_at")
+        .eq("user_id", uid)
+        .order("created_at", { ascending:false })
+        .limit(1);
+
+      if(error){
+        alert("Ошибка поиска карточки: " + error.message);
+        return;
+      }
+      if(!data || !data.length){
+        alert("Карточка ещё не создана. Сначала заполни данные и нажми «Сохранить».");
+        return;
+      }
+
+      window.open("/card?id=" + encodeURIComponent(data[0].id), "_blank");
+    });
+  });
+})();
+</script> <!-- ====== /add END ====== --> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords-->

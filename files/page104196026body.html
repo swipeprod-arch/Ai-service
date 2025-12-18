@@ -1,0 +1,481 @@
+<!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="104196026" data-tilda-page-alias="card" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-page-headcode="yes" data-tilda-project-country="RU"> <div id="rec1695392371" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!-- ====== /card • страница пользователя (ONE-PASTE) ====== --> <header class="nav"> <div class="container nav-inner"> <a class="brand" href="/"> <span class="logo" aria-hidden="true"></span> <span>AI-Биржа (MVP)</span> </a> <nav class="nav-links" aria-label="Навигация"> <a href="/services">Услуги</a> <a href="/experts">Исполнители</a> <a href="/cases">Кейсы</a> <a href="/how">Как это работает</a> <a href="/faq">FAQ</a> </nav> <div class="nav-cta"> <a class="btn" href="/add">Разместить услугу</a> <a class="btn primary" href="/apply">Оставить заявку</a> </div> </div> </header> <main> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Карточка исполнителя</div> <h1 class="h-title" style="font-size:34px" id="pName">Загрузка...</h1> <p class="h-sub" id="pCat"></p> <div class="expert-cover" id="pCover"> <div class="ph">PREVIEW</div> </div> <div class="expert-short"> <div class="expert-short-label">Краткая информация</div> <div class="expert-short-text" id="pShort">—</div> </div> <hr class="sep"> <div id="pDesc" class="section-sub" style="margin:0 0 10px">—</div> <div class="tagrow" id="pTags"></div> <hr class="sep"> <!-- ✅ ПРАВИЛЬНЫЙ ПОРЯДОК КНОПОК: Сайт → Instagram → Telegram → Назад --> <!-- ✅ И РАСПОЛОЖЕНИЕ: прямо перед блоком "Галерея" --> <div class="expert-actions ai-card-actions" style="margin:14px 0 18px"> <a class="btn" id="pSite" href="#" target="_blank" rel="noopener" style="display:none">Сайт</a> <a class="btn" id="pIg" href="#" target="_blank" rel="noopener" style="display:none">Instagram</a> <a class="btn primary" id="pTg" href="#" target="_blank" rel="noopener" style="display:none">
+            Написать сообщение в Telegram
+          </a> <a class="btn" id="pBack" href="/experts">← Назад в каталог</a> </div> <h2 class="section-title" style="margin:0 0 10px">Галерея</h2> <div class="media-grid" id="pMedia"></div> <div class="small" id="pMsg" style="margin-top:10px"></div> </div> </div> </section> </main> <style>
+/* белый текст на синем */
+.btn.primary, .btn.primary *{ color:#fff !important; }
+
+/* ✅ колонка кнопок на мобиле (и нормальная ширина на десктопе) */
+#allrecords .ai-card-actions{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  align-items:flex-start;
+}
+#allrecords .ai-card-actions .btn{
+  width:100%;
+  max-width:360px;
+  text-align:center;
+}
+
+.expert-cover{
+  width:100%;
+  aspect-ratio: 16/10;
+  border-radius: 18px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.7);
+  background: linear-gradient(135deg, rgba(30,120,255,.12), rgba(0,183,255,.10));
+  box-shadow: inset 10px 10px 22px rgba(163,177,198,.25), inset -10px -10px 22px rgba(255,255,255,.85);
+  margin:12px 0;
+}
+.expert-cover img, .expert-cover video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.expert-cover .ph{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  color: rgba(19,35,63,.55);
+  font-weight:900;
+}
+
+.expert-short{
+  margin-top:8px;
+  padding:12px;
+  border-radius: 16px;
+  border:1px solid rgba(255,255,255,.7);
+  background: var(--surface);
+  box-shadow: 10px 10px 22px rgba(163,177,198,.25), -10px -10px 22px rgba(255,255,255,.85);
+}
+.expert-short-label{ font-weight:900; margin-bottom:6px; }
+.expert-short-text{ color: var(--muted); line-height:1.45; }
+
+.media-grid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap:12px;
+}
+@media (max-width: 900px){ .media-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px){ .media-grid{ grid-template-columns: 1fr; } }
+
+.media-item{
+  border-radius: 16px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.7);
+  background: var(--surface);
+  box-shadow: 10px 10px 22px rgba(163,177,198,.25), -10px -10px 22px rgba(255,255,255,.85);
+  cursor:pointer;
+  position:relative;
+}
+.media-item img, .media-item video{
+  width:100%;
+  height:260px;
+  object-fit:cover; /* превью — ровные, без “полей” */
+  display:block;
+}
+
+/* ===== Lightbox (фикс чёрного экрана + свайп/стрелки/тап по половинам) ===== */
+.ai-lb{
+  position:fixed;
+  inset:0;
+  z-index:999999;
+  display:none;
+  flex-direction:column;
+  background: rgba(0,0,0,.78);
+}
+.ai-lb.open{ display:flex; }
+
+.ai-lb-top{
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 12px;
+  background: rgba(245,248,252,.96);
+  border-bottom: 1px solid rgba(0,0,0,.08);
+}
+.ai-lb-count{
+  font-weight:900;
+  color: rgba(19,35,63,.85);
+}
+.ai-lb-close{
+  width:40px;height:40px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.75);
+  background: rgba(238,243,250,.85);
+  box-shadow: 10px 10px 22px rgba(163,177,198,.25), -10px -10px 22px rgba(255,255,255,.9);
+  cursor:pointer;
+  font-size:20px;
+}
+
+.ai-lb-stage{
+  flex:1;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:14px;
+  user-select:none;
+  touch-action: pan-y; /* свайп по X, скролл по Y */
+}
+
+.ai-lb-media{
+  width:min(980px, 96vw);
+  height: calc(100vh - 56px - 28px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.ai-lb-media img,
+.ai-lb-media video{
+  max-width:100%;
+  max-height:100%;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+  border-radius:18px;
+  background:#000;
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.ai-lb-nav{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:46px;height:46px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.75);
+  background: rgba(238,243,250,.78);
+  backdrop-filter: blur(10px);
+  box-shadow: 10px 10px 22px rgba(163,177,198,.30), -10px -10px 22px rgba(255,255,255,.9);
+  cursor:pointer;
+  font-size:26px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.ai-lb-prev{ left:14px; }
+.ai-lb-next{ right:14px; }
+@media (max-width: 560px){
+  .ai-lb-nav{ width:44px;height:44px; }
+}
+</style> <script>
+window.addEventListener('DOMContentLoaded', async function () {
+  const BUCKET = "experts-media";
+
+  const CAT_LABEL = {
+    video: "AI-Видео", design: "AI-Дизайн", bots: "AI-Боты",
+    marketplaces: "WB/Ozon", sites: "AI-Сайты"
+  };
+
+  function esc(s){
+    return String(s || "").replace(/[&<>"']/g, m => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
+  function escAttr(s){
+    return String(s || "")
+      .replace(/&/g,"&amp;")
+      .replace(/"/g,"&quot;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;");
+  }
+
+  async function waitSb(){
+    for(let i=0;i<40;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r => setTimeout(r,150));
+    }
+    return null;
+  }
+
+  function normalizeUrl(u){
+    if(!u) return null;
+    let s = String(u).trim();
+    if(!s) return null;
+    if(/^https?:\/\//i.test(s)) return s;
+    // если пользователь ввёл просто домен
+    return "https://" + s.replace(/^\/+/, "");
+  }
+
+  function buildTelegramLink(raw){
+    if(!raw) return null;
+    const t = String(raw).trim();
+    if(!t) return null;
+    if(t.startsWith("@")) return "https://t.me/" + t.slice(1);
+    if(t.includes("t.me/")) return t;
+    return null;
+  }
+
+  function buildInstagramLink(raw){
+    if(!raw) return null;
+    const t = String(raw).trim();
+    if(!t) return null;
+    if(t.startsWith("@")) return "https://instagram.com/" + t.slice(1);
+    if(t.includes("instagram.com/")) return t;
+    // если ввели ник без @
+    if(!t.includes("/") && !t.includes(".")) return "https://instagram.com/" + t;
+    return normalizeUrl(t);
+  }
+
+  // ===== Lightbox =====
+  function createLightbox(){
+    let lb = document.getElementById('aiLb');
+    if(lb) return lb;
+
+    lb = document.createElement('div');
+    lb.id = 'aiLb';
+    lb.className = 'ai-lb';
+    lb.innerHTML = `
+      <div class="ai-lb-top"> <div class="ai-lb-count" id="aiLbCount">1/1</div> <button class="ai-lb-close" id="aiLbClose" type="button" aria-label="Закрыть">✕</button> </div> <div class="ai-lb-stage" id="aiLbStage"> <button class="ai-lb-nav ai-lb-prev" id="aiLbPrev" type="button" aria-label="Назад">‹</button> <div class="ai-lb-media" id="aiLbMedia"></div> <button class="ai-lb-nav ai-lb-next" id="aiLbNext" type="button" aria-label="Вперёд">›</button> </div>
+    `;
+    document.body.appendChild(lb);
+    return lb;
+  }
+
+  function initLightbox(items){
+    const lb = createLightbox();
+    const stage = lb.querySelector('#aiLbStage');
+    const mediaBox = lb.querySelector('#aiLbMedia');
+    const count = lb.querySelector('#aiLbCount');
+    const btnClose = lb.querySelector('#aiLbClose');
+    const btnPrev = lb.querySelector('#aiLbPrev');
+    const btnNext = lb.querySelector('#aiLbNext');
+
+    let idx = 0;
+
+    function stopAll(){
+      mediaBox.querySelectorAll('video').forEach(v=>{
+        try{ v.pause(); v.currentTime = 0; }catch(e){}
+      });
+      mediaBox.innerHTML = '';
+    }
+
+    function render(){
+      const total = items.length || 1;
+      idx = (idx + total) % total;
+      count.textContent = `${idx+1}/${total}`;
+
+      stopAll();
+
+      const it = items[idx];
+      if(!it || !it.url) return;
+
+      // ✅ Вставляем контент СРАЗУ (фикс чёрного экрана)
+      if(it.type === 'video'){
+        const v = document.createElement('video');
+        v.src = it.url;
+        v.controls = true;
+        v.playsInline = true;
+        v.preload = 'metadata';
+        v.muted = false;
+        mediaBox.appendChild(v);
+        try{ v.load(); }catch(e){}
+      }else{
+        const img = document.createElement('img');
+        img.src = it.url;
+        img.alt = '';
+        mediaBox.appendChild(img);
+      }
+
+      // лёгкий preload соседей
+      const next = items[(idx+1+total)%total];
+      const prev = items[(idx-1+total)%total];
+      [next, prev].forEach(x=>{
+        if(!x || !x.url) return;
+        if(x.type !== 'video'){
+          const im = new Image();
+          im.src = x.url;
+        }
+      });
+    }
+
+    function open(i){
+      idx = i;
+      document.body.style.overflow = 'hidden';
+      lb.classList.add('open');
+
+      // ✅ двойной рендер (iOS иногда первый кадр "пустой")
+      render();
+      requestAnimationFrame(render);
+    }
+
+    function close(){
+      lb.classList.remove('open');
+      document.body.style.overflow = '';
+      stopAll();
+    }
+
+    function goNext(){ idx++; render(); }
+    function goPrev(){ idx--; render(); }
+
+    btnClose.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); close(); }, true);
+    btnPrev.addEventListener('click',  (e)=>{ e.preventDefault(); e.stopPropagation(); goPrev(); }, true);
+    btnNext.addEventListener('click',  (e)=>{ e.preventDefault(); e.stopPropagation(); goNext(); }, true);
+
+    lb.addEventListener('click', (e)=>{
+      if(e.target === lb) close();
+    }, true);
+
+    window.addEventListener('keydown', (e)=>{
+      if(!lb.classList.contains('open')) return;
+      if(e.key === 'Escape') close();
+      if(e.key === 'ArrowLeft') goPrev();
+      if(e.key === 'ArrowRight') goNext();
+    });
+
+    // свайп
+    let down=false, sx=0, sy=0;
+    stage.addEventListener('pointerdown', (e)=>{
+      down=true; sx=e.clientX; sy=e.clientY;
+    }, {passive:true});
+    stage.addEventListener('pointerup', (e)=>{
+      if(!down) return;
+      down=false;
+      const dx = e.clientX - sx;
+      const dy = e.clientY - sy;
+      if(Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)){
+        dx < 0 ? goNext() : goPrev();
+      }
+    }, {passive:true});
+    stage.addEventListener('pointercancel', ()=>{ down=false; }, {passive:true});
+
+    // ✅ моб: тап по правой/левой половине (кроме кнопок/видео)
+    stage.addEventListener('click', (e)=>{
+      if(!lb.classList.contains('open')) return;
+      if(e.target.closest('.ai-lb-nav, .ai-lb-close, video')) return;
+      if(window.innerWidth > 900) return; // только моб/планшет
+      const r = stage.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      (x < r.width/2) ? goPrev() : goNext();
+    }, true);
+
+    return { open, close };
+  }
+
+  const sb = await waitSb();
+  const pMsg = document.getElementById('pMsg');
+  if(!sb){ pMsg.textContent = "Supabase не подключен."; return; }
+
+  const qs = new URLSearchParams(location.search);
+  const id = qs.get("id");
+  if(!id){ pMsg.textContent = "Не указан id карточки."; return; }
+
+  const { data: expert, error } = await sb
+    .from("experts")
+    .select("*")
+    .eq("id", id)
+    .eq("status", "approved")
+    .single();
+
+  if(error || !expert){ pMsg.textContent = "Карточка не найдена или не одобрена."; return; }
+
+  document.getElementById('pName').textContent = expert.name || "—";
+  document.getElementById('pCat').textContent = (CAT_LABEL[expert.category] || expert.category || "");
+  document.getElementById('pDesc').textContent = expert.description || "—";
+  document.getElementById('pShort').textContent = expert.short_info || "—";
+
+  const tags = [];
+  if(expert.price_from) tags.push(`<span class="tag">${esc(expert.price_from)}</span>`);
+  if(expert.delivery_time) tags.push(`<span class="tag">${esc(expert.delivery_time)}</span>`);
+  if(expert.role) tags.push(`<span class="tag">${esc(expert.role)}</span>`);
+  document.getElementById('pTags').innerHTML = tags.join("");
+
+  // кнопки: сайт / инста / телега
+  const pSite = document.getElementById('pSite');
+  const pIg   = document.getElementById('pIg');
+  const pTg   = document.getElementById('pTg');
+
+  // пробуем разные имена полей (на случай как ты назвал в базе)
+  const siteRaw =
+    expert.site || expert.website || expert.site_url || expert.url || expert.web || expert.web_url || null;
+
+  const igRaw =
+    expert.instagram || expert.ig || expert.ig_username || expert.insta || expert.insta_username || null;
+
+  const tgRaw =
+    expert.telegram || expert.tg || expert.tg_username || null;
+
+  const site = normalizeUrl(siteRaw);
+  const ig   = buildInstagramLink(igRaw);
+  const tg   = buildTelegramLink(tgRaw);
+
+  if(site){ pSite.href = site; pSite.style.display = ""; }
+  if(ig){ pIg.href = ig; pIg.style.display = ""; }
+  if(tg){ pTg.href = tg; pTg.style.display = ""; }
+
+  // обложка
+  if(expert.cover_path){
+    const { data: s, error: se } = await sb.storage.from(BUCKET).createSignedUrl(expert.cover_path, 60*60);
+    if(!se && s?.signedUrl){
+      const wrap = document.getElementById('pCover');
+      const url = s.signedUrl;
+      wrap.innerHTML = (String(expert.cover_type||"").toLowerCase()==="video")
+        ? `<video src="${escAttr(url)}" controls muted playsinline preload="metadata"></video>`
+        : `<img src="${escAttr(url)}" alt="">`;
+    }
+  }
+
+  // медиа
+  const { data: media, error: me } = await sb
+    .from("expert_media")
+    .select("id, media_type, storage_path, created_at")
+    .eq("expert_id", id)
+    .order("created_at", { ascending:false });
+
+  if(me){ pMsg.textContent = "Ошибка медиа: " + me.message; return; }
+  if(!media || media.length===0){ pMsg.textContent = "У исполнителя пока нет медиа."; return; }
+
+  const paths = media.map(m => m.storage_path).filter(Boolean);
+  const { data: urls } = await sb.storage.from(BUCKET).createSignedUrls(paths, 60*60);
+  const urlByPath = new Map();
+  (urls || []).forEach(x => { if(x?.path && x?.signedUrl) urlByPath.set(x.path, x.signedUrl); });
+
+  const items = [];
+  const html = media.map(m => {
+    const u = urlByPath.get(m.storage_path);
+    if(!u) return "";
+
+    const type = (String(m.media_type||"").toLowerCase()==="video") ? "video" : "image";
+    const idx = items.length;
+    items.push({ type, url: u });
+
+    return `
+      <div class="media-item" data-idx="${idx}" role="button" tabindex="0">
+        ${type==="video"
+          ? `<video src="${escAttr(u)}" muted playsinline preload="metadata"></video>`
+          : `<img src="${escAttr(u)}" alt="">`
+        }
+      </div>
+    `;
+  }).join("");
+
+  const pMedia = document.getElementById('pMedia');
+  pMedia.innerHTML = html;
+
+  // ✅ инициализация лайтбокса + перехват кликов (чтобы не было "черного старта")
+  const lb = initLightbox(items);
+
+  pMedia.querySelectorAll('.media-item').forEach(el => {
+    const i = Number(el.getAttribute('data-idx') || "0");
+
+    el.addEventListener('click', (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+      lb.open(i);
+    }, true);
+
+    el.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        lb.open(i);
+      }
+    });
+  });
+
+  pMsg.textContent = "";
+});
+</script> <!-- ====== /card END ====== --> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords-->

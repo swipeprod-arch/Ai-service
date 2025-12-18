@@ -1,0 +1,2261 @@
+<!DOCTYPE html> <html> <head> <meta charset="utf-8" /> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!--metatextblock--> <title>add</title> <meta property="og:url" content="add" /> <meta property="og:title" content="add" /> <meta property="og:description" content="" /> <meta property="og:type" content="website" /> <link rel="canonical" href="add"> <!--/metatextblock--> <meta name="format-detection" content="telephone=no" /> <meta http-equiv="x-dns-prefetch-control" content="on"> <link rel="dns-prefetch" href="https://ws.tildacdn.com">  <link rel="shortcut icon" href="images/tildafavicon.ico" type="image/x-icon" /> <!-- Assets --> <script src="https://neo.tildacdn.com/js/tilda-fallback-1.0.min.js" async charset="utf-8"></script> <link rel="stylesheet" href="css/tilda-grid-3.0.min.css" type="text/css" media="all" onerror="this.loaderr='y';"/> <link rel="stylesheet" href="css/tilda-blocks-page103811936.min.css?t=1765892010" type="text/css" media="all" onerror="this.loaderr='y';" /> <link rel="stylesheet" type="text/css" href="css/custom.css?t=1765892010"> <link rel="stylesheet" href="css/fonts-tildasans.css" type="text/css" media="all" onerror="this.loaderr='y';" /> <script nomodule src="js/tilda-polyfill-1.0.min.js" charset="utf-8"></script> <script type="text/javascript">function t_onReady(func) {if(document.readyState!='loading') {func();} else {document.addEventListener('DOMContentLoaded',func);}}
+function t_onFuncLoad(funcName,okFunc,time) {if(typeof window[funcName]==='function') {okFunc();} else {setTimeout(function() {t_onFuncLoad(funcName,okFunc,time);},(time||100));}}</script> <script src="js/jquery-1.10.2.min.js" charset="utf-8" onerror="this.loaderr='y';"></script> <script src="js/tilda-scripts-3.0.min.js" charset="utf-8" defer onerror="this.loaderr='y';"></script> <script src="js/tilda-blocks-page103811936.min.js?t=1765892010" charset="utf-8" async onerror="this.loaderr='y';"></script> <script src="js/lazyload-1.3.min.export.js" charset="utf-8" async onerror="this.loaderr='y';"></script> <script src="js/tilda-events-1.0.min.js" charset="utf-8" async onerror="this.loaderr='y';"></script> <!-- nominify begin --><script>
+window.AI_BIRZHA = {
+  SUPABASE_URL: "https://orxzpefskbkcyuoobkol.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_fj9X3SDLjXiL0v3pajtMwA_fTYhN3us",
+
+  AUTH_PATH: "/auth",
+  APPLY_PATH: "/apply",
+  ADD_PATH: "/add",
+  EXPERTS_PATH: "/experts"
+};
+</script> <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> <script>
+(function initSupabase(){
+  function tryInit(){
+    if(!window.AI_BIRZHA) return;
+
+    // уже создано
+    if(window.AI_BIRZHA.sb) return;
+
+    // ждём загрузку библиотеки supabase-js
+    if(window.supabase && typeof window.supabase.createClient === "function"){
+      window.AI_BIRZHA.sb = window.supabase.createClient(
+        window.AI_BIRZHA.SUPABASE_URL,
+        window.AI_BIRZHA.SUPABASE_ANON_KEY
+      );
+      return;
+    }
+
+    setTimeout(tryInit, 80);
+  }
+  tryInit();
+})();
+</script> <style>
+/* ====== AI-Биржа • Neumorphism Light Theme ====== */
+:root{
+  --bg:#EEF3FA;
+  --surface:#EEF3FA;
+  --surface2:#F6F9FF;
+
+  --text:#13233F;
+  --muted:#5B6C86;
+
+  --radius:22px;
+  --radius-sm:16px;
+  --max:1120px;
+
+  --shadow-dark: rgba(163,177,198,.55);
+  --shadow-light: rgba(255,255,255,.92);
+
+  --stroke: rgba(255,255,255,.65);
+
+  /* Синий градиент как в референсе */
+  --accent1:#1E78FF;
+  --accent2:#00B7FF;
+  --accent-grad: linear-gradient(135deg, var(--accent1) 0%, var(--accent2) 100%);
+}
+
+/* база */
+*{box-sizing:border-box}
+html,body{
+  margin:0;padding:0;
+  background: radial-gradient(1200px 700px at 15% -10%, rgba(30,120,255,.18), transparent 60%),
+              radial-gradient(900px 600px at 90% 0%, rgba(0,183,255,.12), transparent 55%),
+              var(--bg) !important;
+  color:var(--text) !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+
+/* контейнер */
+.container{max-width:var(--max);margin:0 auto;padding:0 18px}
+
+/* навбар */
+.nav{
+  position:sticky;top:0;z-index:50;
+  background: rgba(238,243,250,.75) !important;
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255,255,255,.55);
+  box-shadow: 10px 10px 22px rgba(163,177,198,.35);
+}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0;}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.2px}
+.logo{
+  width:34px;height:34px;border-radius:14px;
+  background: var(--accent-grad);
+  box-shadow: 10px 10px 20px rgba(163,177,198,.45), -10px -10px 20px rgba(255,255,255,.85);
+}
+.nav-links{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.nav-links a{
+  padding:10px 12px;border-radius:16px;
+  color:var(--muted) !important;
+  background: transparent;
+}
+.nav-links a:hover{
+  color:var(--text) !important;
+  background: var(--surface);
+  box-shadow: 8px 8px 18px rgba(163,177,198,.35), -8px -8px 18px rgba(255,255,255,.9);
+}
+
+/* кнопки */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:12px 16px;border-radius:18px;
+  border:1px solid var(--stroke);
+  background: var(--surface);
+  color:var(--text);
+  cursor:pointer;
+  transition: .15s transform ease, .15s box-shadow ease, .15s filter ease;
+  box-shadow: 10px 10px 22px rgba(163,177,198,.45), -10px -10px 22px rgba(255,255,255,.9);
+}
+.btn:hover{transform: translateY(-1px); filter:saturate(1.05)}
+.btn:active{
+  transform: translateY(0);
+  box-shadow: inset 10px 10px 22px rgba(163,177,198,.45), inset -10px -10px 22px rgba(255,255,255,.9);
+}
+.btn.primary{
+  background: var(--accent-grad);
+  border-color: rgba(30,120,255,.18);
+  color:#fff;
+  box-shadow: 12px 12px 26px rgba(30,120,255,.28), -10px -10px 22px rgba(255,255,255,.75);
+}
+.btn.primary:hover{filter:saturate(1.1) brightness(1.02)}
+.btn.green{ /* если где-то осталась зелёная — делаем её просто "акцентной" */
+  background: var(--accent-grad);
+  border-color: rgba(0,183,255,.18);
+  color:#fff;
+}
+
+/* hero */
+.hero{padding:56px 0 26px}
+.hero-grid{display:grid;grid-template-columns: 1.25fr .75fr; gap:20px; align-items:stretch}
+@media (max-width: 900px){.hero-grid{grid-template-columns:1fr} .nav-links{display:none}}
+
+/* карточки */
+.h-card,
+.card{
+  background: linear-gradient(145deg, #F8FBFF, #E7EDF7) !important;
+  border:1px solid rgba(255,255,255,.65);
+  border-radius: var(--radius);
+  box-shadow: 14px 14px 28px rgba(163,177,198,.45), -14px -14px 28px rgba(255,255,255,.92);
+}
+.h-card{padding:26px}
+.card{padding:16px;transition:.15s transform ease, .15s box-shadow ease}
+.card:hover{
+  transform: translateY(-2px);
+  box-shadow: 18px 18px 34px rgba(163,177,198,.42), -18px -18px 34px rgba(255,255,255,.94);
+}
+
+/* заголовки */
+.h-eyebrow{color:var(--muted);font-weight:700;letter-spacing:.2px}
+.h-title{
+  font-size:40px;line-height:1.05;margin:10px 0 12px;font-weight:900;
+  background: var(--accent-grad);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+@media (max-width: 520px){.h-title{font-size:34px}}
+.section-title{
+  font-size:22px;margin:0 0 12px;font-weight:900;
+  background: var(--accent-grad);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.h-sub,.section-sub{color:var(--muted);line-height:1.55}
+.card h3{margin:0 0 8px;font-size:18px;color:var(--text)}
+.card p{margin:0 0 12px;color:var(--muted);line-height:1.55}
+
+/* поиск + инпуты (вдавленный эффект) */
+.searchbox{
+  display:flex;gap:10px;flex-wrap:wrap;
+  padding:12px;border-radius: 20px;
+  background: var(--surface);
+  border:1px solid rgba(255,255,255,.7);
+  box-shadow: inset 10px 10px 22px rgba(163,177,198,.45), inset -10px -10px 22px rgba(255,255,255,.92);
+}
+.searchbox input,
+input,select,textarea{
+  width:100%;
+  padding:12px 12px;border-radius:16px;
+  border:1px solid rgba(255,255,255,.7);
+  background: var(--surface);
+  color: var(--text);
+  outline:none;
+  box-shadow: inset 10px 10px 22px rgba(163,177,198,.40), inset -10px -10px 22px rgba(255,255,255,.92);
+}
+.searchbox input::placeholder{color: rgba(91,108,134,.8)}
+label{font-size:13px;color:var(--muted)}
+
+/* теги/плашки */
+.tag{
+  font-size:12px;
+  color: var(--muted);
+  padding:7px 12px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.7);
+  background: var(--surface);
+  box-shadow: inset 8px 8px 18px rgba(163,177,198,.30), inset -8px -8px 18px rgba(255,255,255,.92);
+}
+.tagrow{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+
+/* KPI */
+.kpis{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.kpi{
+  flex:1 1 150px;
+  border-radius:18px;
+  padding:12px;
+  border:1px solid rgba(255,255,255,.7);
+  background: var(--surface);
+  box-shadow: inset 10px 10px 22px rgba(163,177,198,.35), inset -10px -10px 22px rgba(255,255,255,.92);
+}
+.kpi .n{font-weight:900;font-size:18px;color:var(--text)}
+.kpi .t{color:var(--muted);font-size:12px;margin-top:2px}
+
+/* разделы */
+.section{padding:26px 0}
+.grid{display:grid;gap:14px;grid-template-columns: repeat(3, minmax(0, 1fr));}
+@media (max-width: 900px){.grid{grid-template-columns: repeat(2, minmax(0, 1fr));}}
+@media (max-width: 560px){.grid{grid-template-columns: 1fr;}}
+.list{margin:0;padding-left:16px;color:var(--muted);line-height:1.6}
+hr.sep{border:none;border-top:1px solid rgba(163,177,198,.35);margin:18px 0}
+
+/* футер */
+.footer{
+  padding:34px 0;
+  color:var(--muted);
+  border-top:1px solid rgba(163,177,198,.35);
+  margin-top:34px;
+}
+.footer a{color:var(--muted)}
+.footer a:hover{color:var(--text)}
+.foot-grid{display:grid;grid-template-columns: 1.2fr .8fr;gap:16px}
+@media (max-width: 820px){.foot-grid{grid-template-columns:1fr}}
+
+/* badges */
+.badge{
+  display:inline-flex;gap:8px;align-items:center;
+  font-size:12px;font-weight:900;
+  padding:7px 12px;border-radius:999px;
+  background: var(--surface);
+  color: var(--text);
+  border:1px solid rgba(255,255,255,.75);
+  box-shadow: 10px 10px 22px rgba(163,177,198,.35), -10px -10px 22px rgba(255,255,255,.92);
+}
+.badge.purple{
+  background: var(--accent-grad);
+  color:#fff;
+  border-color: rgba(30,120,255,.18);
+}
+
+/* FIX: чтобы Tilda не перекрашивала ссылки */
+#allrecords a,
+#allrecords a:visited,
+.t-records a,
+.t-records a:visited{
+  color: inherit !important;
+  text-decoration: none !important;
+}
+</style> <script>
+window.addEventListener('DOMContentLoaded', function () {
+
+  /* 1) Авто-фикс ссылок: /services.html -> /services */
+  document.querySelectorAll('a[href]').forEach(function(a){
+    let href = a.getAttribute('href');
+    if(!href) return;
+
+    // пропускаем внешние и служебные ссылки
+    if (
+      href.startsWith('http') ||
+      href.startsWith('mailto:') ||
+      href.startsWith('tel:') ||
+      href.startsWith('#')
+    ) return;
+
+    // делаем ссылку абсолютной (чтобы "services.html" тоже поймать)
+    if (!href.startsWith('/')) href = '/' + href;
+
+    // режем .html
+    if (href.endsWith('.html')) href = href.slice(0, -5);
+
+    // index.html -> /
+    if (href === '/index') href = '/';
+
+    a.setAttribute('href', href);
+  });
+
+  /* 2) Настрой адрес страницы заявки (если у тебя не /apply — поменяй) */
+  const APPLY_PATH = '/apply';
+
+  /* 3) Поиск на главной: ведёт на заявку и подставляет текст */
+  const sform = document.querySelector('form[data-search]');
+  if (sform) {
+    sform.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const input = sform.querySelector('input[name="q"]');
+      const q = input ? input.value.trim() : '';
+      location.href = APPLY_PATH + '?q=' + encodeURIComponent(q);
+    });
+  }
+
+  /* 4) Автозаполнение заявки по параметрам */
+  const qs = new URLSearchParams(location.search);
+  const setVal = (id, v) => { const el = document.getElementById(id); if(el && v) el.value = v; };
+  setVal('req_text', qs.get('q'));
+  setVal('category', qs.get('cat'));
+  setVal('expert', qs.get('expert'));
+
+  /* 5) Демо-отправка (пока не подключил формы) */
+  const form = document.querySelector('form[data-static-submit]');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      alert('Демо: форма не подключена. Подключи в Tilda к почте/CRM/Telegram.');
+    });
+  }
+
+});
+</script> <style>
+.pick-grid{
+  display:grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap:12px;
+  margin-top:12px;
+}
+@media (max-width: 980px){ .pick-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 560px){ .pick-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.pick-btn{
+  width:100%;
+  border:1px solid rgba(255,255,255,.75);
+  border-radius:18px;
+  padding:14px 12px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight:900;
+  cursor:pointer;
+  box-shadow: 10px 10px 22px rgba(163,177,198,.45), -10px -10px 22px rgba(255,255,255,.92);
+  transition: .15s transform ease, .15s box-shadow ease, .15s filter ease;
+}
+.pick-btn:hover{ transform: translateY(-1px); filter:saturate(1.05); }
+.pick-btn:active{
+  transform: translateY(0);
+  box-shadow: inset 10px 10px 22px rgba(163,177,198,.45), inset -10px -10px 22px rgba(255,255,255,.92);
+}
+.pick-btn.active{
+  background: var(--accent-grad);
+  color:#fff;
+  border-color: rgba(30,120,255,.18);
+  box-shadow: 12px 12px 26px rgba(30,120,255,.25), -10px -10px 22px rgba(255,255,255,.75);
+}
+.pick-btn.ghost{ opacity:.85; }
+</style> <script>
+window.addEventListener('DOMContentLoaded', function () {
+
+  function applyCat(cat){
+    const buttons = document.querySelectorAll('.cat-picker [data-cat]');
+    const cards = document.querySelectorAll('[data-expert-card]');
+
+    buttons.forEach(function(b){
+      b.classList.toggle('active', !!cat && b.dataset.cat === cat);
+    });
+
+    cards.forEach(function(c){
+      const ok = !cat || c.dataset.cat === cat;
+      c.style.display = ok ? '' : 'none';
+    });
+
+    // записываем в URL ?cat=..., чтобы можно было делиться ссылкой
+    const u = new URL(window.location.href);
+    if(cat) u.searchParams.set('cat', cat);
+    else u.searchParams.delete('cat');
+    history.replaceState(null, '', u.toString());
+  }
+
+  // клик по кнопкам
+  document.querySelectorAll('.cat-picker [data-cat]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      applyCat(btn.dataset.cat || '');
+    });
+  });
+
+  // автоприменение из URL
+  const qs = new URLSearchParams(location.search);
+  applyCat(qs.get('cat') || '');
+
+});
+</script> <style>
+/* 1) Всегда белый текст на синей кнопке в шапке */
+#allrecords .nav .btn.primary,
+#allrecords .nav .btn.primary *,
+.t-records .nav .btn.primary,
+.t-records .nav .btn.primary *{
+  color:#fff !important;
+}
+</style> <script>
+(async function () {
+  // Находим синюю кнопку в шапке (там где раньше "Оставить заявку")
+  function findHeaderPrimaryBtn(){
+    const nav = document.querySelector('.nav');
+    if(!nav) return null;
+    return nav.querySelector('.nav-cta .btn.primary') || nav.querySelector('.btn.primary');
+  }
+
+  // Ждём, пока подключится Supabase (window.AI_BIRZHA.sb)
+  async function waitSupabase(){
+    for(let i=0;i<50;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r => setTimeout(r,120));
+    }
+    return null;
+  }
+
+  const btn = findHeaderPrimaryBtn();
+  if(!btn) return;
+
+  // Дефолт (если не залогинен или нет карточки)
+  function setPortfolio(){
+    btn.textContent = 'Разместить портфолио';
+    btn.setAttribute('href', '/add');   // страница создания карточки/кабинета
+    btn.classList.add('primary');
+    btn.style.color = '#fff';
+  }
+
+  // Если залогинен и карточка уже есть
+  function setCabinet(){
+    btn.textContent = 'Личный кабинет';
+    btn.setAttribute('href', '/add');   // кабинет (у тебя он на /add)
+    btn.classList.add('primary');
+    btn.style.color = '#fff';
+  }
+
+  setPortfolio();
+
+  const sb = await waitSupabase();
+  if(!sb) return;
+
+  const { data: authData } = await sb.auth.getUser();
+  const user = authData?.user;
+
+  // Если не авторизован — оставляем "Разместить портфолио"
+  if(!user) return;
+
+  // Авторизован: проверяем, есть ли карточка (experts.user_id = user.id)
+  try{
+    const { data, error } = await sb
+      .from('experts')
+      .select('id')
+      .eq('user_id', user.id)
+      .limit(1);
+
+    if(!error && data && data.length > 0){
+      setCabinet();
+    } else {
+      setPortfolio();
+    }
+  } catch(e){
+    // Если что-то пошло не так, но пользователь авторизован — пусть будет кабинет
+    setCabinet();
+  }
+})();
+</script> <style>
+/* Жёстко делаем белый текст на синей кнопке в шапке (обходит твой #allrecords a {color:inherit!important}) */
+#allrecords .nav .nav-cta a.ai-cta,
+#allrecords .nav .nav-cta a.ai-cta:visited,
+#allrecords .nav .nav-cta a.ai-cta *,
+#allrecords .nav a.ai-cta,
+#allrecords .nav a.ai-cta *{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+}
+</style> <script>
+(function(){
+  const ADD_PATH   = (window.AI_BIRZHA && window.AI_BIRZHA.ADD_PATH) ? window.AI_BIRZHA.ADD_PATH : "/add";
+  const APPLY_PATH = (window.AI_BIRZHA && window.AI_BIRZHA.APPLY_PATH) ? window.AI_BIRZHA.APPLY_PATH : "/apply";
+
+  function cleanHref(h){
+    if(!h) return "";
+    return String(h)
+      .replace(location.origin, "")
+      .replace(/\.html(?=($|\?|\#))/, "");
+  }
+
+  function findHeaderBtn(){
+    const nav = document.querySelector(".nav") || document.querySelector("header");
+    if(!nav) return null;
+
+    const links = Array.from(nav.querySelectorAll("a"));
+
+    // 1) сначала ищем ссылку на /apply (старая кнопка)
+    let btn = links.find(a => cleanHref(a.getAttribute("href")).startsWith(APPLY_PATH));
+
+    // 2) если нет — ищем по тексту "Оставить заявку"
+    if(!btn) btn = links.find(a => (a.textContent || "").trim().toLowerCase() === "оставить заявку");
+
+    // 3) если нет — берём последнюю кнопку в .nav-cta
+    if(!btn){
+      const cta = nav.querySelector(".nav-cta");
+      if(cta) btn = cta.querySelector("a:last-of-type");
+    }
+
+    return btn || null;
+  }
+
+  function setBtn(btn, mode){
+    // фиксируем стиль и текст
+    btn.classList.add("ai-cta", "btn", "primary");
+    btn.setAttribute("href", ADD_PATH);
+    btn.textContent = (mode === "cabinet") ? "Личный кабинет" : "Разместить портфолио";
+
+    // жёстко перехватываем клик, чтобы НЕ открывалась старая /apply
+    btn.addEventListener("click", function(e){
+      e.preventDefault();
+      location.href = ADD_PATH;
+    }, true);
+  }
+
+  async function waitSupabase(){
+    for(let i=0;i<120;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r=>setTimeout(r,100));
+    }
+    return null;
+  }
+
+  async function init(){
+    // ждём пока шапка реально появится на странице
+    let btn = null;
+    for(let i=0;i<120;i++){
+      btn = findHeaderBtn();
+      if(btn) break;
+      await new Promise(r=>setTimeout(r,100));
+    }
+    if(!btn) return;
+
+    // дефолт
+    setBtn(btn, "portfolio");
+
+    // если есть supabase — определяем, есть ли карточка
+    const sb = await waitSupabase();
+    if(!sb) return;
+
+    const { data: authData } = await sb.auth.getUser();
+    const user = authData?.user;
+    if(!user) return;
+
+    const { data, error } = await sb.from("experts").select("id").eq("user_id", user.id).limit(1);
+    if(!error && data && data.length > 0) setBtn(btn, "cabinet");
+    else setBtn(btn, "portfolio");
+  }
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script> <style>
+/* Теги-чипсы под полем "Роль" (только на /add) */
+#roleChips{ margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; }
+#roleChips .tag{ cursor:pointer; user-select:none; }
+#roleChips .tag:after{ content:" ×"; opacity:.55; margin-left:4px; }
+</style> <script>
+(function(){
+  function normTags(str){
+    return String(str||"")
+      .split(",")
+      .map(s => s.trim())
+      .filter(Boolean)
+      .slice(0, 20);
+  }
+  function uniq(arr){
+    const out=[], seen=new Set();
+    for(const x of arr){
+      const k = x.toLowerCase();
+      if(!seen.has(k)){ seen.add(k); out.push(x); }
+    }
+    return out;
+  }
+
+  // 1) /add: превращаем строку в чипсы под инпутом
+  function enhanceRoleInput(){
+    if(!location.pathname.startsWith("/add")) return;
+
+    const input = document.getElementById("f_role");
+    if(!input || input.dataset.tagsEnhanced) return;
+    input.dataset.tagsEnhanced = "1";
+
+    const field = input.closest(".field") || input.parentElement;
+    if(!field) return;
+
+    const chips = document.createElement("div");
+    chips.id = "roleChips";
+    chips.className = "tagrow";
+    field.appendChild(chips);
+
+    function renderChips(){
+      const tags = uniq(normTags(input.value));
+      chips.innerHTML = tags.map(t => `<span class="tag" data-t="${t.replace(/"/g,"&quot;")}">${t}</span>`).join("");
+    }
+
+    function normalizeAndRender(){
+      const tags = uniq(normTags(input.value));
+      input.value = tags.join(", ");
+      renderChips();
+    }
+
+    chips.addEventListener("click", (e)=>{
+      const tagEl = e.target.closest(".tag");
+      if(!tagEl) return;
+      const t = (tagEl.getAttribute("data-t") || tagEl.textContent || "").trim();
+      const tags = uniq(normTags(input.value)).filter(x => x.toLowerCase() !== t.toLowerCase());
+      input.value = tags.join(", ");
+      renderChips();
+    });
+
+    input.addEventListener("input", renderChips);
+    input.addEventListener("blur", normalizeAndRender);
+
+    normalizeAndRender();
+  }
+
+  // 2) В каталоге/профиле: если где-то есть .tag с запятыми — разбиваем на отдельные плашки
+  function splitCommaTagsEverywhere(root=document){
+    const tags = root.querySelectorAll ? root.querySelectorAll(".tagrow .tag") : [];
+    tags.forEach(tag=>{
+      if(tag.closest && tag.closest("#roleChips")) return; // не трогаем чипсы в кабинете
+
+      const txt = (tag.textContent || "").trim();
+      if(!txt.includes(",")) return;
+
+      const parts = uniq(normTags(txt));
+      if(parts.length <= 1) return;
+
+      const frag = document.createDocumentFragment();
+      parts.forEach(p=>{
+        const el = tag.cloneNode(false);
+        el.className = tag.className;
+        el.textContent = p;
+        frag.appendChild(el);
+      });
+      tag.replaceWith(frag);
+    });
+  }
+
+  function runAll(){
+    enhanceRoleInput();
+    splitCommaTagsEverywhere(document);
+  }
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", runAll);
+  else runAll();
+
+ 
+</script> <style>
+/* ===== FAST TAGS (без MutationObserver) ===== */
+#roleChips{ margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; }
+#roleChips .tag{ cursor:pointer; user-select:none; }
+#roleChips .tag:after{ content:" ×"; opacity:.55; margin-left:4px; }
+
+.ai-linkrow{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
+.ai-linkrow .btn{white-space:nowrap}
+
+/* Белый текст на синей */
+.btn.primary, .btn.primary *{ color:#fff !important; -webkit-text-fill-color:#fff !important; }
+</style> <script>
+(function(){
+  /* ---------- utils ---------- */
+  function normTags(str){
+    return String(str||"")
+      .split(",")
+      .map(s=>s.trim())
+      .filter(Boolean)
+      .slice(0, 30);
+  }
+  function uniq(arr){
+    const out=[], seen=new Set();
+    for(const x of arr){
+      const k=x.toLowerCase();
+      if(!seen.has(k)){ seen.add(k); out.push(x); }
+    }
+    return out;
+  }
+  function splitCommaTagsOnce(){
+    document.querySelectorAll(".tagrow .tag").forEach(tag=>{
+      if(tag.closest && tag.closest("#roleChips")) return;
+      const txt=(tag.textContent||"").trim();
+      if(!txt.includes(",")) return;
+      const parts=uniq(normTags(txt));
+      if(parts.length<=1) return;
+
+      const frag=document.createDocumentFragment();
+      parts.forEach(p=>{
+        const el=tag.cloneNode(false);
+        el.className=tag.className;
+        el.textContent=p;
+        frag.appendChild(el);
+      });
+      tag.replaceWith(frag);
+    });
+  }
+
+  function extractTgNick(v){
+    v=String(v||"").trim();
+    if(!v) return "";
+    const m=v.match(/(?:t\.me|telegram\.me)\/([A-Za-z0-9_]{3,})/i);
+    if(m && m[1]) return m[1];
+    return v.replace(/^@+/,"").trim();
+  }
+  function tgLink(v){
+    const nick=extractTgNick(v);
+    return nick ? ("https://t.me/" + nick) : "";
+  }
+  function normalizeWebsite(v){
+    v=String(v||"").trim();
+    if(!v) return "";
+    if(/^https?:\/\//i.test(v)) return v;
+    return "https://" + v;
+  }
+  function normalizeInstagram(v){
+    v=String(v||"").trim();
+    if(!v) return "";
+    if(/^https?:\/\//i.test(v)) return v;
+    v=v.replace(/^@+/,"").trim();
+    return v ? ("https://www.instagram.com/" + v + "/") : "";
+  }
+
+  async function waitSb(){
+    for(let i=0;i<80;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r=>setTimeout(r,120));
+    }
+    return null;
+  }
+
+  /* ---------- 1) /add: чипсы под полем тегов ---------- */
+  function enhanceRoleInput(){
+    if(!location.pathname.startsWith("/add")) return;
+    const input=document.getElementById("f_role");
+    if(!input || input.dataset.tagsEnhanced) return;
+    input.dataset.tagsEnhanced="1";
+
+    const field=input.closest(".field") || input.parentElement;
+    if(!field) return;
+
+    const chips=document.createElement("div");
+    chips.id="roleChips";
+    chips.className="tagrow";
+    field.appendChild(chips);
+
+    function render(){
+      const tags=uniq(normTags(input.value));
+      chips.innerHTML=tags.map(t=>`<span class="tag" data-t="${t.replace(/"/g,"&quot;")}">${t}</span>`).join("");
+    }
+    function normalize(){
+      const tags=uniq(normTags(input.value));
+      input.value=tags.join(", ");
+      render();
+    }
+
+    chips.addEventListener("click",(e)=>{
+      const el=e.target.closest(".tag");
+      if(!el) return;
+      const t=(el.getAttribute("data-t")||el.textContent||"").trim();
+      const tags=uniq(normTags(input.value)).filter(x=>x.toLowerCase()!==t.toLowerCase());
+      input.value=tags.join(", ");
+      render();
+    });
+
+    input.addEventListener("input", render);
+    input.addEventListener("blur", normalize);
+
+    normalize();
+  }
+
+  /* ---------- 2) Страница карточки: дорисовать Instagram/Сайт/Описание ---------- */
+  async function enhanceExpertPage(){
+    const qs=new URLSearchParams(location.search);
+    const id = qs.get("id") || qs.get("expert") || qs.get("expert_id");
+    if(!id) return; // нет id -> не страница карточки
+
+    // не трогаем страницу списка /experts
+    if(location.pathname === "/experts") return;
+
+    const sb=await waitSb();
+    if(!sb) return;
+
+    const { data: expert, error } = await sb
+      .from("experts")
+      .select("id, description, instagram, website, telegram")
+      .eq("id", id)
+      .single();
+
+    if(error || !expert) return;
+
+    // Куда вставлять: ищем кнопку "Написать сообщение"
+    const msgBtn = Array.from(document.querySelectorAll("a.btn, button.btn"))
+      .find(el => /написать сообщение/i.test((el.textContent||"").trim()));
+
+    let host = null;
+    if(msgBtn && msgBtn.parentElement) host = msgBtn.parentElement;
+
+    // если не нашли — вставим в основной h-card
+    if(!host){
+      host = document.querySelector(".h-card") || document.querySelector(".container") || document.body;
+    }
+
+    // Контакты (Instagram/Сайт)
+    const ig = normalizeInstagram(expert.instagram);
+    const site = normalizeWebsite(expert.website);
+
+    if((ig || site) && !document.getElementById("aiLinksRow")){
+      const row = document.createElement("div");
+      row.className="ai-linkrow";
+      row.id="aiLinksRow";
+
+      if(ig){
+        const a=document.createElement("a");
+        a.className="btn";
+        a.href=ig; a.target="_blank"; a.rel="noopener";
+        a.textContent="Instagram";
+        row.appendChild(a);
+      }
+      if(site){
+        const a=document.createElement("a");
+        a.className="btn";
+        a.href=site; a.target="_blank"; a.rel="noopener";
+        a.textContent="Сайт";
+        row.appendChild(a);
+      }
+
+      // вставляем рядом с кнопками
+      if(msgBtn && msgBtn.parentElement){
+        msgBtn.parentElement.appendChild(row);
+      }else{
+        host.appendChild(row);
+      }
+    }
+
+    // Если телега кнопка есть, но ссылка пустая — можем поправить
+    const tg = tgLink(expert.telegram);
+    if(tg && msgBtn && msgBtn.tagName.toLowerCase()==="a"){
+      msgBtn.href = tg;
+      msgBtn.target = "_blank";
+      msgBtn.rel = "noopener";
+    }
+
+    // Описание (если на странице его реально нет)
+    const desc = String(expert.description||"").trim();
+    if(desc){
+      const alreadyHas = document.body && (document.body.innerText || "").includes(desc.slice(0, Math.min(25, desc.length)));
+      if(!alreadyHas && !document.getElementById("aiDescBlock")){
+        const block = document.createElement("div");
+        block.id="aiDescBlock";
+        block.className="h-card";
+        block.style.marginTop="14px";
+        block.innerHTML = `
+          <h2 class="section-title" style="margin:0 0 8px">Описание</h2> <div class="section-sub" style="margin:0;white-space:pre-wrap">${desc.replace(/[&<>]/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}</div>
+        `;
+        (document.querySelector(".container") || host).appendChild(block);
+      }
+    }
+  }
+
+  /* ---------- run ---------- */
+  function run(){
+    enhanceRoleInput();
+
+    // разбиваем теги несколько раз (быстро, без observer)
+    splitCommaTagsOnce();
+    setTimeout(splitCommaTagsOnce, 400);
+    setTimeout(splitCommaTagsOnce, 1400);
+
+    enhanceExpertPage();
+  }
+
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", run);
+  else run();
+})();
+</script> <style>
+/* =========================
+   AI-Биржа • Lightbox + CARD thumbs
+   ========================= */
+
+/* 1) На CARD (страница карточки): превью БЕЗ ПОЛЕЙ */
+html[data-ai-page="card"] #allrecords .ab-gallery-item,
+html[data-ai-page="card"] .t-records .ab-gallery-item{
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  background: transparent !important;
+}
+
+/* Дефолтный формат превью в галерее на CARD (можешь менять) */
+html[data-ai-page="card"] #allrecords .ab-gallery-item{ aspect-ratio: 16 / 10; }
+html[data-ai-page="card"] .t-records .ab-gallery-item{ aspect-ratio: 16 / 10; }
+
+html[data-ai-page="card"] #allrecords .ab-gallery-item img,
+html[data-ai-page="card"] #allrecords .ab-gallery-item video,
+html[data-ai-page="card"] .t-records .ab-gallery-item img,
+html[data-ai-page="card"] .t-records .ab-gallery-item video{
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;      /* ВОТ ЭТО убирает поля */
+  background: transparent !important; /* не рисуем черный фон */
+  display:block;
+}
+
+/* Чтобы видео в превью не мешало клику (мы открываем лайтбокс) */
+html[data-ai-page="card"] .ab-gallery-item video{
+  pointer-events: none;
+}
+
+/* 2) Lightbox */
+.ab-lb{
+  position: fixed; inset: 0;
+  z-index: 999999;
+  background: rgba(10,20,40,.62);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+.ab-lb.open{ display:flex; }
+
+.ab-lb__inner{
+  width: min(1080px, 96vw);
+  max-height: 92vh;
+  border-radius: 22px;
+  overflow: hidden;
+  background: rgba(255,255,255,.9);
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+  position: relative;
+}
+
+.ab-lb__top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,.85);
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+
+.ab-lb__title{
+  font-size: 14px;
+  color: rgba(20,35,63,.8);
+  font-weight: 700;
+  overflow:hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ab-lb__close{
+  border: none;
+  border-radius: 14px;
+  padding: 10px 12px;
+  cursor: pointer;
+  background: rgba(240,245,255,.9);
+  box-shadow: inset 6px 6px 14px rgba(163,177,198,.25), inset -6px -6px 14px rgba(255,255,255,.9);
+  font-weight: 900;
+}
+
+.ab-lb__stage{
+  background: #0b0c10; /* фон для full-view */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width: 100%;
+  height: calc(92vh - 52px);
+  max-height: calc(92vh - 52px);
+  position: relative;
+}
+
+.ab-lb__stage img,
+.ab-lb__stage video{
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain; /* В full-view НЕ режем */
+  background: #000;
+}
+
+.ab-lb__nav{
+  position:absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 16px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(255,255,255,.88);
+  box-shadow: 0 10px 30px rgba(0,0,0,.18);
+  font-size: 20px;
+  font-weight: 900;
+  user-select:none;
+}
+.ab-lb__nav.prev{ left: 12px; }
+.ab-lb__nav.next{ right: 12px; }
+
+@media (max-width: 640px){
+  .ab-lb__nav{ width: 40px; height: 40px; border-radius: 14px; }
+  .ab-lb__stage{ height: calc(92vh - 52px); }
+}
+</style> <script>
+(function(){
+  /* -------------------------
+     0) Определяем тип страницы
+     ------------------------- */
+  function detectPage(){
+    const path = location.pathname.replace(/\/+$/,'');
+    const qs = new URLSearchParams(location.search);
+
+    // /add = кабинет/создание карточки (там нам НЕ надо cover)
+    if(path === "/add") return "add";
+
+    // CARD: у тебя это может быть /card или /profile и т.п.
+    // Определим по наличию id и слова "Карточка исполнителя" на странице
+    const hasId = qs.get("id") || qs.get("expert") || qs.get("expert_id");
+    const hasCardTitle = Array.from(document.querySelectorAll("h1,h2,h3"))
+      .some(h => /карточка исполнителя/i.test(h.textContent||""));
+    if(hasId && hasCardTitle) return "card";
+
+    return "other";
+  }
+
+  function setPageDataset(){
+    document.documentElement.dataset.aiPage = detectPage();
+  }
+
+  /* -------------------------
+     1) Находим галерею на CARD
+     ------------------------- */
+  function getGalleryRoot(){
+    // если у тебя есть конкретный id — подхватим
+    const byId = document.getElementById("galleryGrid") || document.getElementById("expertGallery") || document.getElementById("mediaGallery");
+    if(byId) return byId;
+
+    // ищем секцию, где заголовок "Галерея"
+    const headings = Array.from(document.querySelectorAll("h2,h3"));
+    const h = headings.find(x => (x.textContent||"").trim().toLowerCase() === "галерея");
+    if(h){
+      // обычно галерея рядом/ниже
+      return h.closest(".h-card") || h.parentElement;
+    }
+
+    return null;
+  }
+
+  /* -------------------------
+     2) Превращаем элементы в кликабельные items
+     ------------------------- */
+  function buildItems(root){
+    // берём только внутри найденного блока
+    const nodes = Array.from(root.querySelectorAll("img, video"));
+    const items = [];
+
+    nodes.forEach((el) => {
+      const wrap = el.closest(".ab-gallery-item") || el.parentElement;
+
+      // помечаем обёртку как элемент галереи (для CSS cover на CARD)
+      if(wrap && !wrap.classList.contains("ab-gallery-item")){
+        wrap.classList.add("ab-gallery-item");
+        wrap.style.cursor = "pointer";
+      }
+
+      if(el.tagName.toLowerCase() === "img"){
+        const src = el.currentSrc || el.src;
+        if(src) items.push({ type:"img", src });
+      } else {
+        const src = el.currentSrc || el.src || (el.querySelector("source") ? el.querySelector("source").src : "");
+        if(src) items.push({ type:"video", src });
+      }
+    });
+
+    return items;
+  }
+
+  /* -------------------------
+     3) Lightbox UI
+     ------------------------- */
+  function ensureLightbox(){
+    let lb = document.getElementById("abLightbox");
+    if(lb) return lb;
+
+    lb = document.createElement("div");
+    lb.id = "abLightbox";
+    lb.className = "ab-lb";
+    lb.innerHTML = `
+      <div class="ab-lb__inner" role="dialog" aria-modal="true"> <div class="ab-lb__top"> <div class="ab-lb__title" id="abLbTitle">Просмотр</div> <button class="ab-lb__close" type="button" id="abLbClose">✕</button> </div> <div class="ab-lb__stage" id="abLbStage"> <button class="ab-lb__nav prev" type="button" id="abLbPrev" aria-label="Предыдущее">‹</button> <button class="ab-lb__nav next" type="button" id="abLbNext" aria-label="Следующее">›</button> </div> </div>
+    `;
+    document.body.appendChild(lb);
+    return lb;
+  }
+
+  function openLb(state, index){
+    const lb = ensureLightbox();
+    const stage = lb.querySelector("#abLbStage");
+    const title = lb.querySelector("#abLbTitle");
+    const items = state.items;
+
+    state.index = (index + items.length) % items.length;
+
+    // чистим старый контент (кроме кнопок навигации)
+    Array.from(stage.children).forEach(ch=>{
+      if(ch.id === "abLbPrev" || ch.id === "abLbNext") return;
+      ch.remove();
+    });
+
+    const cur = items[state.index];
+    title.textContent = (state.index + 1) + " / " + items.length;
+
+    if(cur.type === "img"){
+      const img = document.createElement("img");
+      img.src = cur.src;
+      img.alt = "";
+      stage.appendChild(img);
+    } else {
+      const v = document.createElement("video");
+      v.src = cur.src;
+      v.controls = true;
+      v.autoplay = true;
+      v.playsInline = true;
+      v.preload = "metadata";
+      stage.appendChild(v);
+    }
+
+    lb.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeLb(){
+    const lb = document.getElementById("abLightbox");
+    if(!lb) return;
+    lb.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  /* -------------------------
+     4) Swipe на мобиле
+     ------------------------- */
+  function enableSwipe(stage, onPrev, onNext){
+    let x0 = null, y0 = null;
+    stage.addEventListener("touchstart", (e)=>{
+      const t = e.touches[0];
+      x0 = t.clientX; y0 = t.clientY;
+    }, {passive:true});
+
+    stage.addEventListener("touchend", (e)=>{
+      if(x0===null) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - x0;
+      const dy = t.clientY - y0;
+      x0 = null; y0 = null;
+
+      if(Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)){
+        if(dx > 0) onPrev();
+        else onNext();
+      }
+    }, {passive:true});
+  }
+
+  /* -------------------------
+     5) Init
+     ------------------------- */
+  function init(){
+    setPageDataset();
+    if(document.documentElement.dataset.aiPage !== "card") return;
+
+    const root = getGalleryRoot();
+    if(!root) return;
+
+    const items = buildItems(root);
+    if(items.length === 0) return;
+
+    const state = { items, index: 0 };
+
+    // клики по любому img/video в галерее → открыть
+    root.addEventListener("click", (e)=>{
+      const el = e.target.closest("img, video");
+      if(!el) return;
+
+      const src = el.currentSrc || el.src || (el.querySelector && el.querySelector("source") ? el.querySelector("source").src : "");
+      const idx = state.items.findIndex(x => x.src === src);
+      openLb(state, idx >= 0 ? idx : 0);
+    });
+
+    // навигация/закрытие
+    const lb = ensureLightbox();
+    const prev = lb.querySelector("#abLbPrev");
+    const next = lb.querySelector("#abLbNext");
+    const close = lb.querySelector("#abLbClose");
+    const stage = lb.querySelector("#abLbStage");
+
+    function goPrev(){ openLb(state, state.index - 1); }
+    function goNext(){ openLb(state, state.index + 1); }
+
+    prev.onclick = goPrev;
+    next.onclick = goNext;
+    close.onclick = closeLb;
+
+    // клик по фону закрывает
+    lb.addEventListener("click", (e)=>{
+      if(e.target === lb) closeLb();
+    });
+
+    // клавиши
+    document.addEventListener("keydown", (e)=>{
+      const opened = lb.classList.contains("open");
+      if(!opened) return;
+      if(e.key === "Escape") closeLb();
+      if(e.key === "ArrowLeft") goPrev();
+      if(e.key === "ArrowRight") goNext();
+    });
+
+    enableSwipe(stage, goPrev, goNext);
+  }
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+
+  // Подстраховка: Tilda иногда дорисовывает блоки позже
+  setTimeout(()=>{ try{ init(); }catch(e){} }, 600);
+  setTimeout(()=>{ try{ init(); }catch(e){} }, 1600);
+})();
+</script> <style>
+  /* скрываем карточку "Что внутри" */
+  .ai-hide-what-inside{display:none!important;}
+
+  /* если в hero-grid осталась одна карточка — делаем 1 колонку */
+  .hero-grid.ai-hero-onecol{grid-template-columns:1fr!important;}
+</style> <script>
+(function () {
+  function norm(s){ return (s||'').replace(/\s+/g,' ').trim().toLowerCase(); }
+
+  function hideFrom(el){
+    const card =
+      el.closest('.h-card') ||
+      el.closest('.t-rec') ||
+      el.closest('#allrecords > div') ||
+      el.parentElement;
+
+    if(card){
+      card.classList.add('ai-hide-what-inside');
+
+      // если это правая карточка в hero-grid — растягиваем левую
+      const grid = card.closest('.hero-grid');
+      if(grid){
+        const visible = Array.from(grid.querySelectorAll('.h-card'))
+          .filter(c => !c.classList.contains('ai-hide-what-inside'));
+        if(visible.length <= 1) grid.classList.add('ai-hero-onecol');
+      }
+    }
+  }
+
+  function run(){
+    // 1) ищем по заголовку "Что внутри"
+    document.querySelectorAll('h1,h2,h3').forEach(function(h){
+      if(norm(h.textContent) === 'что внутри') hideFrom(h);
+    });
+
+    // 2) fallback: ищем карточки с бейджем "MVP" и заголовком "Что внутри"
+    document.querySelectorAll('.badge').forEach(function(b){
+      if(norm(b.textContent) === 'mvp'){
+        const card = b.closest('.h-card');
+        if(!card) return;
+        const h = card.querySelector('h1,h2,h3');
+        if(h && norm(h.textContent) === 'что внутри'){
+          card.classList.add('ai-hide-what-inside');
+          const grid = card.closest('.hero-grid');
+          if(grid) grid.classList.add('ai-hero-onecol');
+        }
+      }
+    });
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
+})();
+</script> <script>
+(function () {
+  if (window.__AI_ALBUMS_FORCE_V1__) return;
+  window.__AI_ALBUMS_FORCE_V1__ = true;
+
+  function onReady(fn){
+    if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+
+  function loadScript(src){
+    return new Promise((resolve, reject)=>{
+      const s = document.createElement('script');
+      s.src = src; s.async = true;
+      s.onload = resolve; s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+
+  async function getSB(){
+    // 1) если уже есть — ок
+    if (window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+
+    // 2) проверяем конфиг
+    if (!window.AI_BIRZHA || !window.AI_BIRZHA.SUPABASE_URL || !window.AI_BIRZHA.SUPABASE_ANON_KEY) {
+      console.warn('[ALBUMS] Нет window.AI_BIRZHA.SUPABASE_URL / ANON_KEY');
+      return null;
+    }
+
+    // 3) если supabase-js не подключён — подключаем
+    if (!window.supabase) {
+      await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
+    }
+
+    // 4) создаём клиент
+    window.AI_BIRZHA.sb = window.supabase.createClient(
+      window.AI_BIRZHA.SUPABASE_URL,
+      window.AI_BIRZHA.SUPABASE_ANON_KEY
+    );
+    return window.AI_BIRZHA.sb;
+  }
+
+  function mountAlbumsUI(){
+    // показываем ТОЛЬКО на /add
+    if (!location.pathname.includes('/add')) return;
+    if (document.getElementById('aiAlbumsAdd')) return;
+
+    const host =
+      document.querySelector('.h-card') ||
+      document.querySelector('#allrecords') ||
+      document.querySelector('.t-records') ||
+      document.body;
+
+    const box = document.createElement('div');
+    box.className = 'h-card';
+    box.id = 'aiAlbumsAdd';
+    box.style.marginTop = '16px';
+    box.innerHTML = `
+      <div class="h-eyebrow">Портфолио</div> <h2 class="section-title" style="margin:8px 0 0">Альбомы</h2> <p class="section-sub" style="margin:8px 0 0">Создай альбом (например “Рилсы”) и добавляй медиа в него.</p> <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-top:12px"> <div style="flex:1 1 240px"> <label>Название альбома</label> <input id="aiAlbumTitle" type="text" placeholder="Рилсы" /> </div> <button class="btn primary" type="button" id="aiAlbumCreate">Создать альбом</button> </div> <div class="small" id="aiAlbumsStatus" style="margin-top:10px"></div>
+    `;
+
+    // вставим после первого .h-card (а не “внутрь”), чтобы точно было видно
+    if (host.classList && host.classList.contains('h-card')) host.insertAdjacentElement('afterend', box);
+    else host.appendChild(box);
+  }
+
+  onReady(async function(){
+    // 1) принудительно вставляем UI (кнопка появится сразу)
+    mountAlbumsUI();
+
+    // 2) подключаем Supabase и делаем кнопку рабочей
+    const sb = await getSB();
+    const status = document.getElementById('aiAlbumsStatus');
+    const btn = document.getElementById('aiAlbumCreate');
+    const title = document.getElementById('aiAlbumTitle');
+
+    if (!status || !btn || !title) return;
+
+    if (!sb) {
+      status.textContent = 'Ошибка: Supabase не подключился. Проверь, что в HEAD есть window.AI_BIRZHA (URL + KEY).';
+      return;
+    }
+
+    const { data: authData } = await sb.auth.getUser();
+    const user = authData?.user;
+    if (!user) {
+      status.textContent = 'Войди в аккаунт, чтобы создавать альбомы.';
+      btn.disabled = true;
+      return;
+    }
+
+    // найдём expert_id
+    const ex = await sb.from('experts').select('id').eq('user_id', user.id).limit(1);
+    const expertId = ex?.data?.[0]?.id;
+    if (!expertId) {
+      status.textContent = 'Сначала нажми “Сохранить” карточку. Потом создавай альбомы.';
+      btn.disabled = true;
+      return;
+    }
+
+    btn.addEventListener('click', async function(){
+      const t = (title.value || '').trim();
+      if(!t) return alert('Напиши название альбома.');
+
+      status.textContent = 'Создаю альбом...';
+      const r = await sb.from('expert_albums').insert({
+        expert_id: expertId,
+        user_id: user.id,
+        title: t
+      }).select('id,title');
+
+      if (r.error){
+        status.textContent = 'Ошибка: ' + r.error.message;
+        return;
+      }
+
+      status.textContent = 'Готово ✅ Альбом создан: ' + (r.data?.[0]?.title || t);
+      title.value = '';
+    });
+  });
+
+})();
+</script> <!-- nominify end --><script type="text/javascript">window.dataLayer=window.dataLayer||[];</script> <script type="text/javascript">(function() {if((/bot|google|yandex|baidu|bing|msn|duckduckbot|teoma|slurp|crawler|spider|robot|crawling|facebook/i.test(navigator.userAgent))===false&&typeof(sessionStorage)!='undefined'&&sessionStorage.getItem('visited')!=='y'&&document.visibilityState){var style=document.createElement('style');style.type='text/css';style.innerHTML='@media screen and (min-width: 980px) {.t-records {opacity: 0;}.t-records_animated {-webkit-transition: opacity ease-in-out .2s;-moz-transition: opacity ease-in-out .2s;-o-transition: opacity ease-in-out .2s;transition: opacity ease-in-out .2s;}.t-records.t-records_visible {opacity: 1;}}';document.getElementsByTagName('head')[0].appendChild(style);function t_setvisRecs(){var alr=document.querySelectorAll('.t-records');Array.prototype.forEach.call(alr,function(el) {el.classList.add("t-records_animated");});setTimeout(function() {Array.prototype.forEach.call(alr,function(el) {el.classList.add("t-records_visible");});sessionStorage.setItem("visited","y");},400);}
+document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="103811936" data-tilda-page-alias="add" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1689498121" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!-- ====== /add • кабинет исполнителя (NO MODERATION) ====== --> <script>
+(async function(){
+  async function waitSb(){
+    for(let i=0;i<40;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r => setTimeout(r,150));
+    }
+    return null;
+  }
+  const sb = await waitSb();
+  if(!sb) return;
+
+  const { data } = await sb.auth.getSession();
+  const user = data?.session?.user;
+
+  if(!user){
+    const here = location.pathname + location.search + location.hash;
+    location.replace("/auth?redirect=" + encodeURIComponent(here));
+  }
+})();
+</script> <header class="nav"> <div class="container nav-inner"> <a class="brand" href="/"> <span class="logo" aria-hidden="true"></span> <span>AI-Биржа (MVP)</span> </a> <nav class="nav-links" aria-label="Навигация"> <a href="/services">Услуги</a> <a href="/experts">Исполнители</a> <a href="/cases">Кейсы</a> <a href="/how">Как это работает</a> <a href="/faq">FAQ</a> </nav> <div class="nav-cta"> <a class="btn" href="/experts">В каталог</a> <a class="btn primary" href="/apply">Оставить заявку</a> </div> </div> </header> <main> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Кабинет</div> <h1 class="h-title" style="font-size:34px;margin-bottom:8px">Добавить / обновить карточку</h1> <p class="h-sub">Модерации нет: карточка появляется в каталоге сразу после сохранения.</p> <div class="two"> <div class="form"> <div class="field"> <label>Имя / Ник</label> <input id="f_name" placeholder="Например: Алексей" /> </div> <div class="field"> <label>Категория</label> <select id="f_category"> <option value="video">AI-Видео</option> <option value="design">AI-Дизайн</option> <option value="bots">AI-Боты</option> <option value="marketplaces">WB/Ozon</option> <option value="sites">AI-Сайты</option> </select> </div> <div class="field"> <label>Роль / специализация (теги через запятую)</label> <input id="f_role" placeholder="Например: reels, монтаж, субтитры, озвучка" /> <div class="small">Пиши через запятую — в каталоге покажем отдельными плашками.</div> </div> <div class="field"> <label>Краткая информация (в превью карточки)</label> <textarea id="f_short" placeholder="1–2 предложения по делу."></textarea> <div class="small">Совет: коротко, конкретно, без воды.</div> </div> <div class="field"> <label>Описание (подробнее)</label> <textarea id="f_desc" placeholder="Опиши, что делаешь, сроки, результат"></textarea> </div> <div class="two"> <div class="field"> <label>Цена (пример)</label> <input id="f_price" placeholder="от 15 000 ₽" /> </div> <div class="field"> <label>Срок (пример)</label> <input id="f_time" placeholder="5–7 дней" /> </div> </div> <div class="field"> <label>Telegram (для кнопки “Написать сообщение”)</label> <div class="prefix-wrap"> <span class="prefix">@</span> <input id="f_tg" placeholder="username" inputmode="text" autocomplete="off" /> </div> <div class="small">Пиши только ник. Если вставишь ссылку — я сам вытащу ник.</div> </div> <div class="two"> <div class="field"> <label>Instagram</label> <input id="f_ig" placeholder="@username или https://instagram.com/username" /> </div> <div class="field"> <label>Сайт</label> <input id="f_site" placeholder="site.ru или https://site.ru" /> </div> </div> <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px"> <button class="btn primary" id="btnSave" type="button">Сохранить</button> <button class="btn" id="btnLogout" type="button">Выйти</button> </div> <div class="small" id="saveMsg" style="margin-top:8px"></div> </div> <div class="form"> <h2 class="section-title" style="margin:0 0 8px">Медиа</h2> <p class="section-sub" style="margin:0 0 10px">Загрузи фото/видео и выбери превью.</p> <div class="field"> <label>Загрузка файлов</label> <input id="mediaInput" type="file" multiple accept="image/*,video/*" /> <div class="small">Можно несколько файлов.</div> </div> <div style="display:flex;gap:10px;flex-wrap:wrap"> <button class="btn primary" id="btnUpload" type="button">Загрузить</button> <button class="btn" id="btnRefresh" type="button">Обновить список</button> </div> <hr class="sep"> <div class="small" style="margin-bottom:8px">Нажми “Сделать превью” — это станет обложкой карточки.</div> <div class="media-grid" id="mediaGrid"></div> <div class="small" id="mediaMsg" style="margin-top:10px"></div> </div> </div> </div> </div> </section> </main> <style>
+/* белый текст на синей */
+.btn.primary, .btn.primary *{ color:#fff !important; -webkit-text-fill-color:#fff !important; }
+
+.prefix-wrap{ position:relative; }
+.prefix-wrap .prefix{
+  position:absolute; left:14px; top:50%; transform:translateY(-50%);
+  font-weight:900; opacity:.7;
+}
+.prefix-wrap input{ padding-left:30px !important; }
+
+/* медиа */
+.media-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:12px;
+}
+@media (max-width: 720px){ .media-grid{ grid-template-columns: 1fr; } }
+
+.media-card{
+  border-radius: 16px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.7);
+  background: var(--surface);
+  box-shadow: 10px 10px 22px rgba(163,177,198,.25), -10px -10px 22px rgba(255,255,255,.85);
+  padding:10px;
+}
+.media-prev{
+  width:100%;
+  aspect-ratio: 16/10;
+  border-radius: 14px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.7);
+  background: rgba(255,255,255,.35);
+  margin-bottom:10px;
+}
+.media-prev img, .media-prev video{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+.media-row{
+  display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+}
+.badge2{
+  font-size:12px;font-weight:900;padding:6px 10px;border-radius:999px;
+  background: rgba(30,120,255,.12);border:1px solid rgba(30,120,255,.22);
+  color: rgba(20,40,75,.85);
+}
+</style> <script>
+window.addEventListener('DOMContentLoaded', async function(){
+  const BUCKET = "experts-media";
+
+  function esc(s){
+    return String(s || "").replace(/[&<>"']/g, m => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
+  async function waitSb(){
+    for(let i=0;i<60;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r => setTimeout(r,150));
+    }
+    return null;
+  }
+
+  function normTagsCSV(s){
+    const arr = String(s||"").split(",").map(x=>x.trim()).filter(Boolean);
+    return arr.join(", ");
+  }
+
+  function extractUsernameFromUrl(url){
+    const u = String(url||"").trim();
+    // t.me/username или https://t.me/username
+    const m = u.match(/(?:t\.me|telegram\.me)\/([A-Za-z0-9_]{3,})/i);
+    if(m && m[1]) return m[1];
+    return "";
+  }
+
+  function normTelegram(input){
+    let v = String(input||"").trim();
+    if(!v) return "";
+    // если дали ссылку
+    if(v.includes("t.me/") || v.includes("telegram.me/")){
+      const u = extractUsernameFromUrl(v);
+      if(u) return "@"+u;
+    }
+    v = v.replace(/^@+/, "").trim();
+    // выкидываем пробелы
+    v = v.replace(/\s+/g,"");
+    return v ? "@"+v : "";
+  }
+
+  function normInstagram(input){
+    let v = String(input||"").trim();
+    if(!v) return "";
+    // если ссылка — оставляем ссылку
+    if(/^https?:\/\//i.test(v)) return v;
+    v = v.replace(/^@+/, "").trim().replace(/\s+/g,"");
+    return v ? ("https://www.instagram.com/"+v+"/") : "";
+  }
+
+  function displayInstagram(v){
+    v = String(v||"").trim();
+    const m = v.match(/instagram\.com\/([A-Za-z0-9_.]+)/i);
+    if(m && m[1]) return "@"+m[1].replace(/\/.*/,"");
+    return v;
+  }
+
+  function normWebsite(input){
+    let v = String(input||"").trim();
+    if(!v) return "";
+    if(/^https?:\/\//i.test(v)) return v;
+    return "https://"+v;
+  }
+
+  function displayTelegramUsername(v){
+    v = String(v||"").trim();
+    if(!v) return "";
+    if(v.includes("t.me/") || v.includes("telegram.me/")) {
+      const u = extractUsernameFromUrl(v);
+      return u || "";
+    }
+    return v.replace(/^@+/, "");
+  }
+
+  const sb = await waitSb();
+  const saveMsg  = document.getElementById('saveMsg');
+  const mediaMsg = document.getElementById('mediaMsg');
+  const grid     = document.getElementById('mediaGrid');
+
+  if(!sb){ saveMsg.textContent = "Supabase не подключен."; return; }
+
+  const { data: authData } = await sb.auth.getUser();
+  const user = authData?.user;
+  if(!user){ saveMsg.textContent = "Ты не залогинен. Открой /auth и войди."; return; }
+
+  let myExpert = null;
+
+  async function loadMyCard(){
+    const { data, error } = await sb
+      .from("experts")
+      .select("id, user_id, name, category, role, short_info, description, price_from, delivery_time, telegram, instagram, website, cover_path, cover_type, status, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending:false })
+      .limit(1);
+
+    if(error){ saveMsg.textContent = "Ошибка загрузки карточки: " + error.message; return; }
+    myExpert = (data && data[0]) ? data[0] : null;
+
+    if(myExpert){
+      document.getElementById('f_name').value = myExpert.name || "";
+      document.getElementById('f_category').value = myExpert.category || "video";
+      document.getElementById('f_role').value = myExpert.role || "";
+      document.getElementById('f_short').value = myExpert.short_info || "";
+      document.getElementById('f_desc').value = myExpert.description || "";
+      document.getElementById('f_price').value = myExpert.price_from || "";
+      document.getElementById('f_time').value = myExpert.delivery_time || "";
+      document.getElementById('f_tg').value = displayTelegramUsername(myExpert.telegram || "");
+      document.getElementById('f_ig').value = displayInstagram(myExpert.instagram || "");
+      document.getElementById('f_site').value = myExpert.website || "";
+      saveMsg.innerHTML = 'Карточка есть. Статус: <b>' + esc(myExpert.status || 'approved') + '</b>';
+    } else {
+      saveMsg.textContent = "Карточки ещё нет — заполни форму и нажми “Сохранить”.";
+    }
+  }
+
+  // автоподчистка полей
+  document.getElementById('f_role').addEventListener('blur', function(){
+    this.value = normTagsCSV(this.value);
+  });
+  document.getElementById('f_tg').addEventListener('blur', function(){
+    this.value = displayTelegramUsername(normTelegram(this.value));
+  });
+  document.getElementById('f_ig').addEventListener('blur', function(){
+    const normalized = normInstagram(this.value);
+    this.value = displayInstagram(normalized);
+  });
+  document.getElementById('f_site').addEventListener('blur', function(){
+    const normalized = normWebsite(this.value);
+    this.value = normalized;
+  });
+
+  async function saveCard(){
+    const payload = {
+      user_id: user.id,
+      name: document.getElementById('f_name').value.trim(),
+      category: document.getElementById('f_category').value,
+      role: normTagsCSV(document.getElementById('f_role').value),
+      short_info: document.getElementById('f_short').value.trim(),
+      description: document.getElementById('f_desc').value.trim(),
+      price_from: document.getElementById('f_price').value.trim(),
+      delivery_time: document.getElementById('f_time').value.trim(),
+      telegram: normTelegram(document.getElementById('f_tg').value),
+      instagram: normInstagram(document.getElementById('f_ig').value),
+      website: normWebsite(document.getElementById('f_site').value),
+      status: "approved"
+    };
+
+    if(!payload.name){ saveMsg.textContent = "Заполни имя/ник."; return; }
+
+    if(myExpert && myExpert.id){
+      const { error } = await sb.from("experts").update(payload).eq("id", myExpert.id);
+      if(error){ saveMsg.textContent = "Ошибка сохранения: " + error.message; return; }
+      saveMsg.textContent = "Сохранено ✅ Карточка обновлена и сразу видна в каталоге.";
+    } else {
+      const { data, error } = await sb.from("experts").insert(payload).select("id").single();
+      if(error){ saveMsg.textContent = "Ошибка создания: " + error.message; return; }
+      myExpert = { id: data.id, ...payload };
+      saveMsg.textContent = "Готово ✅ Карточка создана и сразу видна в каталоге.";
+    }
+
+    await loadMyCard();
+    await loadMedia();
+  }
+
+  async function loadMedia(){
+    grid.innerHTML = "";
+    if(!myExpert || !myExpert.id){ mediaMsg.textContent = "Сначала сохрани карточку."; return; }
+
+    mediaMsg.textContent = "Загружаю медиа...";
+    const { data, error } = await sb
+      .from("expert_media")
+      .select("id, media_type, storage_path, created_at")
+      .eq("expert_id", myExpert.id)
+      .order("created_at", { ascending:false });
+
+    if(error){ mediaMsg.textContent = "Ошибка медиа: " + error.message; return; }
+    if(!data || data.length===0){ mediaMsg.textContent = "Пока медиа нет."; return; }
+
+    const paths = data.map(m => m.storage_path);
+    const { data: urls } = await sb.storage.from(BUCKET).createSignedUrls(paths, 60*60);
+    const urlByPath = new Map();
+    (urls || []).forEach(x => { if(x?.path && x?.signedUrl) urlByPath.set(x.path, x.signedUrl); });
+
+    grid.innerHTML = data.map(m => {
+      const u = urlByPath.get(m.storage_path);
+      const isCover = (myExpert.cover_path && myExpert.cover_path === m.storage_path);
+      return `
+       <div class="media-prev ${m.media_type==="video" ? "is-video" : ""}">
+  ${m.media_type==="video"
+    ? `<video src="${u}" controls muted playsinline preload="metadata"></video>`
+    : `<img src="${u}" alt="">`
+  }
+</div> <div class="media-row"> <span class="badge2">${isCover ? "PREVIEW ✅" : (m.media_type==="video" ? "Видео" : "Фото")}</span> <div style="display:flex;gap:8px;flex-wrap:wrap"> <button class="btn primary" type="button" data-setcover="${esc(m.storage_path)}" data-type="${esc(m.media_type)}">Сделать превью</button> <button class="btn" type="button" data-del="${esc(m.id)}">Удалить</button> </div> </div> </div>
+      `;
+    }).join("");
+
+    grid.querySelectorAll("[data-setcover]").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const path = btn.getAttribute("data-setcover");
+        const type = btn.getAttribute("data-type");
+        const { error } = await sb.from("experts")
+          .update({ cover_path: path, cover_type: type })
+          .eq("id", myExpert.id);
+
+        if(error){ mediaMsg.textContent = "Ошибка превью: " + error.message; return; }
+        mediaMsg.textContent = "Превью обновлено ✅";
+        await loadMyCard();
+        await loadMedia();
+      });
+    });
+
+    grid.querySelectorAll("[data-del]").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const mediaId = btn.getAttribute("data-del");
+
+        const { data: row, error: rerr } = await sb
+          .from("expert_media")
+          .select("id, storage_path")
+          .eq("id", mediaId)
+          .single();
+
+        if(rerr){ mediaMsg.textContent = "Ошибка: " + rerr.message; return; }
+
+        await sb.storage.from(BUCKET).remove([row.storage_path]);
+        const { error: derr } = await sb.from("expert_media").delete().eq("id", mediaId);
+        if(derr){ mediaMsg.textContent = "Ошибка удаления: " + derr.message; return; }
+
+        if(myExpert.cover_path === row.storage_path){
+          await sb.from("experts").update({ cover_path: null, cover_type: null }).eq("id", myExpert.id);
+        }
+
+        mediaMsg.textContent = "Удалено ✅";
+        await loadMyCard();
+        await loadMedia();
+      });
+    });
+
+    mediaMsg.textContent = "";
+  }
+
+  async function uploadMedia(){
+    if(!myExpert || !myExpert.id){ mediaMsg.textContent = "Сначала сохрани карточку."; return; }
+
+    const input = document.getElementById('mediaInput');
+    const files = Array.from(input.files || []);
+    if(files.length===0){ mediaMsg.textContent = "Выбери файлы."; return; }
+
+    mediaMsg.textContent = "Загружаю...";
+    for(const file of files){
+      const isVideo = file.type.startsWith("video/");
+      const ext = (file.name.split(".").pop() || (isVideo ? "mp4" : "jpg")).toLowerCase();
+      const path = `experts/${myExpert.id}/${Date.now()}_${Math.random().toString(16).slice(2)}.${ext}`;
+
+      const { error: uerr } = await sb.storage.from(BUCKET).upload(path, file, { upsert:false });
+      if(uerr){ mediaMsg.textContent = "Ошибка загрузки: " + uerr.message; return; }
+
+    const { error: ierr } = await sb.from("expert_media").insert({
+  user_id: user.id,
+  expert_id: myExpert.id,
+  media_type: isVideo ? "video" : "image",
+  storage_path: path
+});
+
+      if(ierr){ mediaMsg.textContent = "Ошибка записи медиа: " + ierr.message; return; }
+    }
+
+    input.value = "";
+    mediaMsg.textContent = "Загружено ✅";
+    await loadMyCard();
+    await loadMedia();
+  }
+
+  document.getElementById('btnSave').addEventListener('click', saveCard);
+  document.getElementById('btnUpload').addEventListener('click', uploadMedia);
+  document.getElementById('btnRefresh').addEventListener('click', loadMedia);
+  document.getElementById('btnLogout').addEventListener('click', async () => {
+    await sb.auth.signOut();
+    location.reload();
+  });
+
+  await loadMyCard();
+  await loadMedia();
+});
+</script> <style>
+/* ===== Adaptive media preview (9:16 / 16:9 / 1:1) ===== */
+
+/* переопределяем старый фиксированный 16:10 */
+.media-card .media-prev{
+  aspect-ratio: 16 / 9;        /* дефолт: горизонтальное */
+  height: auto !important;
+  max-height: 560px;           /* чтобы вертикалка не уходила бесконечно вниз */
+  background: #000;            /* красивые поля для contain */
+}
+
+/* ориентации */
+.media-card .media-prev.ratio-portrait{ aspect-ratio: 9 / 16; }
+.media-card .media-prev.ratio-landscape{ aspect-ratio: 16 / 9; }
+.media-card .media-prev.ratio-square{ aspect-ratio: 1 / 1; }
+
+/* ВАЖНО: НЕ РЕЖЕМ */
+.media-card .media-prev video,
+.media-card .media-prev img{
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important; /* не обрезает */
+  display: block;
+  background: #000;
+}
+</style> <script>
+(function(){
+  function applyRatio(prev, w, h){
+    if(!w || !h) return;
+
+    prev.classList.remove("ratio-portrait","ratio-landscape","ratio-square");
+
+    const r = w / h;
+
+    // горизонтальное
+    if (r > 1.15){
+      prev.classList.add("ratio-landscape");
+      prev.style.aspectRatio = "16 / 9";
+      return;
+    }
+
+    // вертикальное
+    if (r < 0.87){
+      prev.classList.add("ratio-portrait");
+      prev.style.aspectRatio = "9 / 16";
+      return;
+    }
+
+    // почти квадрат
+    prev.classList.add("ratio-square");
+    prev.style.aspectRatio = "1 / 1";
+  }
+
+  function initPrev(prev){
+    if(!prev || prev.dataset.ratioInit) return;
+    prev.dataset.ratioInit = "1";
+
+    const v = prev.querySelector("video");
+    const img = prev.querySelector("img");
+
+    if(v){
+      const run = () => applyRatio(prev, v.videoWidth, v.videoHeight);
+      if(v.readyState >= 1) run();
+      else v.addEventListener("loadedmetadata", run, { once:true });
+      return;
+    }
+
+    if(img){
+      const run = () => applyRatio(prev, img.naturalWidth, img.naturalHeight);
+      if(img.complete) run();
+      else img.addEventListener("load", run, { once:true });
+    }
+  }
+
+  function scan(){
+    document.querySelectorAll(".media-card .media-prev").forEach(initPrev);
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    scan();
+
+    // лёгкий observer ТОЛЬКО на #mediaGrid (не тормозит сайт)
+    const grid = document.getElementById("mediaGrid");
+    if(!grid) return;
+
+    const mo = new MutationObserver(() => scan());
+    mo.observe(grid, { childList:true, subtree:true });
+  });
+})();
+</script> <!-- FIX: вертикальные видео не режем, делаем 9:16 / 16:9 авто --> <style>
+/* СИЛЬНОЕ перекрытие именно для превью медиа */
+#allrecords #mediaGrid video,
+.t-records #mediaGrid video,
+#allrecords .media-prev video,
+.t-records .media-prev video,
+#allrecords .media-preview video,
+.t-records .media-preview video{
+  object-fit: contain !important;
+  width: 100% !important;
+  height: 100% !important;
+  background:#000 !important;
+}
+
+/* Контейнер превью — пусть принимает нужный ratio */
+#allrecords #mediaGrid .media-prev,
+.t-records #mediaGrid .media-prev,
+#allrecords .media-prev,
+.t-records .media-prev,
+#allrecords .media-preview,
+.t-records .media-preview{
+  background:#000 !important;
+  height:auto !important;
+  max-height:560px !important;
+}
+</style> <script>
+(function(){
+  function pickRatio(w,h){
+    if(!w || !h) return null;
+    const r = w / h;
+    if(r < 0.87) return "9 / 16";     // вертикалка
+    if(r > 1.15) return "16 / 9";     // горизонталка
+    return "1 / 1";                  // почти квадрат
+  }
+
+  function applyToVideo(v){
+    if(!v || v.dataset.ratioFixed) return;
+
+    const wrap =
+      v.closest(".media-prev") ||
+      v.closest(".media-preview") ||
+      v.parentElement;
+
+    // принудительно, инлайном (самое сильное)
+    v.style.objectFit = "contain";
+    v.style.width = "100%";
+    v.style.height = "100%";
+    v.style.background = "#000";
+
+    function set(){
+      const ratio = pickRatio(v.videoWidth, v.videoHeight);
+      if(!ratio) return;
+
+      if(wrap){
+        wrap.style.aspectRatio = ratio;
+        wrap.style.background = "#000";
+        wrap.style.height = "auto";
+        wrap.style.maxHeight = "560px";
+        wrap.style.overflow = "hidden"; // чтобы радиус не ломался
+      }
+
+      v.dataset.ratioFixed = "1";
+    }
+
+    // важно: метаданные могут грузиться не сразу
+    if(v.readyState >= 1) set();
+    else v.addEventListener("loadedmetadata", set, { once:true });
+
+    // на всякий случай: если браузер дал размеры чуть позже
+    setTimeout(set, 300);
+    setTimeout(set, 1200);
+  }
+
+  function scan(){
+    // 1) основная галерея в кабинете
+    const grid = document.getElementById("mediaGrid");
+    if(grid){
+      grid.querySelectorAll("video").forEach(applyToVideo);
+    }
+    // 2) если где-то есть ещё превью-видео (обложка и т.п.)
+    document.querySelectorAll(".media-prev video, .media-preview video").forEach(applyToVideo);
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    scan();
+
+    // лёгкий “досмотр” 3 секунды, чтобы поймать динамически дорисованные блоки (без лагов)
+    let n = 0;
+    const t = setInterval(function(){
+      scan();
+      n++;
+      if(n >= 8) clearInterval(t);
+    }, 400);
+  });
+})();
+</script> <!-- FIX: вертикальные ФОТО не режем (как Reels/Shorts) --> <style>
+/* СИЛЬНОЕ перекрытие для фото в медиа-превью */
+#allrecords #mediaGrid img,
+.t-records #mediaGrid img,
+#allrecords .media-prev img,
+.t-records .media-prev img,
+#allrecords .media-preview img,
+.t-records .media-preview img{
+  object-fit: contain !important;
+  width: 100% !important;
+  height: 100% !important;
+  background:#000 !important;
+}
+</style> <script>
+(function(){
+  function pickRatio(w,h){
+    if(!w || !h) return null;
+    const r = w / h;
+    if(r < 0.87) return "9 / 16";     // вертикалка
+    if(r > 1.15) return "16 / 9";     // горизонталка
+    return "1 / 1";                  // почти квадрат
+  }
+
+  function applyToImg(img){
+    if(!img || img.dataset.ratioFixed) return;
+
+    const wrap =
+      img.closest(".media-prev") ||
+      img.closest(".media-preview") ||
+      img.parentElement;
+
+    // принудительно (инлайн сильнее всех css)
+    img.style.objectFit = "contain";
+    img.style.width = "100%";
+    img.style.height = "100%";
+    img.style.background = "#000";
+
+    function set(){
+      const ratio = pickRatio(img.naturalWidth, img.naturalHeight);
+      if(!ratio) return;
+
+      if(wrap){
+        wrap.style.aspectRatio = ratio;
+        wrap.style.background = "#000";
+        wrap.style.height = "auto";
+        wrap.style.maxHeight = "560px";
+        wrap.style.overflow = "hidden";
+      }
+
+      img.dataset.ratioFixed = "1";
+    }
+
+    if(img.complete) set();
+    else img.addEventListener("load", set, { once:true });
+
+    setTimeout(set, 300);
+    setTimeout(set, 1200);
+  }
+
+  function scanImages(){
+    const grid = document.getElementById("mediaGrid");
+    if(grid) grid.querySelectorAll("img").forEach(applyToImg);
+
+    document.querySelectorAll(".media-prev img, .media-preview img").forEach(applyToImg);
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    scanImages();
+
+    // лёгкий догон на 3 секунды (чтобы поймать дорисовку)
+    let n=0;
+    const t=setInterval(function(){
+      scanImages();
+      n++;
+      if(n>=8) clearInterval(t);
+    }, 400);
+  });
+})();
+</script> <script>
+(function(){
+  const AUTH_PAGE = "/auth"; // страница входа/регистрации в Tilda
+  const BTN_TEXT = "Разместить портфолио";
+
+  function findBtnByText(txt){
+    const all = Array.from(document.querySelectorAll("a,button"));
+    const norm = s => (s||"").replace(/\s+/g," ").trim().toLowerCase();
+    const t = norm(txt);
+    return all.find(el => norm(el.textContent).includes(t)) || null;
+  }
+
+  async function waitSb(){
+    for(let i=0;i<40;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r=>setTimeout(r,150));
+    }
+    return null;
+  }
+
+  async function isAuthed(){
+    const sb = await waitSb();
+    if(!sb) return false;
+    const { data } = await sb.auth.getSession();
+    return !!data?.session?.user;
+  }
+
+  function goAuth(){
+    const redirect = encodeURIComponent(location.href);
+    location.href = AUTH_PAGE + "?redirect=" + redirect;
+  }
+
+  window.addEventListener("DOMContentLoaded", async () => {
+    const btn = findBtnByText(BTN_TEXT);
+    if(!btn) return;
+
+    btn.addEventListener("click", async (e) => {
+      const ok = await isAuthed();
+      if(!ok){
+        e.preventDefault();
+        e.stopPropagation();
+        if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+        goAuth();
+      }
+      // если ok=true — кнопка работает как раньше (создание карточки)
+    }, true);
+  });
+})();
+</script> <style>
+  /* /add: уведомления */
+  #allrecords .ai-add-alert{
+    margin: 0 0 14px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,.7);
+    background: rgba(255,255,255,.45);
+    box-shadow: 10px 10px 22px rgba(163,177,198,.22), -10px -10px 22px rgba(255,255,255,.88);
+    backdrop-filter: blur(10px);
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    justify-content:space-between;
+  }
+  #allrecords .ai-add-alert b{ font-weight: 900; }
+  #allrecords .ai-add-alert .x{
+    width:40px;height:40px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.75);
+    background: rgba(238,243,250,.85);
+    box-shadow: 10px 10px 22px rgba(163,177,198,.22), -10px -10px 22px rgba(255,255,255,.88);
+    cursor:pointer;
+    flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+    user-select:none;
+  }
+  #allrecords .ai-add-alert .t{
+    color: rgba(19,35,63,.78);
+    line-height: 1.45;
+  }
+  #allrecords .ai-add-alert.info{
+    border-left: 6px solid rgba(0,120,255,.55);
+  }
+  #allrecords .ai-add-alert.ok{
+    border-left: 6px solid rgba(0,200,120,.55);
+  }
+</style> <script>
+(function(){
+  async function waitSb(){
+    for(let i=0;i<40;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r => setTimeout(r,150));
+    }
+    return null;
+  }
+
+  function findTopAnchor(){
+    // куда вставлять плашки: стараемся в самый верх основного контента
+    return (
+      document.querySelector('main .section .container') ||
+      document.querySelector('main .container') ||
+      document.querySelector('.section .container') ||
+      document.querySelector('.container') ||
+      document.querySelector('#allrecords') ||
+      document.body
+    );
+  }
+
+  function makeAlert(type, html){
+    const el = document.createElement('div');
+    el.className = 'ai-add-alert ' + type;
+    el.innerHTML = `
+      <div class="t">${html}</div> <div class="x" title="Закрыть" aria-label="Закрыть">✕</div>
+    `;
+    el.querySelector('.x').addEventListener('click', ()=> el.remove());
+    return el;
+  }
+
+  function injectOnce(id, node, anchor){
+    if(document.getElementById(id)) return;
+    node.id = id;
+    anchor.insertBefore(node, anchor.firstChild);
+  }
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    const anchor = findTopAnchor();
+
+    // 1) Всегда показываем подсказку сверху /add
+    const info = makeAlert(
+      'info',
+      `Перед тем как загружать фото/видео, <b>впиши данные о себе</b> и нажми кнопку <b>«Сохранить»</b>.
+      После сохранения создастся карточка — и тогда можно загружать медиа.`
+    );
+    injectOnce('aiAddInfoNotice', info, anchor);
+
+    // 2) Плашка “успешный вход” — только если пришли по письму (flash из /auth)
+    const emailFlash = (localStorage.getItem("AI_BIRZHA_LOGIN_FLASH") || "").trim();
+    const ts = parseInt(localStorage.getItem("AI_BIRZHA_LOGIN_FLASH_TS") || "0", 10);
+    const fresh = ts && (Date.now() - ts) < 5 * 60 * 1000; // 5 минут
+
+    if(emailFlash && fresh){
+      const ok = makeAlert('ok', `Вы успешно вошли под логином: <b>${emailFlash}</b>`);
+      injectOnce('aiAddLoginNotice', ok, anchor);
+
+      localStorage.removeItem("AI_BIRZHA_LOGIN_FLASH");
+      localStorage.removeItem("AI_BIRZHA_LOGIN_FLASH_TS");
+      return;
+    }
+
+    // 3) Если flash не пришёл, но пользователь уже авторизован — можно тоже показать (не обязательно)
+    const sb = await waitSb();
+    if(!sb) return;
+
+    const { data } = await sb.auth.getSession();
+    const email = data?.session?.user?.email;
+    if(email){
+      // показываем один раз за сессию браузера
+      if(!sessionStorage.getItem("AI_BIRZHA_ADD_SHOWN_AUTH")){
+        const ok2 = makeAlert('ok', `Вы вошли как: <b>${email}</b>`);
+        injectOnce('aiAddLoginNotice', ok2, anchor);
+        sessionStorage.setItem("AI_BIRZHA_ADD_SHOWN_AUTH", "1");
+      }
+    }
+  });
+})();
+</script> <style>
+  /* Кнопка "Открыть ссылку..." сразу под "Обновить список" */
+  #allrecords .ai-open-card-wrap{
+    margin-top: 12px;
+    width: 100%;
+    flex-basis: 100%;
+    display: flex;
+    justify-content: flex-start;
+  }
+</style> <script>
+(function(){
+  async function waitSb(){
+    for(let i=0;i<40;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r => setTimeout(r,150));
+    }
+    return null;
+  }
+
+  function findRefreshBtn(){
+    const els = Array.from(document.querySelectorAll('button, a, input[type="button"], input[type="submit"]'));
+    return els.find(el => {
+      const t = (el.textContent || el.value || "").trim().toLowerCase();
+      return t === "обновить список";
+    }) || null;
+  }
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    const sb = await waitSb();
+    if(!sb) return;
+
+    const { data: sess } = await sb.auth.getSession();
+    const uid = sess?.session?.user?.id;
+    if(!uid) return; // не вошёл — кнопку не показываем
+
+    const wrap = document.createElement('div');
+    wrap.className = 'ai-open-card-wrap';
+    wrap.innerHTML = `<button class="btn primary" type="button" id="aiOpenMyCardBtn">Открыть ссылку на мою карточку</button>`;
+
+    const refreshBtn = findRefreshBtn();
+    if(refreshBtn){
+      // ставим ПРЯМО под "Обновить список"
+      refreshBtn.insertAdjacentElement('afterend', wrap);
+    }else{
+      // запасной вариант — в конец контейнера
+      (document.querySelector('#allrecords') || document.body).appendChild(wrap);
+    }
+
+    document.getElementById('aiOpenMyCardBtn').addEventListener('click', async () => {
+      const { data, error } = await sb
+        .from("experts")
+        .select("id,created_at")
+        .eq("user_id", uid)
+        .order("created_at", { ascending:false })
+        .limit(1);
+
+      if(error){
+        alert("Ошибка поиска карточки: " + error.message);
+        return;
+      }
+      if(!data || !data.length){
+        alert("Карточка ещё не создана. Сначала заполни данные и нажми «Сохранить».");
+        return;
+      }
+
+      window.open("/card?id=" + encodeURIComponent(data[0].id), "_blank");
+    });
+  });
+})();
+</script> <!-- ====== /add END ====== --> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords--> <!-- Tilda copyright. Don't remove this line --><div class="t-tildalabel " id="tildacopy" data-tilda-sign="13172919#103811936"><a href="https://tilda.cc/" class="t-tildalabel__link"><div class="t-tildalabel__wrapper"><div class="t-tildalabel__txtleft">Made on </div><div class="t-tildalabel__wrapimg"><img src="images/tildacopy.png" class="t-tildalabel__img" fetchpriority="low" alt=""></div><div class="t-tildalabel__txtright">Tilda</div></div></a></div> <!-- Stat --> <script type="text/javascript">if(!window.mainTracker) {window.mainTracker='tilda';}
+window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.getElementsByTagName(o)[0],s=d.createElement(o),f=function(){n.parentNode.insertBefore(s,n);};s.type="text/javascript";s.async=true;s.key=k;s.id="tildastatscript";s.src=g;if(w.opera=="[object Opera]") {d.addEventListener("DOMContentLoaded",f,false);} else {f();}})(document,window,'b3e5db9cfc6c4460a026f51ee207b27b','script','js/tilda-stat-1.0.min.js');},2000);</script> </body> </html>

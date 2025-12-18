@@ -1,0 +1,468 @@
+<!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="103811056" data-tilda-page-alias="experts" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-page-headcode="yes" data-tilda-project-country="RU"> <div id="rec1689486501" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!-- ====== PAGE: Исполнители (ONE-PASTE, FULL) ====== --> <header class="nav"> <div class="container nav-inner"> <a class="brand" href="/"> <span class="logo" aria-hidden="true"></span> <span>AI-Биржа (MVP)</span> </a> <nav class="nav-links" aria-label="Навигация"> <a href="/services">Услуги</a> <a href="/experts">Исполнители</a> <a href="/cases">Кейсы</a> <a href="/how">Как это работает</a> <a href="/faq">FAQ</a> </nav> <div class="nav-cta"> <a class="btn" href="/add">Разместить услугу</a> <a class="btn primary" href="/apply">Оставить заявку</a> </div> </div> </header> <main> <!-- ФИЛЬТР НИШ --> <section class="section" id="experts-filter"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Фильтр</div> <h1 class="h-title" style="font-size:34px">Выбери нишу исполнителей</h1> <p class="h-sub">Одна ниша за раз. Можно сбросить фильтр и снова увидеть всех.</p> <div class="pick-grid cat-picker"> <button class="pick-btn" type="button" data-cat="video"><span class="ico" aria-hidden="true">&#127916;</span> AI-Видео</button> <button class="pick-btn" type="button" data-cat="design"><span class="ico" aria-hidden="true">&#127912;</span> AI-Дизайн</button> <button class="pick-btn" type="button" data-cat="bots"><span class="ico" aria-hidden="true">&#129302;</span> AI-Боты</button> <button class="pick-btn" type="button" data-cat="marketplaces"><span class="ico" aria-hidden="true">&#128722;</span> WB/Ozon</button> <button class="pick-btn" type="button" data-cat="sites"><span class="ico" aria-hidden="true">&#129513;</span> AI-Сайты</button> <button class="pick-btn ghost" type="button" data-cat="">Сбросить</button> </div> </div> </div> </section> <!-- HERO --> <section class="hero"> <div class="container hero-grid hero-grid--single"> <div class="h-card"> <div class="h-eyebrow">Каталог</div> <h1 class="h-title">Исполнители</h1> <p class="h-sub">Ищи по задаче или выбери нишу сверху. Превью берётся из выбранной обложки в карточке.</p> <div class="searchbox"> <form data-search style="display:flex;gap:10px;flex:1;flex-wrap:wrap"> <input name="q" placeholder="Например: 10 reels для стоматологии / карточка WB / бот в Telegram" /> <button class="btn primary" type="submit">Подобрать исполнителя</button> </form> </div> <div class="h-actions"> <a class="btn primary" href="/add">Добавить исполнителя</a> <a class="btn" href="/apply">Оставить заявку</a> </div> <div class="note">Без оплат на сайте. Договорённости напрямую.</div> </div> </div> </div> </div> </section> <!-- СПИСОК --> <section class="section" id="experts-list"> <div class="container"> <h2 class="section-title">Список исполнителей</h2> <p class="section-sub">Клик по карточке → открывается страница исполнителя.</p> <div class="grid" id="expertsGrid"></div> <div class="small" id="expertsMsg" style="margin-top:10px"></div> </div> </section> </main> <style>
+/* Белый текст на синем ВЕЗДЕ */
+.btn.primary, .btn.primary *{ color:#fff !important; }
+.badge, .badge *{ color:#fff !important; }
+.pick-btn.active, .pick-btn.active *{ color:#fff !important; }
+
+/* кнопки ниш */
+.pick-grid{ display:grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap:12px; margin-top:12px; }
+@media (max-width: 980px){ .pick-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 560px){ .pick-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.pick-btn{
+  width:100%;
+  border:1px solid rgba(255,255,255,.75);
+  border-radius:18px;
+  padding:14px 12px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight:900;
+  cursor:pointer;
+  box-shadow: 10px 10px 22px rgba(163,177,198,.45), -10px -10px 22px rgba(255,255,255,.92);
+  transition:.15s transform ease, .15s box-shadow ease;
+}
+.pick-btn:hover{ transform: translateY(-1px); }
+.pick-btn:active{
+  transform: translateY(0);
+  box-shadow: inset 10px 10px 22px rgba(163,177,198,.45), inset -10px -10px 22px rgba(255,255,255,.92);
+}
+.pick-btn.active{ background: var(--accent-grad); }
+.ico{ font-size:18px; line-height:1; }
+
+/* карточки */
+.expert-card{ cursor:pointer; }
+.expert-cover{
+  width:100%;
+  aspect-ratio: 16/10;
+  border-radius: 18px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.7);
+  background: linear-gradient(135deg, rgba(30,120,255,.12), rgba(0,183,255,.10));
+  box-shadow: inset 10px 10px 22px rgba(163,177,198,.25), inset -10px -10px 22px rgba(255,255,255,.85);
+  margin-bottom:10px;
+}
+.expert-cover img, .expert-cover video{ width:100%; height:100%; object-fit:cover; display:block; }
+.expert-cover .ph{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  color: rgba(19,35,63,.55);
+  font-weight:900;
+}
+.expert-short{
+  margin-top:6px;
+  padding:10px;
+  border-radius: 16px;
+  border:1px solid rgba(255,255,255,.7);
+  background: rgba(255,255,255,.35);
+  box-shadow: inset 10px 10px 22px rgba(163,177,198,.20), inset -10px -10px 22px rgba(255,255,255,.85);
+}
+.expert-short-label{ font-weight:900; margin-bottom:4px; }
+.expert-short-text{ color: var(--muted); line-height:1.4; font-size:14px; }
+.expert-actions{ margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; }
+</style> <script>
+window.addEventListener('DOMContentLoaded', function () {
+  const BUCKET = "experts-media";
+  const PROFILE_PATH = "/card"; // ✅ профиль у нас /card?id=...
+
+  const CAT_LABEL = {
+    video: "AI-Видео",
+    design: "AI-Дизайн",
+    bots: "AI-Боты",
+    marketplaces: "WB/Ozon",
+    sites: "AI-Сайты"
+  };
+
+  const grid = document.getElementById('expertsGrid');
+  const msg  = document.getElementById('expertsMsg');
+
+  function esc(s){
+    return String(s || "").replace(/[&<>"']/g, m => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
+  function escAttr(s){ return esc(s).replace(/"/g, "&quot;"); }
+
+  async function waitSb(){
+    for(let i=0;i<40;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r => setTimeout(r,150));
+    }
+    return null;
+  }
+
+  function buildTelegramLink(raw){
+    if(!raw) return null;
+    const t = raw.trim();
+    if(!t) return null;
+    if(t.startsWith("@")) return "https://t.me/" + t.slice(1);
+    if(t.includes("t.me/")) return t;
+    return null;
+  }
+
+  function setActiveButton(cat){
+    document.querySelectorAll('.cat-picker [data-cat]').forEach(btn => {
+      btn.classList.toggle('active', !!cat && btn.dataset.cat === cat);
+    });
+  }
+  function setUrlCat(cat){
+    const u = new URL(location.href);
+    if (cat) u.searchParams.set('cat', cat);
+    else u.searchParams.delete('cat');
+    history.replaceState(null, "", u.toString());
+  }
+
+  async function loadExperts(cat){
+    msg.textContent = "Загружаю исполнителей...";
+    grid.innerHTML = "";
+
+    const sb = await waitSb();
+    if(!sb){ msg.textContent = "Supabase не подключен."; return; }
+
+    let q = sb
+      .from("experts")
+      .select("id, category, name, role, short_info, price_from, delivery_time, telegram, cover_path, cover_type, status, created_at")
+      .eq("status", "approved")
+      .order("created_at", { ascending:false })
+      .limit(60);
+
+    if (cat) q = q.eq("category", cat);
+
+    const { data, error } = await q;
+    if(error){ msg.textContent = "Ошибка загрузки: " + error.message; return; }
+    if(!data || data.length===0){
+      msg.textContent = cat ? "В этой нише пока нет одобренных исполнителей." : "Пока нет одобренных исполнителей.";
+      return;
+    }
+
+    const paths = data.map(x => x.cover_path).filter(Boolean);
+    const urlByPath = new Map();
+    if(paths.length){
+      const { data: sdata } = await sb.storage.from(BUCKET).createSignedUrls(paths, 60*60);
+      (sdata || []).forEach(it => { if(it?.path && it?.signedUrl) urlByPath.set(it.path, it.signedUrl); });
+    }
+
+    grid.innerHTML = data.map(x => {
+      const coverUrl  = x.cover_path ? (urlByPath.get(x.cover_path) || "") : "";
+      const coverType = String(x.cover_type||"").toLowerCase();
+      const profileHref = PROFILE_PATH + "?id=" + encodeURIComponent(x.id);
+
+      const tg = buildTelegramLink(x.telegram || "");
+      const shortText = x.short_info || "—";
+
+      const coverHtml = coverUrl
+        ? (coverType === "video"
+            ? `<div class="expert-cover"><video src="${escAttr(coverUrl)}" muted playsinline preload="metadata"></video></div>`
+            : `<div class="expert-cover"><img src="${escAttr(coverUrl)}" alt=""></div>`
+          )
+        : `<div class="expert-cover"><div class="ph">PREVIEW</div></div>`;
+
+      return `
+        <div class="card expert-card" data-open="${escAttr(profileHref)}" tabindex="0" role="link">
+          ${coverHtml}
+
+          <h3>${esc(x.name)} • ${esc(CAT_LABEL[x.category] || x.category)}</h3> <div class="expert-short"> <div class="expert-short-label">Краткая информация</div> <div class="expert-short-text">${esc(shortText)}</div> </div> <div class="tagrow" style="margin-top:10px">
+            ${x.price_from ? `<span class="tag">${esc(x.price_from)}</span>` : ``}
+            ${x.delivery_time ? `<span class="tag">${esc(x.delivery_time)}</span>` : ``}
+            ${x.role ? `<span class="tag">${esc(x.role)}</span>` : ``}
+          </div> <div class="expert-actions"> <button class="btn primary open-card" type="button" data-href="${escAttr(profileHref)}">Открыть карточку</button>
+            ${tg ? `<a class="btn tg-link" href="${escAttr(tg)}" target="_blank" rel="noopener">Написать сообщение</a>` : `<span class="btn" style="opacity:.55;cursor:not-allowed">Нет Telegram</span>`}
+          </div> </div>
+      `;
+    }).join("");
+
+    grid.querySelectorAll(".expert-card").forEach(card => {
+      const href = card.getAttribute("data-open");
+      card.addEventListener("click", () => { location.href = href; });
+      card.addEventListener("keydown", (e) => {
+        if(e.key === "Enter" || e.key === " ") { e.preventDefault(); location.href = href; }
+      });
+    });
+    grid.querySelectorAll(".tg-link").forEach(a => a.addEventListener("click", (e) => e.stopPropagation()));
+    grid.querySelectorAll(".open-card").forEach(b => b.addEventListener("click", (e) => { e.stopPropagation(); location.href = b.dataset.href; }));
+
+    msg.textContent = "";
+  }
+
+  // фильтр
+  document.querySelectorAll(".cat-picker [data-cat]").forEach(btn => {
+    btn.addEventListener("click", function(){
+      const cat = btn.dataset.cat || "";
+      setActiveButton(cat);
+      setUrlCat(cat);
+      loadExperts(cat);
+    });
+  });
+
+  // поиск -> /apply?q=
+  const sform = document.querySelector('form[data-search]');
+  if (sform) {
+    sform.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const input = sform.querySelector('input[name="q"]');
+      const q = input ? input.value.trim() : '';
+      location.href = "/apply?q=" + encodeURIComponent(q);
+    });
+  }
+
+  const qs = new URLSearchParams(location.search);
+  const startCat = qs.get("cat") || "";
+  setActiveButton(startCat);
+  loadExperts(startCat);
+});
+</script> <style>
+/* ===== MINI-CAROUSEL inside .expert-cover on /experts (v2) ===== */
+.expert-cover{ position:relative; }
+.expert-cover[data-mc="1"]{ cursor:grab; }
+.expert-cover[data-mc="1"]:active{ cursor:grabbing; }
+
+.mc{ position:absolute; inset:0; z-index:2; }
+.mc-track{ position:absolute; inset:0; z-index:1; }
+.mc-item{ position:absolute; inset:0; opacity:0; transition:opacity .18s ease; }
+.mc-item.active{ opacity:1; }
+
+.mc-item img, .mc-item video{
+  width:100%; height:100%;
+  object-fit:contain; /* НЕ режем вертикальные */
+  display:block;
+  background: linear-gradient(135deg, rgba(30,120,255,.10), rgba(0,183,255,.08));
+}
+
+/* чтобы кнопки точно были кликабельны */
+.mc-btn{
+  position:absolute; top:50%; transform:translateY(-50%);
+  width:40px; height:40px; border-radius:14px;
+  border:1px solid rgba(255,255,255,.75);
+  background: rgba(238,243,250,.78);
+  backdrop-filter: blur(10px);
+  box-shadow: 10px 10px 22px rgba(163,177,198,.35), -10px -10px 22px rgba(255,255,255,.92);
+  cursor:pointer;
+  z-index:5;
+  pointer-events:auto;
+  user-select:none;
+}
+.mc-prev{ left:10px; }
+.mc-next{ right:10px; }
+
+@media (max-width:560px){
+  .mc-btn{ width:36px; height:36px; }
+}
+
+.mc-dots{
+  position:absolute; left:50%; bottom:10px; transform:translateX(-50%);
+  display:flex; gap:6px; padding:6px 10px; border-radius:999px;
+  border:1px solid rgba(255,255,255,.65);
+  background: rgba(238,243,250,.65);
+  backdrop-filter: blur(10px);
+  box-shadow: 10px 10px 22px rgba(163,177,198,.20), -10px -10px 22px rgba(255,255,255,.85);
+  z-index:5;
+  pointer-events:auto;
+}
+.mc-dot{ width:8px; height:8px; border-radius:999px; background: rgba(19,35,63,.25); }
+.mc-dot.active{ background: rgba(30,120,255,.95); }
+</style> <script>
+(function(){
+  const BUCKET = "experts-media"; // проверь bucket
+
+  function waitSb(){
+    return new Promise(async (resolve) => {
+      for(let i=0;i<60;i++){
+        if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return resolve(window.AI_BIRZHA.sb);
+        await new Promise(r=>setTimeout(r,150));
+      }
+      resolve(null);
+    });
+  }
+
+  function parseExpertIdFromCard(card){
+    const href = card.getAttribute("data-open")
+      || card.querySelector(".open-card")?.dataset?.href
+      || "";
+    try{
+      const u = new URL(href, location.origin);
+      return u.searchParams.get("id");
+    }catch(e){ return null; }
+  }
+
+  const uniq = (arr)=>{ const s=new Set(),o=[]; for(const x of arr){ if(x && !s.has(x)){s.add(x);o.push(x)} } return o; };
+
+  function pauseAllVideos(root){
+    root.querySelectorAll("video").forEach(v=>{ try{ v.pause(); v.currentTime = 0; }catch(e){} });
+  }
+
+  function makeCarousel(coverEl, slides){
+    if(!slides || slides.length < 2) return;
+
+    coverEl.dataset.mc = "1";
+
+    // если в карточке есть общий клик на открытие — не даём ему срабатывать от превью
+    coverEl.addEventListener("click", (e)=>{ e.stopPropagation(); }, true);
+
+    coverEl.innerHTML = `
+      <div class="mc"> <div class="mc-track"></div> <button class="mc-btn mc-prev" type="button" aria-label="Назад">‹</button> <button class="mc-btn mc-next" type="button" aria-label="Вперёд">›</button> <div class="mc-dots"></div> </div>
+    `;
+
+    const track = coverEl.querySelector(".mc-track");
+    const prevB = coverEl.querySelector(".mc-prev");
+    const nextB = coverEl.querySelector(".mc-next");
+    const dots  = coverEl.querySelector(".mc-dots");
+
+    let idx = 0;
+
+    const items = slides.map((s, i) => {
+      const wrap = document.createElement("div");
+      wrap.className = "mc-item" + (i===0 ? " active" : "");
+
+      if(String(s.type).toLowerCase() === "video"){
+        const v = document.createElement("video");
+        v.src = s.url;
+        v.muted = true;
+        v.playsInline = true;
+        v.preload = "metadata";
+        // тап по видео = play/pause (и не открывать карточку)
+        v.addEventListener("click", (e)=>{ e.stopPropagation(); try{ v.paused ? v.play() : v.pause(); }catch(_){} }, true);
+        wrap.appendChild(v);
+      }else{
+        const img = document.createElement("img");
+        img.src = s.url;
+        img.alt = "";
+        wrap.appendChild(img);
+      }
+
+      track.appendChild(wrap);
+
+      const d = document.createElement("div");
+      d.className = "mc-dot" + (i===0 ? " active" : "");
+      d.addEventListener("click", (e)=>{ e.stopPropagation(); go(i); }, true);
+      dots.appendChild(d);
+
+      return wrap;
+    });
+
+    function go(next){
+      if(next === idx) return;
+      pauseAllVideos(track);
+      items[idx].classList.remove("active");
+      dots.children[idx].classList.remove("active");
+
+      idx = (next + items.length) % items.length;
+
+      items[idx].classList.add("active");
+      dots.children[idx].classList.add("active");
+    }
+    const next = ()=>go(idx+1);
+    const prev = ()=>go(idx-1);
+
+    // ФИКС: стрелки 100% кликабельны (ПК)
+    ["pointerdown","click"].forEach(evt=>{
+      prevB.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); prev(); }, true);
+      nextB.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); next(); }, true);
+    });
+
+    // swipe
+    let sx=0, sy=0, down=false;
+    coverEl.addEventListener("pointerdown", (e)=>{
+      down=true; sx=e.clientX; sy=e.clientY;
+    }, {passive:true});
+
+    coverEl.addEventListener("pointerup", (e)=>{
+      if(!down) return;
+      down=false;
+      const dx = e.clientX - sx;
+      const dy = e.clientY - sy;
+      if(Math.abs(dx) > 35 && Math.abs(dx) > Math.abs(dy)){
+        dx < 0 ? next() : prev();
+      }
+    }, {passive:true});
+
+    coverEl.addEventListener("pointercancel", ()=>{ down=false; }, {passive:true});
+
+    // Моб: тап по левой/правой половине превью (кроме кнопок/точек/видео)
+    coverEl.addEventListener("click", (e)=>{
+      if(e.target.closest(".mc-btn, .mc-dots, video")) return;
+      const r = coverEl.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      (x < r.width/2) ? prev() : next();
+    }, true);
+  }
+
+  window.addEventListener("DOMContentLoaded", async ()=>{
+    const sb = await waitSb();
+    const grid = document.getElementById("expertsGrid");
+    if(!sb || !grid) return;
+
+    const cache = new Map(); // expertId -> slides
+
+    let t=null;
+    const schedule = ()=>{ clearTimeout(t); t=setTimeout(enhance, 180); };
+
+    new MutationObserver(schedule).observe(grid, { childList:true, subtree:true });
+    schedule();
+
+    async function enhance(){
+      const cards = Array.from(grid.querySelectorAll(".expert-card"));
+      if(!cards.length) return;
+
+      const needIds = [];
+      const idToCards = new Map();
+
+      for(const card of cards){
+        const id = parseExpertIdFromCard(card);
+        if(!id) continue;
+        if(!idToCards.has(id)) idToCards.set(id, []);
+        idToCards.get(id).push(card);
+        if(!cache.has(id)) needIds.push(id);
+      }
+
+      if(needIds.length){
+        const { data: rows, error } = await sb
+          .from("expert_media")
+          .select("expert_id, media_type, storage_path, is_cover, created_at")
+          .in("expert_id", uniq(needIds))
+          .order("is_cover", { ascending:false })
+          .order("created_at", { ascending:false })
+          .limit(600);
+
+        if(!error && rows?.length){
+          const allPaths = uniq(rows.map(r=>r.storage_path).filter(Boolean));
+          const urlByPath = new Map();
+
+          if(allPaths.length){
+            const { data: sdata } = await sb.storage.from(BUCKET).createSignedUrls(allPaths, 60*60);
+            (sdata||[]).forEach(x=>{ if(x?.path && x?.signedUrl) urlByPath.set(x.path, x.signedUrl); });
+          }
+
+          const by = new Map();
+          rows.forEach(r=>{
+            if(!r.storage_path) return;
+            if(!by.has(r.expert_id)) by.set(r.expert_id, []);
+            by.get(r.expert_id).push(r);
+          });
+
+          for(const id of uniq(needIds)){
+            const list = (by.get(id) || [])
+              .map(r=>({
+                type: (String(r.media_type||"").toLowerCase()==="video") ? "video" : "image",
+                url: urlByPath.get(r.storage_path) || ""
+              }))
+              .filter(x=>x.url)
+              .slice(0, 6); // можно 5-6 работ в превью
+            cache.set(id, list);
+          }
+        }
+      }
+
+      for(const [id, listCards] of idToCards.entries()){
+        const slides = cache.get(id) || [];
+        if(slides.length < 2) continue;
+
+        listCards.forEach(card=>{
+          const cover = card.querySelector(".expert-cover");
+          if(!cover || cover.dataset.mcDone==="1") return;
+          cover.dataset.mcDone="1";
+          makeCarousel(cover, slides);
+        });
+      }
+    }
+  });
+})();
+</script> <!-- ====== END PAGE ====== --> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords-->

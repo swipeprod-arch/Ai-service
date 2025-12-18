@@ -1,0 +1,171 @@
+<!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="104134416" data-tilda-page-alias="auth" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1694348421" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Аккаунт</div> <h1 class="h-title" style="font-size:34px">Вход / регистрация</h1> <p class="h-sub">Вводишь email → получаешь ссылку. Пароль не нужен.</p> <form class="form" id="authForm"> <div class="field"> <label>Email</label> <input id="authEmail" type="email" placeholder="you@mail.com" required> </div> <button class="btn primary" type="submit">Отправить ссылку</button> <div class="small" id="authMsg" style="margin-top:8px"></div> </form> <hr class="sep"> <div class="small" id="authState"></div> <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"> <a class="btn" href="/add">Создать карточку</a> <a class="btn" href="/experts">В каталог</a> <button class="btn" id="logoutBtn" type="button">Выйти</button> </div> </div> </div> </section> <script>
+window.addEventListener('DOMContentLoaded', async function () {
+  const msg = document.getElementById('authMsg');
+  const state = document.getElementById('authState');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  async function waitSb(){
+    for(let i=0;i<40;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r => setTimeout(r,150));
+    }
+    return null;
+  }
+
+  const sb = await waitSb();
+  if(!sb){
+    msg.textContent = "Ошибка: Supabase не подключен (нет window.AI_BIRZHA.sb).";
+    return;
+  }
+
+  const PUBLIC_ORIGIN =
+    (window.AI_BIRZHA && window.AI_BIRZHA.PUBLIC_ORIGIN)
+      ? window.AI_BIRZHA.PUBLIC_ORIGIN.replace(/\/$/, "")
+      : window.location.origin;
+
+  const AUTH_PATH = (window.AI_BIRZHA && window.AI_BIRZHA.AUTH_PATH) ? window.AI_BIRZHA.AUTH_PATH : "/auth";
+  const STORAGE_KEY = "AI_BIRZHA_AFTER_AUTH";
+
+  function safeRedirect(raw){
+    if(!raw) return "/add";
+    try{ raw = decodeURIComponent(raw); }catch(e){}
+    if(raw.startsWith("/")) return raw;
+
+    if(raw.startsWith("http://") || raw.startsWith("https://")){
+      try{
+        const u = new URL(raw);
+        if(u.origin === PUBLIC_ORIGIN) return u.pathname + u.search + u.hash;
+      }catch(e){}
+    }
+    return "/add";
+  }
+
+  // Берём redirect из URL и сохраняем
+  const qs = new URLSearchParams(window.location.search);
+  const incomingRedirect = qs.get("redirect") || qs.get("next") || "";
+  if(incomingRedirect){
+    localStorage.setItem(STORAGE_KEY, safeRedirect(incomingRedirect));
+  } else {
+    if(!localStorage.getItem(STORAGE_KEY)) localStorage.setItem(STORAGE_KEY, "/add");
+  }
+
+  async function renderState(){
+    const { data } = await sb.auth.getSession();
+    const email = data?.session?.user?.email;
+    state.innerHTML = email
+      ? ("Вы вошли как: <b>" + email + "</b>")
+      : "Вы не авторизованы.";
+  }
+
+  async function redirectIfAuthed(){
+    const { data } = await sb.auth.getSession();
+    const user = data?.session?.user;
+    if(!user) return false;
+
+    const dest = safeRedirect(localStorage.getItem(STORAGE_KEY) || "/add");
+    localStorage.removeItem(STORAGE_KEY);
+
+    if(msg) msg.textContent = "Готово ✅ Перенаправляю...";
+    localStorage.setItem("AI_BIRZHA_LOGIN_FLASH", user.email || "");
+localStorage.setItem("AI_BIRZHA_LOGIN_FLASH_TS", String(Date.now()));
+    window.location.replace(dest);
+    return true;
+  }
+
+  async function handleAuthCallback(){
+    const u = new URL(window.location.href);
+
+    const code = u.searchParams.get("code");
+    const token_hash = u.searchParams.get("token_hash");
+    const type = u.searchParams.get("type"); // magiclink / recovery / invite и т.д.
+
+    const hasAccessTokenInHash = (window.location.hash || "").includes("access_token=");
+
+    try{
+      // 1) PKCE flow (?code=...)
+      if(code){
+        await sb.auth.exchangeCodeForSession(window.location.href);
+      }
+
+      // 2) Magiclink flow (?token_hash=...&type=magiclink)
+      else if(token_hash && type){
+        await sb.auth.verifyOtp({ type, token_hash });
+      }
+
+      // 3) Implicit flow (#access_token=...&refresh_token=...)
+      else if(hasAccessTokenInHash){
+        // В supabase-js v2 это обычно есть:
+        if(sb.auth.getSessionFromUrl){
+          await sb.auth.getSessionFromUrl({ storeSession: true });
+        } else {
+          // запасной вариант: парсим hash вручную
+          const hash = new URLSearchParams((window.location.hash || "").replace(/^#/, ""));
+          const access_token = hash.get("access_token");
+          const refresh_token = hash.get("refresh_token");
+          if(access_token && refresh_token){
+            await sb.auth.setSession({ access_token, refresh_token });
+          }
+        }
+      }
+
+      // чистим URL от auth-параметров (чтобы не повторялось)
+      if(code) u.searchParams.delete("code");
+      if(u.searchParams.get("token_hash")) u.searchParams.delete("token_hash");
+      if(u.searchParams.get("type")) u.searchParams.delete("type");
+      if(u.searchParams.get("next")) u.searchParams.delete("next");
+      // redirect можно оставить, но обычно лучше убрать:
+      // u.searchParams.delete("redirect");
+
+      const cleaned = u.pathname + (u.search ? u.search : "");
+      window.history.replaceState({}, "", cleaned);
+      if(window.location.hash) window.location.hash = "";
+
+    }catch(e){
+      // если вдруг обмен/верификация не прошли — покажем ошибку
+      if(msg) msg.textContent = "Ошибка авторизации: " + (e?.message || e);
+    }
+  }
+
+  // Обработка перехода по ссылке из письма
+  await handleAuthCallback();
+
+  // Рендер
+  await renderState();
+
+  // Если уже авторизован — сразу уводим на /add
+  await redirectIfAuthed();
+
+  // Отправка magic-link
+  document.getElementById('authForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.textContent = "Отправляю ссылку...";
+
+    const email = document.getElementById('authEmail').value.trim();
+    const dest = safeRedirect(localStorage.getItem(STORAGE_KEY) || "/add");
+
+    // важно: редиректим обратно на /auth, чтобы поймать токены и перекинуть на /add
+    const emailRedirectTo = PUBLIC_ORIGIN + AUTH_PATH + "?redirect=" + encodeURIComponent(dest);
+
+    const { error } = await sb.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo }
+    });
+
+    msg.textContent = error
+      ? ("Ошибка: " + error.message)
+      : ("Ссылка отправлена ✅ Открой письмо и перейди по ссылке.");
+  });
+
+  // Выход
+  logoutBtn.addEventListener('click', async () => {
+    await sb.auth.signOut();
+    await renderState();
+  });
+
+  // На всякий случай слушаем смену статуса
+  sb.auth.onAuthStateChange(async () => {
+    await renderState();
+    await redirectIfAuthed();
+  });
+});
+</script> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords-->

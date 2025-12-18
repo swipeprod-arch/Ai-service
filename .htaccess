@@ -1,0 +1,16 @@
+RewriteEngine On
+RewriteBase /
+
+# Убираем .html из URL
+RewriteCond %{THE_REQUEST} /([^.]+)\.html [NC]
+RewriteRule ^ /%1 [NC,L,R]
+
+# Если запрос не файл и не папка, пробуем добавить .html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.*)$ $1.html [L]
+
+# Редирект с index.html на /
+RewriteCond %{THE_REQUEST} ^.*/index\.html 
+RewriteRule ^(.*)index.html$ /$1 [R=301,L]
