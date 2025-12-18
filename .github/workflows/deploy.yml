@@ -20,10 +20,11 @@ jobs:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: /
+        server-dir: ${{ secrets.FTP_PATH }}
         exclude: |
           **/.git*
           **/.git*/**
           **/node_modules/**
           .github/
+          README.md
 
