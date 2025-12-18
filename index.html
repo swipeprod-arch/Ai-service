@@ -1493,21 +1493,59 @@ window.addEventListener('DOMContentLoaded', async function () {
   const state = document.getElementById('authState');
   const logoutBtn = document.getElementById('logoutBtn');
 
-  // если пришли по magic-link с code=
+  // ========== ОБРАБОТКА АВТОРИЗАЦИИ ИЗ EMAIL ==========
   const u = new URL(location.href);
-  // Обработка кода авторизации из email (если есть)
-  if (u.searchParams.get('code')) {
-    try { 
-      await sb.auth.exchangeCodeForSession(location.href);
-      // После успешной авторизации перенаправляем на /add
+  const code = u.searchParams.get('code');
+  const token_hash = u.searchParams.get('token_hash');
+  const type = u.searchParams.get('type');
+  const hasAccessTokenInHash = (location.hash || '').includes('access_token=');
+
+  // Если есть auth-параметры, обрабатываем авторизацию
+  if (code || token_hash || hasAccessTokenInHash) {
+    try {
+      // 1) PKCE flow (OAuth с code)
+      if (code) {
+        await sb.auth.exchangeCodeForSession(location.href);
+      }
+      // 2) Magiclink flow (token_hash + type)
+      else if (token_hash && type) {
+        await sb.auth.verifyOtp({ type, token_hash });
+      }
+      // 3) Implicit flow (токены в hash)
+      else if (hasAccessTokenInHash) {
+        if (sb.auth.getSessionFromUrl) {
+          await sb.auth.getSessionFromUrl({ storeSession: true });
+        } else {
+          // Запасной вариант: парсим hash вручную
+          const hash = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+          const access_token = hash.get('access_token');
+          const refresh_token = hash.get('refresh_token');
+          if (access_token && refresh_token) {
+            await sb.auth.setSession({ access_token, refresh_token });
+          }
+        }
+      }
+
+      // Успешная авторизация - редиректим
       const redirect = u.searchParams.get('redirect') || window.AI_BIRZHA.ADD_PATH;
+      
+      // Чистим URL от auth-параметров
+      if (code) u.searchParams.delete('code');
+      if (token_hash) u.searchParams.delete('token_hash');
+      if (type) u.searchParams.delete('type');
+      u.searchParams.delete('redirect');
+      
+      // Редиректим на целевую страницу
+      console.log('✅ Авторизация успешна! Редирект на:', redirect);
       location.href = redirect;
       return;
     }
     catch(e) {
-      console.error('Ошибка авторизации:', e);
+      console.error('❌ Ошибка авторизации:', e);
+      if (msg) msg.textContent = 'Ошибка авторизации: ' + (e?.message || e);
     }
   }
+  // ========== КОНЕЦ ОБРАБОТКИ АВТОРИЗАЦИИ ==========
 
   async function renderState(){
     const { data } = await sb.auth.getSession();
