@@ -474,9 +474,17 @@ window.addEventListener('DOMContentLoaded', function () {
     btn.classList.add("ai-cta", "btn", "primary");
     btn.textContent = (mode === "cabinet") ? "Личный кабинет" : "Разместить портфолио";
 
-    // жёстко перехватываем клик, чтобы НЕ открывалась старая /apply
-    btn.addEventListener("click", function(e){
+    // Удаляем старый обработчик, если был
+    if(btn._aiClickHandler) {
+      btn.removeEventListener("click", btn._aiClickHandler, true);
+    }
+
+    // Создаём новый обработчик
+    btn._aiClickHandler = function(e){
       e.preventDefault();
+      e.stopPropagation();
+      
+      console.log('🔘 Клик на кнопку:', mode, 'Auth:', isAuthenticated);
       
       // Если НЕ авторизован → открываем модальное окно
       if(!isAuthenticated){
@@ -489,9 +497,13 @@ window.addEventListener('DOMContentLoaded', function () {
         }
       } else {
         // Авторизован → идём на /add
+        console.log('🚀 Редирект на:', ADD_PATH);
         location.href = ADD_PATH;
       }
-    }, true);
+    };
+    
+    // Добавляем обработчик с capture=true чтобы перехватить раньше всех
+    btn.addEventListener("click", btn._aiClickHandler, true);
   }
 
   async function waitSupabase(){
