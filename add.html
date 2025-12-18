@@ -4,11 +4,44 @@ window.AI_BIRZHA = {
   SUPABASE_URL: "https://orxzpefskbkcyuoobkol.supabase.co",
   SUPABASE_ANON_KEY: "sb_publishable_fj9X3SDLjXiL0v3pajtMwA_fTYhN3us",
 
+  // ====== НАСТРОЙКИ URL (ИЗМЕНИ ЗДЕСЬ) ======
+  // Локальный URL (для разработки)
+  LOCAL_URL: "http://project13172919-.test",
+  
+  // Продакшн URL (для публичного сайта)
+  PRODUCTION_URL: "https://e45318ft.beget.tech",  // ← твой домен на Beget
+  
+  // Автоопределение окружения или ручная настройка
+  // Варианты: "auto" (авто), "local" (всегда локальный), "production" (всегда продакшн)
+  ENVIRONMENT: "auto",
+  // =========================================
+
   AUTH_PATH: "/auth",
   APPLY_PATH: "/apply",
   ADD_PATH: "/add",
   EXPERTS_PATH: "/experts"
 };
+
+// Автоматическое определение PUBLIC_ORIGIN
+(function() {
+  const config = window.AI_BIRZHA;
+  
+  if (config.ENVIRONMENT === "auto") {
+    // Автоопределение: если в URL есть localhost, .test, 127.0.0.1 → локальный
+    const isLocal = /localhost|\.test|127\.0\.0\.1/.test(location.hostname);
+    config.PUBLIC_ORIGIN = isLocal ? config.LOCAL_URL : config.PRODUCTION_URL;
+  } else if (config.ENVIRONMENT === "local") {
+    config.PUBLIC_ORIGIN = config.LOCAL_URL;
+  } else if (config.ENVIRONMENT === "production") {
+    config.PUBLIC_ORIGIN = config.PRODUCTION_URL;
+  } else {
+    // Fallback: используем текущий origin
+    config.PUBLIC_ORIGIN = location.origin;
+  }
+  
+  console.log('🌍 Окружение:', config.ENVIRONMENT === "auto" ? (config.PUBLIC_ORIGIN === config.LOCAL_URL ? "LOCAL" : "PRODUCTION") : config.ENVIRONMENT.toUpperCase());
+  console.log('🔗 PUBLIC_ORIGIN:', config.PUBLIC_ORIGIN);
+})();
 </script> <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> <script>
 (function initSupabase(){
   function tryInit(){
