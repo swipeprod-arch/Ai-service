@@ -1909,4 +1909,20 @@ window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.
 })();
 </script>
 
+<!-- Фикс текста главного заголовка (H1) -->
+<script>
+(function () {
+  function setHeroTitle(){
+    const h1 = document.querySelector('#rec1689407041 .hero .h-title');
+    if(!h1) return;
+    h1.textContent = 'Каталог ИИ специалистов для вашего бизнеса';
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setHeroTitle);
+  else setHeroTitle();
+  // Подстраховка для Tilda (иногда дорисовывает позже)
+  setTimeout(setHeroTitle, 500);
+  setTimeout(setHeroTitle, 1500);
+})();
+</script>
+
 </body> </html>
