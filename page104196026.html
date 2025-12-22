@@ -1,4 +1,4 @@
-<!DOCTYPE html> <html> <head> <meta charset="utf-8" /> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!--metatextblock--> <title>card</title> <meta property="og:url" content="card" /> <meta property="og:title" content="card" /> <meta property="og:description" content="" /> <meta property="og:type" content="website" /> <link rel="canonical" href="card"> <!--/metatextblock--> <meta name="format-detection" content="telephone=no" /> <meta http-equiv="x-dns-prefetch-control" content="on"> <link rel="dns-prefetch" href="https://ws.tildacdn.com">  <link rel="shortcut icon" href="images/tildafavicon.ico" type="image/x-icon" /> <!-- Assets --> <script src="https://neo.tildacdn.com/js/tilda-fallback-1.0.min.js" async charset="utf-8"></script> <link rel="stylesheet" href="css/tilda-grid-3.0.min.css" type="text/css" media="all" onerror="this.loaderr='y';"/> <link rel="stylesheet" href="css/tilda-blocks-page104196026.min.css?t=1765896694" type="text/css" media="all" onerror="this.loaderr='y';" /> <link rel="stylesheet" type="text/css" href="css/custom.css?t=1766426000"> <link rel="stylesheet" href="css/fonts-tildasans.css" type="text/css" media="all" onerror="this.loaderr='y';" /> <script nomodule src="js/tilda-polyfill-1.0.min.js" charset="utf-8"></script> <script type="text/javascript">function t_onReady(func) {if(document.readyState!='loading') {func();} else {document.addEventListener('DOMContentLoaded',func);}}
+﻿<!DOCTYPE html> <html> <head> <meta charset="utf-8" /> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!--metatextblock--> <title>card</title> <meta property="og:url" content="card" /> <meta property="og:title" content="card" /> <meta property="og:description" content="" /> <meta property="og:type" content="website" /> <link rel="canonical" href="card"> <!--/metatextblock--> <meta name="format-detection" content="telephone=no" /> <meta http-equiv="x-dns-prefetch-control" content="on"> <link rel="dns-prefetch" href="https://ws.tildacdn.com">  <link rel="shortcut icon" href="images/tildafavicon.ico" type="image/x-icon" /> <!-- Assets --> <script src="https://neo.tildacdn.com/js/tilda-fallback-1.0.min.js" async charset="utf-8"></script> <link rel="stylesheet" href="css/tilda-grid-3.0.min.css" type="text/css" media="all" onerror="this.loaderr='y';"/> <link rel="stylesheet" href="css/tilda-blocks-page104196026.min.css?t=1765896694" type="text/css" media="all" onerror="this.loaderr='y';" /> <link rel="stylesheet" type="text/css" href="css/custom.css?t=1766426000"> <link rel="stylesheet" href="css/fonts-tildasans.css" type="text/css" media="all" onerror="this.loaderr='y';" /> <script nomodule src="js/tilda-polyfill-1.0.min.js" charset="utf-8"></script> <script type="text/javascript">function t_onReady(func) {if(document.readyState!='loading') {func();} else {document.addEventListener('DOMContentLoaded',func);}}
 function t_onFuncLoad(funcName,okFunc,time) {if(typeof window[funcName]==='function') {okFunc();} else {setTimeout(function() {t_onFuncLoad(funcName,okFunc,time);},(time||100));}}</script> <script src="js/jquery-1.10.2.min.js" charset="utf-8" onerror="this.loaderr='y';"></script> <script src="js/tilda-scripts-3.0.min.js" charset="utf-8" defer onerror="this.loaderr='y';"></script> <script src="js/tilda-blocks-page104196026.min.js?t=1765896694" charset="utf-8" async onerror="this.loaderr='y';"></script> <script src="js/lazyload-1.3.min.export.js" charset="utf-8" async onerror="this.loaderr='y';"></script> <script src="js/tilda-events-1.0.min.js" charset="utf-8" async onerror="this.loaderr='y';"></script> <!-- nominify begin --><script>
 window.AI_BIRZHA = {
   SUPABASE_URL: "https://orxzpefskbkcyuoobkol.supabase.co",
@@ -1958,6 +1958,38 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
   window.addEventListener('resize', apply);
   setTimeout(apply, 200);
   setTimeout(apply, 900);
+})();
+</script><script id="ai-gallery-menu">
+(function(){
+  function addGalleryMenu(){
+    // РС‰РµРј nav-links
+    const navLinks = document.querySelector('.nav-links');
+    if(!navLinks) return;
+    
+    // РџСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё СѓР¶Рµ СЃСЃС‹Р»РєР° РЅР° РіР°Р»РµСЂРµСЋ
+    if(navLinks.querySelector('a[href*="gallery"]')) return;
+    
+    // РС‰РµРј СЃСЃС‹Р»РєСѓ РЅР° РёСЃРїРѕР»РЅРёС‚РµР»РµР№
+    const expertsLink = navLinks.querySelector('a[href*="experts"]');
+    if(!expertsLink) return;
+    
+    // РЎРѕР·РґР°РµРј СЃСЃС‹Р»РєСѓ РЅР° РіР°Р»РµСЂРµСЋ
+    const galleryLink = document.createElement('a');
+    galleryLink.href = '/gallery';
+    galleryLink.textContent = 'Р“Р°Р»РµСЂРµСЏ СЂР°Р±РѕС‚';
+    
+    // Р’СЃС‚Р°РІР»СЏРµРј РїРѕСЃР»Рµ РёСЃРїРѕР»РЅРёС‚РµР»РµР№
+    expertsLink.insertAdjacentElement('afterend', galleryLink);
+  }
+  
+  if(document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addGalleryMenu);
+  } else {
+    addGalleryMenu();
+  }
+  // РџРѕРІС‚РѕСЂСЏРµРј РЅР° СЃР»СѓС‡Р°Р№ РґРёРЅР°РјРёС‡РµСЃРєРѕР№ Р·Р°РіСЂСѓР·РєРё
+  setTimeout(addGalleryMenu, 500);
+  setTimeout(addGalleryMenu, 1500);
 })();
 </script></head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="104196026" data-tilda-page-alias="card" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-page-headcode="yes" data-tilda-project-country="RU"> <div id="rec1695392371" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!-- ====== /card • страница пользователя (ONE-PASTE) ====== --> <header class="nav"> <div class="container nav-inner"> <a class="brand" href="/"> <span class="logo" aria-hidden="true"></span> <span>AI-Биржа (MVP)</span> </a> <nav class="nav-links" aria-label="Навигация"> <a href="/services">Услуги</a> <a href="/experts">Исполнители</a> <a href="/cases">Кейсы</a> <a href="/how">Как это работает</a> <a href="/faq">FAQ</a> </nav> <div class="nav-cta"> <a class="btn" href="/add">Разместить услугу</a> <a class="btn primary" href="/apply">Оставить заявку</a> </div> </div> </header> <main> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Карточка исполнителя</div> <h1 class="h-title" style="font-size:34px" id="pName">Загрузка...</h1> <p class="h-sub" id="pCat"></p> <div class="expert-cover" id="pCover"> <div class="ph">PREVIEW</div> </div> <div class="expert-short"> <div class="expert-short-label">Краткая информация</div> <div class="expert-short-text" id="pShort">—</div> </div> <hr class="sep"> <div id="pDesc" class="section-sub" style="margin:0 0 10px">—</div> <div class="tagrow" id="pTags"></div> <hr class="sep"> <!-- ✅ ПРАВИЛЬНЫЙ ПОРЯДОК КНОПОК: Сайт → Instagram → Telegram → Назад --> <!-- ✅ И РАСПОЛОЖЕНИЕ: прямо перед блоком "Галерея" --> <div class="expert-actions ai-card-actions" style="margin:14px 0 18px"> <a class="btn" id="pSite" href="#" target="_blank" rel="noopener" style="display:none">Сайт</a> <a class="btn" id="pIg" href="#" target="_blank" rel="noopener" style="display:none">Instagram</a> <a class="btn primary" id="pTg" href="#" target="_blank" rel="noopener" style="display:none">
             Написать сообщение в Telegram

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
@@ -110,7 +110,39 @@
       color: #333;
     }
   </style>
-</head>
+<script id="ai-gallery-menu">
+(function(){
+  function addGalleryMenu(){
+    // РС‰РµРј nav-links
+    const navLinks = document.querySelector('.nav-links');
+    if(!navLinks) return;
+    
+    // РџСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё СѓР¶Рµ СЃСЃС‹Р»РєР° РЅР° РіР°Р»РµСЂРµСЋ
+    if(navLinks.querySelector('a[href*="gallery"]')) return;
+    
+    // РС‰РµРј СЃСЃС‹Р»РєСѓ РЅР° РёСЃРїРѕР»РЅРёС‚РµР»РµР№
+    const expertsLink = navLinks.querySelector('a[href*="experts"]');
+    if(!expertsLink) return;
+    
+    // РЎРѕР·РґР°РµРј СЃСЃС‹Р»РєСѓ РЅР° РіР°Р»РµСЂРµСЋ
+    const galleryLink = document.createElement('a');
+    galleryLink.href = '/gallery';
+    galleryLink.textContent = 'Р“Р°Р»РµСЂРµСЏ СЂР°Р±РѕС‚';
+    
+    // Р’СЃС‚Р°РІР»СЏРµРј РїРѕСЃР»Рµ РёСЃРїРѕР»РЅРёС‚РµР»РµР№
+    expertsLink.insertAdjacentElement('afterend', galleryLink);
+  }
+  
+  if(document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addGalleryMenu);
+  } else {
+    addGalleryMenu();
+  }
+  // РџРѕРІС‚РѕСЂСЏРµРј РЅР° СЃР»СѓС‡Р°Р№ РґРёРЅР°РјРёС‡РµСЃРєРѕР№ Р·Р°РіСЂСѓР·РєРё
+  setTimeout(addGalleryMenu, 500);
+  setTimeout(addGalleryMenu, 1500);
+})();
+</script></head>
 <body>
   <div class="container">
     <h1>🎲 Генератор данных</h1>
