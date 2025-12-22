@@ -1516,7 +1516,6 @@ window.addEventListener('DOMContentLoaded', async function () {
   const sb = window.AI_BIRZHA.sb;
   const msg = document.getElementById('authMsg');
   const state = document.getElementById('authState');
-  const logoutBtn = document.getElementById('logoutBtn');
 
   // ========== ОБРАБОТКА АВТОРИЗАЦИИ ИЗ EMAIL ==========
   const u = new URL(location.href);
@@ -1577,7 +1576,7 @@ window.addEventListener('DOMContentLoaded', async function () {
     const email = data?.session?.user?.email;
     state.textContent = email ? ("Вы вошли как: " + email) : "Вы не авторизованы.";
     
-    // Если авторизован, скрываем форму входа и показываем кнопку "Создать карточку"
+    // Если авторизован, скрываем форму входа (в модалке не показываем доп.кнопки)
     const authForm = document.getElementById('authForm');
     if (email && authForm) {
       authForm.style.display = 'none';
@@ -1627,11 +1626,6 @@ window.addEventListener('DOMContentLoaded', async function () {
     }
   });
 
-  logoutBtn.addEventListener('click', async () => {
-    await sb.auth.signOut();
-    await renderState();
-  });
-
   await renderState();
 });
 </script> <footer class="footer"> <div class="container foot-grid"> <div> <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"> <span class="logo" style="width:28px;height:28px;border-radius:10px"></span> <strong>AI-Биржа (информативный MVP)</strong> </div> <div>Каталог AI-специалистов. Без оплат на сайте. Договорённости напрямую.</div> <div class="small" style="margin-top:10px">© 2025 • Черновик для сборки в Tilda</div> </div> <div style="display:grid;gap:8px;justify-items:start"> <a href="/privacy.html">Политика конфиденциальности</a> <a href="/terms.html">Условия использования</a> <a href="/apply.html">Оставить заявку</a> </div> </div> </footer>
@@ -1659,10 +1653,6 @@ window.addEventListener('DOMContentLoaded', async function () {
       </form> 
       <hr class="sep"> 
       <div class="small" id="authState"></div> 
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"> 
-        <a class="btn" href="/add">Создать карточку</a> 
-        <button class="btn" id="logoutBtn" type="button">Выйти</button> 
-      </div> 
     </div>
   </div>
 </div>

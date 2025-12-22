@@ -3,7 +3,7 @@ window.addEventListener('DOMContentLoaded', async function () {
   const sb = window.AI_BIRZHA.sb;
   const msg = document.getElementById('authMsg');
   const state = document.getElementById('authState');
-  const logoutBtn = document.getElementById('logoutBtn');
+  // (кнопку "Выйти" убрали из интерфейса — выход делается в личном кабинете)
 
   // если пришли по magic-link с code=
   const u = new URL(location.href);
@@ -29,11 +29,6 @@ window.addEventListener('DOMContentLoaded', async function () {
     });
 
     msg.textContent = error ? ("Ошибка: " + error.message) : "Ссылка отправлена на почту. Открой письмо и перейди по ссылке.";
-  });
-
-  logoutBtn.addEventListener('click', async () => {
-    await sb.auth.signOut();
-    await renderState();
   });
 
   await renderState();

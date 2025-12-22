@@ -1,8 +1,7 @@
-<!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="104134416" data-tilda-page-alias="auth" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1694348421" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Аккаунт</div> <h1 class="h-title" style="font-size:34px">Вход / регистрация</h1> <p class="h-sub">Вводишь email → получаешь ссылку. Пароль не нужен.</p> <form class="form" id="authForm"> <div class="field"> <label>Email</label> <input id="authEmail" type="email" placeholder="you@mail.com" required> </div> <button class="btn primary" type="submit">Отправить ссылку</button> <div class="small" id="authMsg" style="margin-top:8px"></div> </form> <hr class="sep"> <div class="small" id="authState"></div> <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"> <a class="btn" href="/add">Создать карточку</a> <a class="btn" href="/experts">В каталог</a> <button class="btn" id="logoutBtn" type="button">Выйти</button> </div> </div> </div> </section> <script>
+<!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="104134416" data-tilda-page-alias="auth" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1694348421" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Аккаунт</div> <h1 class="h-title" style="font-size:34px">Вход / регистрация</h1> <p class="h-sub">Вводишь email → получаешь ссылку. Пароль не нужен.</p> <form class="form" id="authForm"> <div class="field"> <label>Email</label> <input id="authEmail" type="email" placeholder="you@mail.com" required> </div> <button class="btn primary" type="submit">Отправить ссылку</button> <div class="small" id="authMsg" style="margin-top:8px"></div> </form> <hr class="sep"> <div class="small" id="authState"></div> <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"> <a class="btn" href="/experts">В каталог</a> </div> </div> </div> </section> <script>
 window.addEventListener('DOMContentLoaded', async function () {
   const msg = document.getElementById('authMsg');
   const state = document.getElementById('authState');
-  const logoutBtn = document.getElementById('logoutBtn');
 
   async function waitSb(){
     for(let i=0;i<40;i++){
@@ -156,11 +155,7 @@ localStorage.setItem("AI_BIRZHA_LOGIN_FLASH_TS", String(Date.now()));
       : ("Ссылка отправлена ✅ Открой письмо и перейди по ссылке.");
   });
 
-  // Выход
-  logoutBtn.addEventListener('click', async () => {
-    await sb.auth.signOut();
-    await renderState();
-  });
+  // (кнопку "Выйти" убрали из интерфейса — выход делается в личном кабинете)
 
   // На всякий случай слушаем смену статуса
   sb.auth.onAuthStateChange(async () => {
