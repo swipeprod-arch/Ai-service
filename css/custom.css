@@ -48,3 +48,29 @@
   display:none !important;
 }
 
+/* Мобильный хедер: текст рядом с логотипом можно скрыть, логотип остаётся кликабельным */
+@media (max-width: 560px){
+  /* без привязки к #allrecords: браузер может “переставлять” вложенные <html>/<head> из Tilda-экспорта */
+  .nav a.brand{
+    flex: 0 0 auto !important;
+    min-width: auto !important;
+    padding: 6px 0 !important;
+  }
+  .nav a.brand span:not(.logo){
+    display:none !important;
+  }
+  /* ВАЖНО: перебиваем старое правило с #allrecords и !important (иначе оно сильнее) */
+  #allrecords .nav .brand span:last-child{
+    display:none !important;
+  }
+  /* запасной вариант, если текст вдруг не в span */
+  .nav a.brand{
+    font-size: 0 !important;
+  }
+  .nav a.brand .logo{
+    width: 34px !important;
+    height: 34px !important;
+    flex: 0 0 auto !important;
+  }
+}
+

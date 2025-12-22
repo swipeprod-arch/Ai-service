@@ -1,1 +1,55 @@
-<!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="103812316" data-tilda-page-alias="terms" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1689502451" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!doctype html> <html lang="ru"> <head> <meta charset="utf-8"/> <meta name="viewport" content="width=device-width, initial-scale=1"/> <title>Условия использования — AI-Биржа (MVP)</title> <meta name="description" content="Каталог AI-услуг: видео, дизайн, боты, WB/Ozon, сайты."/> <link rel="stylesheet" href="/assets/styles.css"/> </head> <body> <header class="nav"> <div class="container nav-inner"> <a class="brand" href="/index.html"> <span class="logo" aria-hidden="true"></span> <span>AI-Биржа (MVP)</span> </a> <nav class="nav-links" aria-label="Навигация"> <a href="/services.html">Услуги</a> <a href="/experts.html">Исполнители</a> <a href="/cases.html">Кейсы</a> <a href="/how.html">Как это работает</a> <a href="/faq.html">FAQ</a> </nav> <div class="nav-cta"> <a class="btn" href="/add.html">Разместить услугу</a> <a class="btn primary" href="/apply.html">Оставить заявку</a> </div> </div> </header> <main> <section class="section" style="padding-top:34px"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Юридическое</div> <h1 class="h-title" style="font-size:34px">Условия использования (черновик)</h1> <div style="color:var(--muted);line-height:1.7"> <p>Этот документ — минимальный черновик для MVP. Перед запуском в продакшн лучше согласовать с юристом.</p> <ul class="list"> <li>Сайт предоставляет информацию об исполнителях и их услугах.</li> <li>Сделки и расчёты происходят напрямую между клиентом и исполнителем.</li> <li>Администрация сайта не является стороной договора между клиентом и исполнителем.</li> <li>Портфолио и материалы размещаются исполнителями; при жалобах контент может быть скрыт.</li> </ul> </div> </div> </div> </section> </main> <footer class="footer"> <div class="container foot-grid"> <div> <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"> <span class="logo" style="width:28px;height:28px;border-radius:10px"></span> <strong>AI-Биржа (информативный MVP)</strong> </div> <div>Каталог AI-специалистов. Без оплат на сайте. Договорённости напрямую.</div> <div class="small" style="margin-top:10px">© 2025 • Черновик для сборки в Tilda</div> </div> <div style="display:grid;gap:8px;justify-items:start"> <a href="/privacy.html">Политика конфиденциальности</a> <a href="/terms.html">Условия использования</a> <a href="/apply.html">Оставить заявку</a> </div> </div> </footer> <script src="/assets/app.js"></script> </body> </html> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords-->
+<!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="103812316" data-tilda-page-alias="terms" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1689502451" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!doctype html> <html lang="ru"> <head> <meta charset="utf-8"/> <meta name="viewport" content="width=device-width, initial-scale=1"/> <title>Условия использования — AI-Биржа (MVP)</title> <meta name="description" content="Каталог AI-услуг: видео, дизайн, боты, WB/Ozon, сайты."/> <link rel="stylesheet" href="/assets/styles.css"/> <style id="ai-logo-css">
+  /* ЛОГО: /images/ai-logo.png + запасной градиент */
+  .nav a.brand{
+    display:flex !important;
+    align-items:center !important;
+    gap:10px !important;
+    text-decoration:none !important;
+  }
+  .nav a.brand .logo{
+    width: 36px !important;
+    height: 36px !important;
+    flex: 0 0 auto !important;
+    border-radius: 999px !important;
+    background:
+      url("/images/ai-logo.png") center / cover no-repeat,
+      linear-gradient(135deg, #1E78FF 0%, #00B7FF 100%) !important;
+  }
+
+  /* Мобильный хедер: логотип всегда виден, название можно скрыть */
+  @media (max-width: 560px){
+    .nav a.brand{ flex: 0 0 auto !important; min-width: auto !important; }
+    /* скрываем любой текстовый span внутри бренда (оставляем только .logo) */
+    .nav a.brand span:not(.logo){
+      display:none !important;
+    }
+    .nav a.brand .logo{
+      width: 34px !important;
+      height: 34px !important;
+    }
+    .nav .nav-cta{
+      flex-wrap: wrap !important;
+      justify-content: flex-end;
+    }
+  }
+</style><script id="ai-mobile-brand-hide">
+(function(){
+  function apply(){
+    try{
+      var isMobile = window.matchMedia && window.matchMedia('(max-width: 560px)').matches;
+      var nodes = document.querySelectorAll('.nav a.brand span:not(.logo)');
+      nodes.forEach(function(sp){
+        try{
+          if(isMobile) sp.style.setProperty('display','none','important');
+          else sp.style.removeProperty('display');
+        }catch(e){}
+      });
+    }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
+  else apply();
+  window.addEventListener('resize', apply);
+  setTimeout(apply, 200);
+  setTimeout(apply, 900);
+})();
+</script></head> <body> <header class="nav"> <div class="container nav-inner"> <a class="brand" href="/index.html"> <span class="logo" aria-hidden="true"></span> <span>AI-Биржа (MVP)</span> </a> <nav class="nav-links" aria-label="Навигация"> <a href="/services.html">Услуги</a> <a href="/experts.html">Исполнители</a> <a href="/cases.html">Кейсы</a> <a href="/how.html">Как это работает</a> <a href="/faq.html">FAQ</a> </nav> <div class="nav-cta"> <a class="btn" href="/add.html">Разместить услугу</a> <a class="btn primary" href="/apply.html">Оставить заявку</a> </div> </div> </header> <main> <section class="section" style="padding-top:34px"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Юридическое</div> <h1 class="h-title" style="font-size:34px">Условия использования (черновик)</h1> <div style="color:var(--muted);line-height:1.7"> <p>Этот документ — минимальный черновик для MVP. Перед запуском в продакшн лучше согласовать с юристом.</p> <ul class="list"> <li>Сайт предоставляет информацию об исполнителях и их услугах.</li> <li>Сделки и расчёты происходят напрямую между клиентом и исполнителем.</li> <li>Администрация сайта не является стороной договора между клиентом и исполнителем.</li> <li>Портфолио и материалы размещаются исполнителями; при жалобах контент может быть скрыт.</li> </ul> </div> </div> </div> </section> </main> <footer class="footer"> <div class="container foot-grid"> <div> <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"> <span class="logo" style="width:28px;height:28px;border-radius:10px"></span> <strong>AI-Биржа (информативный MVP)</strong> </div> <div>Каталог AI-специалистов. Без оплат на сайте. Договорённости напрямую.</div> <div class="small" style="margin-top:10px">© 2025 • Черновик для сборки в Tilda</div> </div> <div style="display:grid;gap:8px;justify-items:start"> <a href="/privacy.html">Политика конфиденциальности</a> <a href="/terms.html">Условия использования</a> <a href="/apply.html">Оставить заявку</a> </div> </div> </footer> <script src="/assets/app.js"></script> </body> </html> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords-->

@@ -1752,6 +1752,60 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
   setTimeout(rm, 50);
   setTimeout(rm, 250);
 })();
+</script><style id="ai-logo-css">
+  /* ЛОГО: /images/ai-logo.png + запасной градиент */
+  .nav a.brand{
+    display:flex !important;
+    align-items:center !important;
+    gap:10px !important;
+    text-decoration:none !important;
+  }
+  .nav a.brand .logo{
+    width: 36px !important;
+    height: 36px !important;
+    flex: 0 0 auto !important;
+    border-radius: 999px !important;
+    background:
+      url("/images/ai-logo.png") center / cover no-repeat,
+      linear-gradient(135deg, #1E78FF 0%, #00B7FF 100%) !important;
+  }
+
+  /* Мобильный хедер: логотип всегда виден, название можно скрыть */
+  @media (max-width: 560px){
+    .nav a.brand{ flex: 0 0 auto !important; min-width: auto !important; }
+    /* скрываем любой текстовый span внутри бренда (оставляем только .logo) */
+    .nav a.brand span:not(.logo){
+      display:none !important;
+    }
+    .nav a.brand .logo{
+      width: 34px !important;
+      height: 34px !important;
+    }
+    .nav .nav-cta{
+      flex-wrap: wrap !important;
+      justify-content: flex-end;
+    }
+  }
+</style><script id="ai-mobile-brand-hide">
+(function(){
+  function apply(){
+    try{
+      var isMobile = window.matchMedia && window.matchMedia('(max-width: 560px)').matches;
+      var nodes = document.querySelectorAll('.nav a.brand span:not(.logo)');
+      nodes.forEach(function(sp){
+        try{
+          if(isMobile) sp.style.setProperty('display','none','important');
+          else sp.style.removeProperty('display');
+        }catch(e){}
+      });
+    }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
+  else apply();
+  window.addEventListener('resize', apply);
+  setTimeout(apply, 200);
+  setTimeout(apply, 900);
+})();
 </script></head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="103811936" data-tilda-page-alias="add" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1689498121" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!-- ====== /add • кабинет исполнителя (NO MODERATION) ====== --> <script>
 (async function(){
   async function waitSb(){

@@ -1,1 +1,35 @@
-<html><head><meta name="robots" content="noindex"><title>Tilda</title></head><body style="background-color:#eee;"><table style="width:100%; height:100%;"><tr><td style="vertical-align: middle; text-align: center;"><a href="https://tilda.cc"><img src="//tilda.ws/img/logo404.png" border="0" alt="Tilda" /></a></td></tr></table></body></html>
+<html><head><meta name="robots" content="noindex"><title>Tilda</title><style id="ai-logo-css">
+  /* ЛОГО: /images/ai-logo.png + запасной градиент */
+  .nav a.brand{
+    display:flex !important;
+    align-items:center !important;
+    gap:10px !important;
+    text-decoration:none !important;
+  }
+  .nav a.brand .logo{
+    width: 36px !important;
+    height: 36px !important;
+    flex: 0 0 auto !important;
+    border-radius: 999px !important;
+    background:
+      url("/images/ai-logo.png") center / cover no-repeat,
+      linear-gradient(135deg, #1E78FF 0%, #00B7FF 100%) !important;
+  }
+
+  /* Мобильный хедер: логотип всегда виден, название можно скрыть */
+  @media (max-width: 560px){
+    .nav a.brand{ flex: 0 0 auto !important; min-width: auto !important; }
+    /* скрываем любой текстовый span внутри бренда (оставляем только .logo) */
+    .nav a.brand span:not(.logo){
+      display:none !important;
+    }
+    .nav a.brand .logo{
+      width: 34px !important;
+      height: 34px !important;
+    }
+    .nav .nav-cta{
+      flex-wrap: wrap !important;
+      justify-content: flex-end;
+    }
+  }
+</style></head><body style="background-color:#eee;"><table style="width:100%; height:100%;"><tr><td style="vertical-align: middle; text-align: center;"><a href="https://tilda.cc"><img src="//tilda.ws/img/logo404.png" border="0" alt="Tilda" /></a></td></tr></table></body></html>

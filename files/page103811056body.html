@@ -466,3 +466,59 @@ window.addEventListener('DOMContentLoaded', function () {
   });
 })();
 </script> <!-- ====== END PAGE ====== --> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords-->
+<style id="ai-logo-css">
+  /* ЛОГО: /images/ai-logo.png + запасной градиент */
+  .nav a.brand{
+    display:flex !important;
+    align-items:center !important;
+    gap:10px !important;
+    text-decoration:none !important;
+  }
+  .nav a.brand .logo{
+    width: 36px !important;
+    height: 36px !important;
+    flex: 0 0 auto !important;
+    border-radius: 999px !important;
+    background:
+      url("/images/ai-logo.png") center / cover no-repeat,
+      linear-gradient(135deg, #1E78FF 0%, #00B7FF 100%) !important;
+  }
+
+  /* Мобильный хедер: логотип всегда виден, название можно скрыть */
+  @media (max-width: 560px){
+    .nav a.brand{ flex: 0 0 auto !important; min-width: auto !important; }
+    /* скрываем любой текстовый span внутри бренда (оставляем только .logo) */
+    .nav a.brand span:not(.logo){
+      display:none !important;
+    }
+    .nav a.brand .logo{
+      width: 34px !important;
+      height: 34px !important;
+    }
+    .nav .nav-cta{
+      flex-wrap: wrap !important;
+      justify-content: flex-end;
+    }
+  }
+</style>
+<script id="ai-mobile-brand-hide">
+(function(){
+  function apply(){
+    try{
+      var isMobile = window.matchMedia && window.matchMedia('(max-width: 560px)').matches;
+      var nodes = document.querySelectorAll('.nav a.brand span:not(.logo)');
+      nodes.forEach(function(sp){
+        try{
+          if(isMobile) sp.style.setProperty('display','none','important');
+          else sp.style.removeProperty('display');
+        }catch(e){}
+      });
+    }catch(e){}
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
+  else apply();
+  window.addEventListener('resize', apply);
+  setTimeout(apply, 200);
+  setTimeout(apply, 900);
+})();
+</script>

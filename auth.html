@@ -1461,7 +1461,41 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
   setTimeout(rm, 50);
   setTimeout(rm, 250);
 })();
-</script></head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="104134416" data-tilda-page-alias="auth" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1694348421" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Аккаунт</div> <h1 class="h-title" style="font-size:34px">Вход / регистрация</h1> <p class="h-sub">Введи email и пароль для входа или регистрации.</p> <form class="form" id="authForm"> <div class="field"> <label>Email</label> <input id="authEmail" type="email" placeholder="you@mail.com" required> </div> <div class="field"> <label>Пароль</label> <input id="authPassword" type="password" placeholder="Минимум 6 символов" required> </div> <div style="display:flex;gap:10px;flex-wrap:wrap"> <button class="btn primary" type="submit">Войти</button> <button class="btn" id="registerBtn" type="button">Зарегистрироваться</button> </div> <div class="small" id="authMsg" style="margin-top:8px"></div> </form> <hr class="sep"> <div class="small" id="authState"></div> <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"> <a class="btn" href="/experts">В каталог</a> </div> </div> </div> </section> <script>
+</script><style id="ai-logo-css">
+  /* ЛОГО: /images/ai-logo.png + запасной градиент */
+  .nav a.brand{
+    display:flex !important;
+    align-items:center !important;
+    gap:10px !important;
+    text-decoration:none !important;
+  }
+  .nav a.brand .logo{
+    width: 36px !important;
+    height: 36px !important;
+    flex: 0 0 auto !important;
+    border-radius: 999px !important;
+    background:
+      url("/images/ai-logo.png") center / cover no-repeat,
+      linear-gradient(135deg, #1E78FF 0%, #00B7FF 100%) !important;
+  }
+
+  /* Мобильный хедер: логотип всегда виден, название можно скрыть */
+  @media (max-width: 560px){
+    .nav a.brand{ flex: 0 0 auto !important; min-width: auto !important; }
+    /* скрываем любой текстовый span внутри бренда (оставляем только .logo) */
+    .nav a.brand span:not(.logo){
+      display:none !important;
+    }
+    .nav a.brand .logo{
+      width: 34px !important;
+      height: 34px !important;
+    }
+    .nav .nav-cta{
+      flex-wrap: wrap !important;
+      justify-content: flex-end;
+    }
+  }
+</style></head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="104134416" data-tilda-page-alias="auth" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1694348421" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Аккаунт</div> <h1 class="h-title" style="font-size:34px">Вход / регистрация</h1> <p class="h-sub">Введи email и пароль для входа или регистрации.</p> <form class="form" id="authForm"> <div class="field"> <label>Email</label> <input id="authEmail" type="email" placeholder="you@mail.com" required> </div> <div class="field"> <label>Пароль</label> <input id="authPassword" type="password" placeholder="Минимум 6 символов" required> </div> <div style="display:flex;gap:10px;flex-wrap:wrap"> <button class="btn primary" type="submit">Войти</button> <button class="btn" id="registerBtn" type="button">Зарегистрироваться</button> </div> <div class="small" id="authMsg" style="margin-top:8px"></div> </form> <hr class="sep"> <div class="small" id="authState"></div> <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"> <a class="btn" href="/experts">В каталог</a> </div> </div> </div> </section> <script>
 window.addEventListener('DOMContentLoaded', async function () {
   const msg = document.getElementById('authMsg');
   const state = document.getElementById('authState');
