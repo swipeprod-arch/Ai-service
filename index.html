@@ -1516,6 +1516,7 @@ window.addEventListener('DOMContentLoaded', async function () {
   const sb = window.AI_BIRZHA.sb;
   const msg = document.getElementById('authMsg');
   const state = document.getElementById('authState');
+  const registerBtn = document.getElementById('registerBtn');
 
   // ========== ОБРАБОТКА АВТОРИЗАЦИИ ИЗ EMAIL ==========
   const u = new URL(location.href);
@@ -1626,6 +1627,53 @@ window.addEventListener('DOMContentLoaded', async function () {
     }
   });
 
+  // Регистрация по email+паролю
+  if(registerBtn){
+    registerBtn.addEventListener('click', async () => {
+      const email = document.getElementById('authEmail')?.value?.trim() || "";
+      const password = document.getElementById('authPassword')?.value || "";
+
+      msg.style.color = "";
+
+      if(!email){
+        msg.textContent = "Введите email.";
+        msg.style.color = "red";
+        return;
+      }
+      if(!password || password.length < 6){
+        msg.textContent = "Пароль должен быть минимум 6 символов.";
+        msg.style.color = "red";
+        return;
+      }
+
+      msg.textContent = "Регистрирую...";
+
+      const { data, error } = await sb.auth.signUp({
+        email,
+        password
+      });
+
+      if(error){
+        msg.textContent = "Ошибка: " + error.message;
+        msg.style.color = "red";
+        return;
+      }
+
+      // Если в Supabase включено Confirm email — session может быть null.
+      const hasSession = !!data?.session;
+      if(hasSession){
+        msg.textContent = "✅ Аккаунт создан! Открываю личный кабинет...";
+        msg.style.color = "green";
+        setTimeout(() => window.navigateTo('/add'), 900);
+      } else {
+        msg.textContent = "✅ Аккаунт создан. Проверь почту и подтвердите email, затем войдите.";
+        msg.style.color = "green";
+      }
+
+      await renderState();
+    });
+  }
+
   await renderState();
 });
 </script> <footer class="footer"> <div class="container foot-grid"> <div> <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"> <span class="logo" style="width:28px;height:28px;border-radius:10px"></span> <strong>AI-Биржа (информативный MVP)</strong> </div> <div>Каталог AI-специалистов. Без оплат на сайте. Договорённости напрямую.</div> <div class="small" style="margin-top:10px">© 2025 • Черновик для сборки в Tilda</div> </div> <div style="display:grid;gap:8px;justify-items:start"> <a href="/privacy.html">Политика конфиденциальности</a> <a href="/terms.html">Условия использования</a> <a href="/apply.html">Оставить заявку</a> </div> </div> </footer>
@@ -1648,7 +1696,11 @@ window.addEventListener('DOMContentLoaded', async function () {
           <label>Пароль</label> 
           <input id="authPassword" type="password" placeholder="Введите пароль" required> 
         </div> 
-        <button class="btn primary" type="submit">Войти</button> 
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn primary" type="submit">Войти</button> 
+          <button class="btn" id="registerBtn" type="button">Зарегистрироваться</button>
+        </div>
+        <div class="small" style="margin-top:8px;opacity:.8">Пароль минимум 6 символов.</div>
         <div class="small" id="authMsg"></div> 
       </form> 
       <hr class="sep"> 

@@ -1440,7 +1440,7 @@ html[data-ai-page="card"] .ab-gallery-item video{
 
 })();
 </script> <!-- nominify end --><script type="text/javascript">window.dataLayer=window.dataLayer||[];</script> <script type="text/javascript">(function() {if((/bot|google|yandex|baidu|bing|msn|duckduckbot|teoma|slurp|crawler|spider|robot|crawling|facebook/i.test(navigator.userAgent))===false&&typeof(sessionStorage)!='undefined'&&sessionStorage.getItem('visited')!=='y'&&document.visibilityState){var style=document.createElement('style');style.type='text/css';style.innerHTML='@media screen and (min-width: 980px) {.t-records {opacity: 0;}.t-records_animated {-webkit-transition: opacity ease-in-out .2s;-moz-transition: opacity ease-in-out .2s;-o-transition: opacity ease-in-out .2s;transition: opacity ease-in-out .2s;}.t-records.t-records_visible {opacity: 1;}}';document.getElementsByTagName('head')[0].appendChild(style);function t_setvisRecs(){var alr=document.querySelectorAll('.t-records');Array.prototype.forEach.call(alr,function(el) {el.classList.add("t-records_animated");});setTimeout(function() {Array.prototype.forEach.call(alr,function(el) {el.classList.add("t-records_visible");});sessionStorage.setItem("visited","y");},400);}
-document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="104134416" data-tilda-page-alias="auth" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1694348421" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Аккаунт</div> <h1 class="h-title" style="font-size:34px">Вход / регистрация</h1> <p class="h-sub">Вводишь email → получаешь ссылку. Пароль не нужен.</p> <form class="form" id="authForm"> <div class="field"> <label>Email</label> <input id="authEmail" type="email" placeholder="you@mail.com" required> </div> <button class="btn primary" type="submit">Отправить ссылку</button> <div class="small" id="authMsg" style="margin-top:8px"></div> </form> <hr class="sep"> <div class="small" id="authState"></div> <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"> <a class="btn" href="/experts">В каталог</a> </div> </div> </div> </section> <script>
+document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="104134416" data-tilda-page-alias="auth" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1694348421" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Аккаунт</div> <h1 class="h-title" style="font-size:34px">Вход / регистрация</h1> <p class="h-sub">Введи email и пароль для входа или регистрации.</p> <form class="form" id="authForm"> <div class="field"> <label>Email</label> <input id="authEmail" type="email" placeholder="you@mail.com" required> </div> <div class="field"> <label>Пароль</label> <input id="authPassword" type="password" placeholder="Минимум 6 символов" required> </div> <div style="display:flex;gap:10px;flex-wrap:wrap"> <button class="btn primary" type="submit">Войти</button> <button class="btn" id="registerBtn" type="button">Зарегистрироваться</button> </div> <div class="small" id="authMsg" style="margin-top:8px"></div> </form> <hr class="sep"> <div class="small" id="authState"></div> <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"> <a class="btn" href="/experts">В каталог</a> </div> </div> </div> </section> <script>
 window.addEventListener('DOMContentLoaded', async function () {
   const msg = document.getElementById('authMsg');
   const state = document.getElementById('authState');
@@ -1513,62 +1513,7 @@ localStorage.setItem("AI_BIRZHA_LOGIN_FLASH_TS", String(Date.now()));
     return true;
   }
 
-  async function handleAuthCallback(){
-    const u = new URL(window.location.href);
-
-    const code = u.searchParams.get("code");
-    const token_hash = u.searchParams.get("token_hash");
-    const type = u.searchParams.get("type"); // magiclink / recovery / invite и т.д.
-
-    const hasAccessTokenInHash = (window.location.hash || "").includes("access_token=");
-
-    try{
-      // 1) PKCE flow (?code=...)
-      if(code){
-        await sb.auth.exchangeCodeForSession(window.location.href);
-      }
-
-      // 2) Magiclink flow (?token_hash=...&type=magiclink)
-      else if(token_hash && type){
-        await sb.auth.verifyOtp({ type, token_hash });
-      }
-
-      // 3) Implicit flow (#access_token=...&refresh_token=...)
-      else if(hasAccessTokenInHash){
-        // В supabase-js v2 это обычно есть:
-        if(sb.auth.getSessionFromUrl){
-          await sb.auth.getSessionFromUrl({ storeSession: true });
-        } else {
-          // запасной вариант: парсим hash вручную
-          const hash = new URLSearchParams((window.location.hash || "").replace(/^#/, ""));
-          const access_token = hash.get("access_token");
-          const refresh_token = hash.get("refresh_token");
-          if(access_token && refresh_token){
-            await sb.auth.setSession({ access_token, refresh_token });
-          }
-        }
-      }
-
-      // чистим URL от auth-параметров (чтобы не повторялось)
-      if(code) u.searchParams.delete("code");
-      if(u.searchParams.get("token_hash")) u.searchParams.delete("token_hash");
-      if(u.searchParams.get("type")) u.searchParams.delete("type");
-      if(u.searchParams.get("next")) u.searchParams.delete("next");
-      // redirect можно оставить, но обычно лучше убрать:
-      // u.searchParams.delete("redirect");
-
-      const cleaned = u.pathname + (u.search ? u.search : "");
-      window.history.replaceState({}, "", cleaned);
-      if(window.location.hash) window.location.hash = "";
-
-    }catch(e){
-      // если вдруг обмен/верификация не прошли — покажем ошибку
-      if(msg) msg.textContent = "Ошибка авторизации: " + (e?.message || e);
-    }
-  }
-
-  // Обработка перехода по ссылке из письма
-  await handleAuthCallback();
+  // Раньше здесь была обработка magic-link, но мы перешли на вход/регистрацию по email+паролю.
 
   // Рендер
   await renderState();
@@ -1576,28 +1521,64 @@ localStorage.setItem("AI_BIRZHA_LOGIN_FLASH_TS", String(Date.now()));
   // Если уже авторизован — сразу уводим на /add
   await redirectIfAuthed();
 
-  // Отправка magic-link
+  // Вход по email+паролю
   document.getElementById('authForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    msg.textContent = "Отправляю ссылку...";
+    msg.style.color = "";
+    msg.textContent = "Вхожу...";
 
     const email = document.getElementById('authEmail').value.trim();
-    const dest = safeRedirect(localStorage.getItem(STORAGE_KEY) || "/add");
+    const password = document.getElementById('authPassword').value;
 
-    // важно: редиректим обратно на /auth, чтобы поймать токены и перекинуть на /add
-    const emailRedirectTo = PUBLIC_ORIGIN + AUTH_PATH + "?redirect=" + encodeURIComponent(dest);
+    const { error } = await sb.auth.signInWithPassword({ email, password });
 
-    const { error } = await sb.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo }
-    });
+    if(error){
+      msg.textContent = "Ошибка: " + error.message;
+      msg.style.color = "red";
+      return;
+    }
 
-    msg.textContent = error
-      ? ("Ошибка: " + error.message)
-      : ("Ссылка отправлена ✅ Открой письмо и перейди по ссылке.");
+    msg.textContent = "✅ Вход выполнен! Перенаправляю...";
+    msg.style.color = "green";
+    await renderState();
+    await redirectIfAuthed();
   });
 
-  // (кнопку "Выйти" убрали из интерфейса — выход делается в личном кабинете)
+  // Регистрация по email+паролю
+  const registerBtn = document.getElementById('registerBtn');
+  if(registerBtn){
+    registerBtn.addEventListener('click', async () => {
+      msg.style.color = "";
+      msg.textContent = "Регистрирую...";
+
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value;
+
+      if(!password || password.length < 6){
+        msg.textContent = "Пароль должен быть минимум 6 символов.";
+        msg.style.color = "red";
+        return;
+      }
+
+      const { data, error } = await sb.auth.signUp({ email, password });
+      if(error){
+        msg.textContent = "Ошибка: " + error.message;
+        msg.style.color = "red";
+        return;
+      }
+
+      if(data?.session){
+        msg.textContent = "✅ Аккаунт создан! Перенаправляю...";
+        msg.style.color = "green";
+        await renderState();
+        await redirectIfAuthed();
+      } else {
+        msg.textContent = "✅ Аккаунт создан. Проверь почту и подтвердите email, затем войдите.";
+        msg.style.color = "green";
+        await renderState();
+      }
+    });
+  }
 
   // На всякий случай слушаем смену статуса
   sb.auth.onAuthStateChange(async () => {
