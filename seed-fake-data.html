@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎲 Генератор фейковых данных</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+    .settings {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    .setting-row {
+      margin-bottom: 15px;
+    }
+    .setting-row:last-child {
+      margin-bottom: 0;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+      font-size: 14px;
+    }
+    input[type="number"],
+    input[type="email"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+    input[type="number"]:focus,
+    input[type="email"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    button {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-bottom: 15px;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .log {
+      background: #1a1a1a;
+      color: #00ff00;
+      padding: 20px;
+      border-radius: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 400px;
+      overflow-y: auto;
+      line-height: 1.6;
+      display: none;
+    }
+    .log.active {
+      display: block;
+    }
+    .log-line {
+      margin-bottom: 5px;
+    }
+    .log-success { color: #00ff00; }
+    .log-error { color: #ff4444; }
+    .log-info { color: #44aaff; }
+    .log-warning { color: #ffaa00; }
+    .progress {
+      background: #f0f0f0;
+      height: 30px;
+      border-radius: 15px;
+      overflow: hidden;
+      margin-bottom: 15px;
+      display: none;
+    }
+    .progress.active {
+      display: block;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transition: width 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 5px;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎲 Генератор данных</h1>
+    <p class="subtitle">Создание фейковых карточек экспертов с медиа</p>
+
+    <div class="settings">
+      <div id="authBlock" class="setting-row" style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+        <label style="color: #856404;">🔐 Авторизация (обязательно!):</label>
+        <input type="email" id="authEmail" placeholder="Введи свой email" style="width: 100%; padding: 12px; border: 2px solid #ffc107; border-radius: 8px; margin-bottom: 10px;">
+        <button onclick="sendAuthLink()" id="authBtn" style="width: 100%; background: #ffc107; color: #000; padding: 12px; margin-bottom: 0;">
+          📧 Отправить ссылку для входа
+        </button>
+        <div id="authStatus" style="margin-top: 10px; font-size: 14px; color: #856404;"></div>
+      </div>
+      
+      <div id="settingsBlock" style="opacity: 0.5; pointer-events: none;">
+        <div class="setting-row">
+          <label>Количество карточек экспертов:</label>
+          <input type="number" id="expertsCount" value="100" min="1" max="1000">
+        </div>
+        <div class="setting-row">
+          <label>Альбомов на карточку (2-4):</label>
+          <input type="number" id="albumsPerExpert" value="3" min="1" max="10">
+        </div>
+        <div class="setting-row">
+          <label>Медиа на альбом (3-7):</label>
+          <input type="number" id="mediaPerAlbum" value="5" min="1" max="20">
+        </div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-value" id="statExperts">0</div>
+        <div class="stat-label">Эксперты</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statAlbums">0</div>
+        <div class="stat-label">Альбомы</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statMedia">0</div>
+        <div class="stat-label">Медиа</div>
+      </div>
+    </div>
+
+    <div class="progress" id="progress">
+      <div class="progress-bar" id="progressBar">0%</div>
+    </div>
+
+    <button id="startBtn" onclick="startGeneration()">🚀 Начать генерацию</button>
+    <button id="clearBtn" onclick="clearAllData()" style="background: #dc3545;">🗑️ Очистить все данные</button>
+
+    <div class="log" id="log"></div>
+  </div>
+
+  <script>
+    // ====== КОНФИГУРАЦИЯ SUPABASE ======
+    const SUPABASE_URL = "https://orxzpefskbkcyuoobkol.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_fj9X3SDLjXiL0v3pajtMwA_fTYhN3us";
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ====== ДАННЫЕ ДЛЯ ГЕНЕРАЦИИ ======
+    const CATEGORIES = ['design', 'video', 'photo', 'text', 'audio'];
+    
+    const ROLES = {
+      design: ['UI/UX Дизайнер', 'Графический дизайнер', 'Веб-дизайнер', 'Моушн-дизайнер', 'Продуктовый дизайнер'],
+      video: ['Видеограф', 'Видеомонтажер', 'Моушн-дизайнер', 'Оператор', 'Режиссер монтажа'],
+      photo: ['Фотограф', 'Ретушер', 'Фуд-фотограф', 'Предметный фотограф', 'Портретист'],
+      text: ['Копирайтер', 'Редактор', 'Контент-менеджер', 'SMM-специалист', 'Сценарист'],
+      audio: ['Звукорежиссер', 'Композитор', 'Диктор', 'Подкастер', 'Аудиоинженер']
+    };
+
+    const NAMES = [
+      'Александр', 'Мария', 'Дмитрий', 'Анна', 'Сергей',
+      'Елена', 'Андрей', 'Ольга', 'Михаил', 'Наталья',
+      'Иван', 'Татьяна', 'Алексей', 'Светлана', 'Владимир',
+      'Екатерина', 'Николай', 'Ирина', 'Павел', 'Юлия',
+      'Роман', 'Виктория', 'Максим', 'Дарья', 'Артем'
+    ];
+
+    const SURNAMES = [
+      'Смирнов', 'Иванов', 'Кузнецов', 'Попов', 'Соколов',
+      'Лебедев', 'Козлов', 'Новиков', 'Морозов', 'Петров',
+      'Волков', 'Соловьев', 'Васильев', 'Зайцев', 'Павлов',
+      'Семенов', 'Голубев', 'Виноградов', 'Богданов', 'Воробьев'
+    ];
+
+    const DESCRIPTIONS = [
+      'Создаю крутой контент для брендов и стартапов. Работаю с топовыми компаниями.',
+      'Профессионально занимаюсь созданием визуального контента. Портфолио от 500+ проектов.',
+      'Помогаю бизнесу расти через качественный контент. Индивидуальный подход к каждому клиенту.',
+      'Специализируюсь на коммерческих проектах. Быстро, качественно, в срок.',
+      'Работаю с международными и российскими брендами. Более 7 лет опыта.'
+    ];
+
+    const ALBUM_TITLES = [
+      'Коммерческие проекты', 'Портфолио 2024', 'Лучшие работы',
+      'Последние проекты', 'Избранное', 'Для брендов',
+      'Личные проекты', 'Концепты', 'Для вдохновения'
+    ];
+
+    let stats = { experts: 0, albums: 0, media: 0 };
+
+    // ====== УТИЛИТЫ ======
+    function log(message, type = 'info') {
+      const logEl = document.getElementById('log');
+      logEl.classList.add('active');
+      const line = document.createElement('div');
+      line.className = `log-line log-${type}`;
+      const timestamp = new Date().toLocaleTimeString('ru-RU');
+      line.textContent = `[${timestamp}] ${message}`;
+      logEl.appendChild(line);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function updateProgress(current, total) {
+      const progress = document.getElementById('progress');
+      const bar = document.getElementById('progressBar');
+      progress.classList.add('active');
+      const percent = Math.round((current / total) * 100);
+      bar.style.width = percent + '%';
+      bar.textContent = `${percent}% (${current}/${total})`;
+    }
+
+    function updateStats() {
+      document.getElementById('statExperts').textContent = stats.experts;
+      document.getElementById('statAlbums').textContent = stats.albums;
+      document.getElementById('statMedia').textContent = stats.media;
+    }
+
+    function random(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function randomItem(array) {
+      return array[Math.floor(Math.random() * array.length)];
+    }
+
+    function randomImageUrl() {
+      const width = random(800, 1920);
+      const height = random(600, 1080);
+      const id = random(1, 1000);
+      return `https://picsum.photos/id/${id}/${width}/${height}`;
+    }
+
+    // ====== АВТОРИЗАЦИЯ ======
+    let currentUserId = null;
+
+    async function sendAuthLink() {
+      const email = document.getElementById('authEmail').value.trim();
+      const authBtn = document.getElementById('authBtn');
+      const authStatus = document.getElementById('authStatus');
+      
+      if (!email) {
+        authStatus.textContent = '❌ Введи email!';
+        authStatus.style.color = '#dc3545';
+        return;
+      }
+
+      authBtn.disabled = true;
+      authStatus.textContent = '⏳ Отправляю ссылку...';
+      authStatus.style.color = '#856404';
+
+      try {
+        const { error } = await supabase.auth.signInWithOtp({
+          email: email,
+          options: {
+            emailRedirectTo: window.location.href
+          }
+        });
+
+        if (error) throw error;
+
+        authStatus.textContent = '✅ Ссылка отправлена! Проверь почту и перейди по ссылке.';
+        authStatus.style.color = '#28a745';
+        log(`📧 Ссылка для входа отправлена на ${email}`, 'success');
+        
+      } catch (error) {
+        authStatus.textContent = `❌ Ошибка: ${error.message}`;
+        authStatus.style.color = '#dc3545';
+        log(`❌ Ошибка отправки: ${error.message}`, 'error');
+      } finally {
+        authBtn.disabled = false;
+      }
+    }
+
+    async function checkAuth() {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      
+      if (user) {
+        currentUserId = user.id;
+        
+        // Скрываем блок авторизации
+        document.getElementById('authBlock').style.display = 'none';
+        
+        // Активируем настройки
+        const settingsBlock = document.getElementById('settingsBlock');
+        settingsBlock.style.opacity = '1';
+        settingsBlock.style.pointerEvents = 'auto';
+        
+        // Активируем кнопку генерации
+        document.getElementById('startBtn').disabled = false;
+        
+        log(`✅ Авторизован как: ${user.email}`, 'success');
+        log(`🆔 User ID: ${user.id}`, 'info');
+        
+        return true;
+      }
+      
+      log('⚠️ Нужно авторизоваться перед генерацией данных', 'warning');
+      document.getElementById('startBtn').disabled = true;
+      return false;
+    }
+
+    // ====== ГЕНЕРАЦИЯ ДАННЫХ ======
+    async function createFakeUser() {
+      return currentUserId;
+    }
+
+    async function createExpert(userId) {
+      const category = randomItem(CATEGORIES);
+      const name = `${randomItem(NAMES)} ${randomItem(SURNAMES)}`;
+      const role = randomItem(ROLES[category]);
+      
+      const expert = {
+        user_id: userId,
+        category: category,
+        name: name,
+        role: role,
+        description: randomItem(DESCRIPTIONS),
+        short_info: `${role} • ${random(1, 10)} лет опыта`,
+        price_from: `от ${random(5, 50)} 000 ₽`,
+        delivery_time: `${random(1, 14)} дней`,
+        telegram: `@${name.toLowerCase().replace(/\s+/g, '_')}`,
+        instagram: `${name.toLowerCase().replace(/\s+/g, '.')}.pro`,
+        portfolio_url: null,
+        status: 'approved',
+        works: []
+      };
+
+      const { data, error } = await supabase
+        .from('experts')
+        .insert([expert])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      stats.experts++;
+      updateStats();
+      return data;
+    }
+
+    async function createAlbum(expertId, userId, title, sortOrder) {
+      const album = {
+        expert_id: expertId,
+        user_id: userId,
+        title: title,
+        sort_order: sortOrder
+      };
+
+      const { data, error } = await supabase
+        .from('expert_albums')
+        .insert([album])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      stats.albums++;
+      updateStats();
+      return data;
+    }
+
+    async function createMedia(expertId, userId, albumId, isFirst = false) {
+      // Генерируем случайный URL изображения
+      const imageUrl = randomImageUrl();
+      
+      const media = {
+        expert_id: expertId,
+        user_id: userId,
+        album_id: albumId,
+        media_type: 'image',
+        storage_path: imageUrl,
+        file_name: `image_${Date.now()}_${random(1000, 9999)}.jpg`,
+        mime_type: 'image/jpeg',
+        size_bytes: random(500000, 5000000),
+        is_cover: isFirst
+      };
+
+      const { data, error } = await supabase
+        .from('expert_media')
+        .insert([media])
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      stats.media++;
+      updateStats();
+      return data;
+    }
+
+    // ====== ОСНОВНАЯ ФУНКЦИЯ ======
+    async function startGeneration() {
+      const startBtn = document.getElementById('startBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      
+      startBtn.disabled = true;
+      clearBtn.disabled = true;
+      
+      const expertsCount = parseInt(document.getElementById('expertsCount').value);
+      const albumsPerExpert = parseInt(document.getElementById('albumsPerExpert').value);
+      const mediaPerAlbum = parseInt(document.getElementById('mediaPerAlbum').value);
+
+      log('🚀 Начинаю генерацию данных...', 'info');
+      log(`📊 Параметры: ${expertsCount} экспертов, ${albumsPerExpert} альбомов, ${mediaPerAlbum} медиа`, 'info');
+
+      try {
+        const userId = await createFakeUser();
+        
+        for (let i = 0; i < expertsCount; i++) {
+          updateProgress(i + 1, expertsCount);
+          
+          // Создаем эксперта
+          const expert = await createExpert(userId);
+          log(`✅ Создан эксперт #${i + 1}: ${expert.name}`, 'success');
+
+          // Создаем альбомы
+          const albumCount = random(2, albumsPerExpert);
+          for (let j = 0; j < albumCount; j++) {
+            const album = await createAlbum(
+              expert.id,
+              userId,
+              randomItem(ALBUM_TITLES),
+              j
+            );
+
+            // Создаем медиа
+            const mediaCount = random(3, mediaPerAlbum);
+            for (let k = 0; k < mediaCount; k++) {
+              await createMedia(expert.id, userId, album.id, k === 0);
+            }
+          }
+
+          // Небольшая задержка чтобы не перегрузить API
+          if (i % 10 === 0 && i > 0) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
+        }
+
+        log('🎉 Генерация завершена успешно!', 'success');
+        log(`📈 Создано: ${stats.experts} экспертов, ${stats.albums} альбомов, ${stats.media} медиа`, 'success');
+        
+      } catch (error) {
+        log(`❌ Ошибка: ${error.message}`, 'error');
+        console.error(error);
+      } finally {
+        startBtn.disabled = false;
+        clearBtn.disabled = false;
+      }
+    }
+
+    // ====== ОЧИСТКА ДАННЫХ ======
+    async function clearAllData() {
+      if (!confirm('⚠️ Удалить ВСЕ тестовые данные? Это действие нельзя отменить!')) {
+        return;
+      }
+
+      const startBtn = document.getElementById('startBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      
+      startBtn.disabled = true;
+      clearBtn.disabled = true;
+
+      try {
+        log('🗑️ Начинаю очистку данных...', 'warning');
+
+        // Удаляем в правильном порядке (из-за внешних ключей)
+        const { error: mediaError } = await supabase
+          .from('expert_media')
+          .delete()
+          .neq('id', '00000000-0000-0000-0000-000000000000');
+        
+        if (mediaError) throw mediaError;
+        log('✅ Медиа удалены', 'success');
+
+        const { error: albumsError } = await supabase
+          .from('expert_albums')
+          .delete()
+          .neq('id', '00000000-0000-0000-0000-000000000000');
+        
+        if (albumsError) throw albumsError;
+        log('✅ Альбомы удалены', 'success');
+
+        const { error: expertsError } = await supabase
+          .from('experts')
+          .delete()
+          .neq('id', '00000000-0000-0000-0000-000000000000');
+        
+        if (expertsError) throw expertsError;
+        log('✅ Эксперты удалены', 'success');
+
+        stats = { experts: 0, albums: 0, media: 0 };
+        updateStats();
+        
+        log('🎉 Все данные успешно удалены!', 'success');
+        
+      } catch (error) {
+        log(`❌ Ошибка при удалении: ${error.message}`, 'error');
+        console.error(error);
+      } finally {
+        startBtn.disabled = false;
+        clearBtn.disabled = false;
+      }
+    }
+
+    // ====== ИНИЦИАЛИЗАЦИЯ ======
+    async function init() {
+      log('✅ Скрипт загружен и готов к работе', 'info');
+      
+      // Обработка auth callback (если пришли по ссылке из email)
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      if (hashParams.get('access_token')) {
+        log('🔄 Обрабатываю авторизацию из email...', 'info');
+        // Небольшая задержка для обработки токенов
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      
+      // Проверяем авторизацию
+      const isAuth = await checkAuth();
+      
+      if (!isAuth) {
+        log('ℹ️ Введи email и войди в систему перед генерацией', 'info');
+      } else {
+        log('ℹ️ Установи нужные параметры и нажми "Начать генерацию"', 'info');
+      }
+    }
+
+    // Запускаем инициализацию
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
+

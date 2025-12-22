@@ -452,27 +452,24 @@ window.addEventListener('DOMContentLoaded', function () {
     const nav = document.querySelector(".nav") || document.querySelector("header");
     if(!nav) return null;
 
-    const links = Array.from(nav.querySelectorAll("a"));
-
-    // 1) сначала ищем ссылку на /apply (старая кнопка)
-    let btn = links.find(a => cleanHref(a.getAttribute("href")).startsWith(APPLY_PATH));
-
-    // 2) если нет — ищем по тексту "Оставить заявку"
-    if(!btn) btn = links.find(a => (a.textContent || "").trim().toLowerCase() === "оставить заявку");
-
-    // 3) если нет — берём последнюю кнопку в .nav-cta
-    if(!btn){
-      const cta = nav.querySelector(".nav-cta");
-      if(cta) btn = cta.querySelector("a:last-of-type");
-    }
-
+    const cta = nav.querySelector(".nav-cta");
+    if(!cta) return null;
+    
+    // Ищем последнюю кнопку (primary) в .nav-cta - это наша кнопка входа/кабинета
+    const btn = cta.querySelector("a.btn.primary:last-of-type") || cta.querySelector("a:last-of-type");
+    
     return btn || null;
   }
 
   function setBtn(btn, mode, isAuthenticated){
     // фиксируем стиль и текст
     btn.classList.add("ai-cta", "btn", "primary");
-    btn.textContent = (mode === "cabinet") ? "Личный кабинет" : "Разместить портфолио";
+    btn.textContent = (mode === "cabinet") ? "Личный кабинет" : "Вход/регистрация";
+    
+    // ВАЖНО: убираем href, чтобы не было перехода по ссылке
+    btn.removeAttribute("href");
+    btn.setAttribute("href", "javascript:void(0)");
+    btn.style.cursor = "pointer";
 
     // Удаляем старый обработчик, если был
     if(btn._aiClickHandler) {
@@ -488,17 +485,27 @@ window.addEventListener('DOMContentLoaded', function () {
       
       // Если НЕ авторизован → открываем модальное окно
       if(!isAuthenticated){
+        console.log('🔓 Открываю модальное окно авторизации');
         if(typeof window.openAuthModal === 'function') {
           window.openAuthModal();
         } else {
+          console.error('❌ Функция openAuthModal не найдена!');
           // Fallback: редирект на /auth если модальное окно не работает
           const AUTH_PATH = (window.AI_BIRZHA && window.AI_BIRZHA.AUTH_PATH) ? window.AI_BIRZHA.AUTH_PATH : "/auth";
-          location.href = AUTH_PATH + "?redirect=" + encodeURIComponent(ADD_PATH);
+          if (window.navigateTo) {
+            window.navigateTo(AUTH_PATH + "?redirect=" + encodeURIComponent(ADD_PATH));
+          } else {
+            location.href = AUTH_PATH + "?redirect=" + encodeURIComponent(ADD_PATH);
+          }
         }
       } else {
         // Авторизован → идём на /add
         console.log('🚀 Редирект на:', ADD_PATH);
-        location.href = ADD_PATH;
+        if (window.navigateTo) {
+          window.navigateTo(ADD_PATH);
+        } else {
+          location.href = ADD_PATH;
+        }
       }
     };
     
@@ -523,6 +530,12 @@ window.addEventListener('DOMContentLoaded', function () {
       await new Promise(r=>setTimeout(r,100));
     }
     if(!btn) return;
+    
+    // Ждём пока модальное окно будет определено
+    for(let i=0;i<50;i++){
+      if(typeof window.openAuthModal === 'function') break;
+      await new Promise(r=>setTimeout(r,50));
+    }
 
     // дефолт (не авторизован)
     setBtn(btn, "portfolio", false);
@@ -1575,19 +1588,43 @@ window.addEventListener('DOMContentLoaded', async function () {
 
   document.getElementById('authForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    msg.textContent = "Отправляю ссылку...";
+    console.log('🔐 Вход по паролю начался...');
+    msg.textContent = "Вхожу...";
     const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    console.log('🔐 Email:', email);
 
-    // Используем PUBLIC_ORIGIN для редиректа на локальный сайт
-    const origin = window.AI_BIRZHA?.PUBLIC_ORIGIN || location.origin;
-    const redirectTo = origin + "/?redirect=" + encodeURIComponent(window.AI_BIRZHA.ADD_PATH);
+    if (!sb) {
+      console.error('❌ Supabase клиент не инициализирован!');
+      msg.textContent = "Ошибка: Supabase не подключен";
+      return;
+    }
 
-    const { error } = await sb.auth.signInWithOtp({
+    console.log('🔐 Вызываю sb.auth.signInWithPassword...');
+    const { data, error } = await sb.auth.signInWithPassword({
       email,
-      options: { emailRedirectTo: redirectTo }
+      password
     });
 
-    msg.textContent = error ? ("Ошибка: " + error.message) : "✅ Ссылка отправлена! Открой письмо и перейди по ссылке.";
+    console.log('🔐 Результат:', error ? `Ошибка: ${error.message}` : 'Успех!', 'Data:', data);
+    
+    if (error) {
+      msg.textContent = "Ошибка: " + error.message;
+      msg.style.color = "red";
+      
+      // Дополнительные подсказки
+      if (error.message.includes("Invalid")) {
+        msg.textContent += " (Неверный email или пароль)";
+      }
+    } else {
+      msg.textContent = "✅ Вход выполнен! Открываю личный кабинет...";
+      msg.style.color = "green";
+      
+      // Редирект на личный кабинет
+      setTimeout(() => {
+        window.navigateTo('/add');
+      }, 1000);
+    }
   });
 
   logoutBtn.addEventListener('click', async () => {
@@ -1607,13 +1644,17 @@ window.addEventListener('DOMContentLoaded', async function () {
     <div class="h-card"> 
       <div class="h-eyebrow">Аккаунт</div> 
       <h1 class="h-title" style="font-size:34px">Вход / регистрация</h1> 
-      <p class="h-sub">Вводишь email → получаешь ссылку для входа. Пароль не нужен.</p> 
+      <p class="h-sub">Введи email и пароль для входа.</p> 
       <form class="form" id="authForm"> 
         <div class="field"> 
           <label>Email</label> 
           <input id="authEmail" type="email" placeholder="you@mail.com" required> 
         </div> 
-        <button class="btn primary" type="submit">Отправить ссылку</button> 
+        <div class="field"> 
+          <label>Пароль</label> 
+          <input id="authPassword" type="password" placeholder="Введите пароль" required> 
+        </div> 
+        <button class="btn primary" type="submit">Войти</button> 
         <div class="small" id="authMsg"></div> 
       </form> 
       <hr class="sep"> 
@@ -1743,4 +1784,87 @@ window.addEventListener('DOMContentLoaded', async function () {
 </script>
 
 <!--/allrecords--> <!-- Tilda copyright. Don't remove this line --><div class="t-tildalabel " id="tildacopy" data-tilda-sign="13172919#103804766"><a href="https://tilda.cc/" class="t-tildalabel__link"><div class="t-tildalabel__wrapper"><div class="t-tildalabel__txtleft">Made on </div><div class="t-tildalabel__wrapimg"><img src="images/tildacopy.png" class="t-tildalabel__img" fetchpriority="low" alt=""></div><div class="t-tildalabel__txtright">Tilda</div></div></a></div> <!-- Stat --> <script type="text/javascript">if(!window.mainTracker) {window.mainTracker='tilda';}
-window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.getElementsByTagName(o)[0],s=d.createElement(o),f=function(){n.parentNode.insertBefore(s,n);};s.type="text/javascript";s.async=true;s.key=k;s.id="tildastatscript";s.src=g;if(w.opera=="[object Opera]") {d.addEventListener("DOMContentLoaded",f,false);} else {f();}})(document,window,'b3e5db9cfc6c4460a026f51ee207b27b','script','js/tilda-stat-1.0.min.js');},2000);</script> </body> </html>
+window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.getElementsByTagName(o)[0],s=d.createElement(o),f=function(){n.parentNode.insertBefore(s,n);};s.type="text/javascript";s.async=true;s.key=k;s.id="tildastatscript";s.src=g;if(w.opera=="[object Opera]") {d.addEventListener("DOMContentLoaded",f,false);} else {f();}})(document,window,'b3e5db9cfc6c4460a026f51ee207b27b','script','js/tilda-stat-1.0.min.js');},2000);</script>
+
+<!-- Роутер для локальных файлов -->
+<script>
+(function() {
+  // Маппинг путей на файлы
+  const routes = {
+    '/': 'index.html',
+    '/services': 'page103809416.html',
+    '/experts': 'page103811056.html',
+    '/cases': 'page103811306.html',
+    '/how': 'page103811576.html',
+    '/faq': 'page103811816.html',
+    '/apply': 'apply.html',
+    '/add': 'add.html',
+    '/auth': 'auth.html',
+    '/privacy': 'page103812116.html',
+    '/terms': 'page103812316.html',
+    '/card': 'page104196026.html',
+    '/expert-template': 'page103813286.html',
+    '/case-template': 'page103813646.html'
+  };
+  
+  // Категории перенаправляют на страницу экспертов с фильтром
+  const categoryRoutes = {
+    '/video': 'video',
+    '/bots': 'bots',
+    '/design': 'design',
+    '/marketplaces': 'marketplaces',
+    '/sites': 'sites'
+  };
+  
+  // Глобальная функция роутинга для использования в скриптах
+  window.navigateTo = function(href) {
+    if (!href) return;
+    if (href.startsWith('/') && !href.startsWith('//')) {
+      const path = href.split('?')[0].split('#')[0].replace(/\/$/, '') || '/';
+      
+      // Проверяем, это категория?
+      if (categoryRoutes[path]) {
+        window.location.href = 'page103811056.html?cat=' + categoryRoutes[path];
+        return;
+      }
+      
+      const file = routes[path];
+      if (file) {
+        const query = href.includes('?') ? href.substring(href.indexOf('?')) : '';
+        const hash = href.includes('#') ? href.substring(href.indexOf('#')) : '';
+        window.location.href = file + query + hash;
+      } else {
+        window.location.href = href;
+      }
+    } else {
+      window.location.href = href;
+    }
+  };
+
+  // Функция для обработки клика
+  function handleLinkClick(e) {
+    const link = e.target.closest('a');
+    if (!link) return;
+
+    // ВАЖНО: Пропускаем кнопку авторизации, чтобы её обработчик сработал первым
+    if (link.classList.contains('ai-cta')) return;
+
+    const href = link.getAttribute('href');
+    if (!href) return;
+
+    // Проверяем, это внутренняя ссылка?
+    if (href.startsWith('/') && !href.startsWith('//')) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.navigateTo(href);
+    }
+  }
+
+  // Перехватываем все клики по ссылкам
+  document.addEventListener('click', handleLinkClick, true);
+  
+  console.log('✅ Роутер для локальных файлов активирован');
+})();
+</script>
+
+</body> </html>

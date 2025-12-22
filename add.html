@@ -681,7 +681,7 @@ window.addEventListener('DOMContentLoaded', function () {
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", runAll);
   else runAll();
 
- 
+})();
 </script> <style>
 /* ===== FAST TAGS (без MutationObserver) ===== */
 #roleChips{ margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; }
@@ -1375,10 +1375,27 @@ html[data-ai-page="card"] .ab-gallery-item video{
     box.id = 'aiAlbumsAdd';
     box.style.marginTop = '16px';
     box.innerHTML = `
-      <div class="h-eyebrow">Портфолио</div> <h2 class="section-title" style="margin:8px 0 0">Альбомы</h2> <p class="section-sub" style="margin:8px 0 0">Создай альбом (например “Рилсы”) и добавляй медиа в него.</p> <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-top:12px"> <div style="flex:1 1 240px"> <label>Название альбома</label> <input id="aiAlbumTitle" type="text" placeholder="Рилсы" /> </div> <button class="btn primary" type="button" id="aiAlbumCreate">Создать альбом</button> </div> <div class="small" id="aiAlbumsStatus" style="margin-top:10px"></div>
+      <div class="h-eyebrow">Портфолио</div>
+      <h2 class="section-title" style="margin:8px 0 0">Альбомы</h2>
+      <p class="section-sub" style="margin:8px 0 0">Создавай альбомы и распределяй медиа по ним.</p>
+      
+      <!-- Создание альбома -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-top:16px;padding:16px;background:#f5f5f5;border-radius:8px">
+        <div style="flex:1 1 240px">
+          <label style="font-weight:600;margin-bottom:6px;display:block">Название нового альбома</label>
+          <input id="aiAlbumTitle" type="text" placeholder="Например: Рилсы" />
+        </div>
+        <button class="btn primary" type="button" id="aiAlbumCreate">Создать альбом</button>
+      </div>
+      
+      <!-- Статус -->
+      <div class="small" id="aiAlbumsStatus" style="margin-top:10px;color:#0ea5e9"></div>
+      
+      <!-- Список альбомов -->
+      <div id="aiAlbumsList" style="margin-top:20px"></div>
     `;
 
-    // вставим после первого .h-card (а не “внутрь”), чтобы точно было видно
+    // вставим после первого .h-card (а не "внутрь"), чтобы точно было видно
     if (host.classList && host.classList.contains('h-card')) host.insertAdjacentElement('afterend', box);
     else host.appendChild(box);
   }
@@ -1392,8 +1409,9 @@ html[data-ai-page="card"] .ab-gallery-item video{
     const status = document.getElementById('aiAlbumsStatus');
     const btn = document.getElementById('aiAlbumCreate');
     const title = document.getElementById('aiAlbumTitle');
+    const albumsList = document.getElementById('aiAlbumsList');
 
-    if (!status || !btn || !title) return;
+    if (!status || !btn || !title || !albumsList) return;
 
     if (!sb) {
       status.textContent = 'Ошибка: Supabase не подключился. Проверь, что в HEAD есть window.AI_BIRZHA (URL + KEY).';
@@ -1412,11 +1430,74 @@ html[data-ai-page="card"] .ab-gallery-item video{
     const ex = await sb.from('experts').select('id').eq('user_id', user.id).limit(1);
     const expertId = ex?.data?.[0]?.id;
     if (!expertId) {
-      status.textContent = 'Сначала нажми “Сохранить” карточку. Потом создавай альбомы.';
+      status.textContent = 'Сначала нажми "Сохранить" карточку. Потом создавай альбомы.';
       btn.disabled = true;
       return;
     }
 
+    // Загрузка списка альбомов
+    async function loadAlbums() {
+      const { data: albums, error } = await sb
+        .from('expert_albums')
+        .select('id, title, created_at')
+        .eq('expert_id', expertId)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        status.textContent = 'Ошибка загрузки альбомов: ' + error.message;
+        return;
+      }
+
+      if (!albums || albums.length === 0) {
+        albumsList.innerHTML = '<p class="small" style="color:#888">Альбомов пока нет. Создай первый!</p>';
+        return;
+      }
+
+      // Загружаем количество медиа в каждом альбоме
+      const albumsWithCounts = await Promise.all(albums.map(async (album) => {
+        const { count } = await sb
+          .from('expert_media')
+          .select('id', { count: 'exact', head: true })
+          .eq('album_id', album.id);
+        return { ...album, mediaCount: count || 0 };
+      }));
+
+      // Рендерим альбомы
+      albumsList.innerHTML = albumsWithCounts.map(album => `
+        <div class="album-card" data-album-id="${album.id}" style="
+          padding:16px;
+          margin-bottom:12px;
+          border:1px solid #e5e5e5;
+          border-radius:8px;
+          background:#fff;
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          flex-wrap:wrap;
+          gap:12px
+        ">
+          <div style="flex:1">
+            <h3 style="margin:0 0 4px;font-size:18px;font-weight:600">${escapeHtml(album.title)}</h3>
+            <p class="small" style="margin:0;color:#666">${album.mediaCount} медиа</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn album-manage" data-album-id="${album.id}" type="button">Управлять медиа</button>
+            <button class="btn album-delete" data-album-id="${album.id}" type="button" style="background:#ef4444;color:#fff">Удалить</button>
+          </div>
+        </div>
+      `).join('');
+
+      // Обработчики для кнопок альбомов
+      document.querySelectorAll('.album-manage').forEach(btn => {
+        btn.addEventListener('click', () => openAlbumManager(btn.dataset.albumId));
+      });
+
+      document.querySelectorAll('.album-delete').forEach(btn => {
+        btn.addEventListener('click', () => deleteAlbum(btn.dataset.albumId));
+      });
+    }
+
+    // Создание альбома
     btn.addEventListener('click', async function(){
       const t = (title.value || '').trim();
       if(!t) return alert('Напиши название альбома.');
@@ -1433,9 +1514,219 @@ html[data-ai-page="card"] .ab-gallery-item video{
         return;
       }
 
-      status.textContent = 'Готово ✅ Альбом создан: ' + (r.data?.[0]?.title || t);
+      status.textContent = '✅ Альбом создан: ' + (r.data?.[0]?.title || t);
       title.value = '';
+      await loadAlbums();
     });
+
+    // Удаление альбома
+    async function deleteAlbum(albumId) {
+      if (!confirm('Удалить альбом? Медиа останутся в общем списке.')) return;
+      
+      status.textContent = 'Удаление...';
+      
+      // Сначала отвязываем медиа от альбома
+      await sb.from('expert_media').update({ album_id: null }).eq('album_id', albumId);
+      
+      // Затем удаляем альбом
+      const { error } = await sb.from('expert_albums').delete().eq('id', albumId);
+      
+      if (error) {
+        status.textContent = 'Ошибка удаления: ' + error.message;
+        return;
+      }
+      
+      status.textContent = '✅ Альбом удалён';
+      await loadAlbums();
+    }
+
+    // Управление медиа в альбоме
+    function openAlbumManager(albumId) {
+      // Создаём модальное окно для управления медиа
+      const modal = document.createElement('div');
+      modal.id = 'albumMediaModal';
+      modal.style.cssText = `
+        position:fixed;
+        top:0;left:0;right:0;bottom:0;
+        background:rgba(0,0,0,0.5);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        z-index:9999;
+        padding:20px;
+      `;
+      
+      modal.innerHTML = `
+        <div style="
+          background:#fff;
+          border-radius:12px;
+          padding:24px;
+          max-width:800px;
+          width:100%;
+          max-height:80vh;
+          overflow-y:auto;
+        ">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <h2 style="margin:0">Управление медиа в альбоме</h2>
+            <button class="btn" id="closeAlbumModal">✕</button>
+          </div>
+          <div id="albumMediaContent">Загрузка...</div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Закрытие модалки
+      document.getElementById('closeAlbumModal').addEventListener('click', () => {
+        modal.remove();
+      });
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+      });
+      
+      // Загружаем медиа
+      loadAlbumMedia(albumId);
+    }
+
+    // Загрузка медиа для альбома
+    async function loadAlbumMedia(albumId) {
+      const content = document.getElementById('albumMediaContent');
+      
+      // Получаем название альбома
+      const { data: album } = await sb.from('expert_albums').select('title').eq('id', albumId).single();
+      
+      // Загружаем все медиа пользователя
+      const { data: allMedia } = await sb
+        .from('expert_media')
+        .select('id, media_type, storage_path, album_id, created_at')
+        .eq('expert_id', expertId)
+        .order('created_at', { ascending: false });
+      
+      if (!allMedia || allMedia.length === 0) {
+        content.innerHTML = '<p>У вас пока нет загруженных медиа.</p>';
+        return;
+      }
+      
+      // Получаем подписанные URL для всех медиа
+      const paths = allMedia.map(m => m.storage_path);
+      const { data: urls } = await sb.storage.from('experts-media').createSignedUrls(paths, 60*60);
+      const urlByPath = new Map();
+      (urls || []).forEach(x => { if(x?.path && x?.signedUrl) urlByPath.set(x.path, x.signedUrl); });
+      
+      // Добавляем URL к каждому медиа
+      const mediaWithUrls = allMedia.map(m => ({
+        ...m,
+        url: urlByPath.get(m.storage_path) || ''
+      }));
+      
+      // Разделяем на медиа в альбоме и вне его
+      const inAlbum = mediaWithUrls.filter(m => m.album_id === albumId);
+      const notInAlbum = mediaWithUrls.filter(m => !m.album_id || m.album_id !== albumId);
+      
+      content.innerHTML = `
+        <h3 style="margin:0 0 12px">Медиа в альбоме "${escapeHtml(album?.title || '')}"</h3>
+        <div class="media-grid" id="albumCurrentMedia" style="margin-bottom:24px"></div>
+        
+        <h3 style="margin:0 0 12px">Доступные медиа (кликни, чтобы добавить)</h3>
+        <div class="media-grid" id="albumAvailableMedia"></div>
+      `;
+      
+      // Рендерим медиа в альбоме
+      const currentGrid = document.getElementById('albumCurrentMedia');
+      if (inAlbum.length === 0) {
+        currentGrid.innerHTML = '<p class="small" style="color:#888">В альбоме пока нет медиа</p>';
+      } else {
+        currentGrid.innerHTML = inAlbum.map(media => renderMediaThumb(media, true, albumId)).join('');
+      }
+      
+      // Рендерим доступные медиа
+      const availableGrid = document.getElementById('albumAvailableMedia');
+      if (notInAlbum.length === 0) {
+        availableGrid.innerHTML = '<p class="small" style="color:#888">Все медиа уже в альбомах</p>';
+      } else {
+        availableGrid.innerHTML = notInAlbum.map(media => renderMediaThumb(media, false, albumId)).join('');
+      }
+      
+      // Добавляем обработчики
+      document.querySelectorAll('.media-add-to-album').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          await addMediaToAlbum(btn.dataset.mediaId, albumId);
+          await loadAlbumMedia(albumId);
+        });
+      });
+      
+      document.querySelectorAll('.media-remove-from-album').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          await removeMediaFromAlbum(btn.dataset.mediaId);
+          await loadAlbumMedia(albumId);
+        });
+      });
+    }
+    
+    // Рендер миниатюры медиа
+    function renderMediaThumb(media, isInAlbum, albumId) {
+      const isVideo = media.media_type === 'video';
+      const url = media.url || '';
+      
+      return `
+        <div class="media-item" style="position:relative;border:1px solid #e5e5e5;border-radius:8px;overflow:hidden">
+          ${isVideo 
+            ? `<video src="${url}" style="width:100%;height:150px;object-fit:cover;display:block" muted playsinline></video>`
+            : `<img src="${url}" alt="" style="width:100%;height:150px;object-fit:cover;display:block">`
+          }
+          ${isInAlbum 
+            ? `<button class="btn media-remove-from-album" data-media-id="${media.id}" 
+                 style="position:absolute;top:8px;right:8px;background:#ef4444;color:#fff;padding:6px 12px;font-size:12px;border:none;border-radius:6px;cursor:pointer">
+                 Убрать
+               </button>`
+            : `<button class="btn media-add-to-album" data-media-id="${media.id}" 
+                 style="position:absolute;top:8px;right:8px;background:#10b981;color:#fff;padding:6px 12px;font-size:12px;border:none;border-radius:6px;cursor:pointer">
+                 Добавить
+               </button>`
+          }
+        </div>
+      `;
+    }
+    
+    // Добавить медиа в альбом
+    async function addMediaToAlbum(mediaId, albumId) {
+      const { error } = await sb
+        .from('expert_media')
+        .update({ album_id: albumId })
+        .eq('id', mediaId);
+      
+      if (error) {
+        alert('Ошибка: ' + error.message);
+        return;
+      }
+      
+      status.textContent = '✅ Медиа добавлено в альбом';
+    }
+    
+    // Убрать медиа из альбома
+    async function removeMediaFromAlbum(mediaId) {
+      const { error } = await sb
+        .from('expert_media')
+        .update({ album_id: null })
+        .eq('id', mediaId);
+      
+      if (error) {
+        alert('Ошибка: ' + error.message);
+        return;
+      }
+      
+      status.textContent = '✅ Медиа убрано из альбома';
+    }
+    
+    // Вспомогательная функция для экранирования HTML
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Загружаем список альбомов при старте
+    await loadAlbums();
   });
 
 })();
@@ -1753,35 +2044,190 @@ window.addEventListener('DOMContentLoaded', async function(){
   }
 
   async function uploadMedia(){
-    if(!myExpert || !myExpert.id){ mediaMsg.textContent = "Сначала сохрани карточку."; return; }
+    const ui = ensureUploadUi();
+
+    if(!myExpert || !myExpert.id){
+      mediaMsg.textContent = "Сначала сохрани карточку.";
+      ui.setFiles([]);
+      ui.setProgress(0);
+      ui.setState("error");
+      ui.setSummary("Сначала сохрани карточку, потом загружай файлы.");
+      return;
+    }
 
     const input = document.getElementById('mediaInput');
     const files = Array.from(input.files || []);
-    if(files.length===0){ mediaMsg.textContent = "Выбери файлы."; return; }
-
-    mediaMsg.textContent = "Загружаю...";
-    for(const file of files){
-      const isVideo = file.type.startsWith("video/");
-      const ext = (file.name.split(".").pop() || (isVideo ? "mp4" : "jpg")).toLowerCase();
-      const path = `experts/${myExpert.id}/${Date.now()}_${Math.random().toString(16).slice(2)}.${ext}`;
-
-      const { error: uerr } = await sb.storage.from(BUCKET).upload(path, file, { upsert:false });
-      if(uerr){ mediaMsg.textContent = "Ошибка загрузки: " + uerr.message; return; }
-
-    const { error: ierr } = await sb.from("expert_media").insert({
-  user_id: user.id,
-  expert_id: myExpert.id,
-  media_type: isVideo ? "video" : "image",
-  storage_path: path
-});
-
-      if(ierr){ mediaMsg.textContent = "Ошибка записи медиа: " + ierr.message; return; }
+    if(files.length===0){
+      mediaMsg.textContent = "Выбери файлы.";
+      ui.setFiles([]);
+      ui.setProgress(0);
+      ui.setState("error");
+      ui.setSummary("Выбери файлы — и нажми «Загрузить» ещё раз.");
+      return;
     }
 
-    input.value = "";
-    mediaMsg.textContent = "Загружено ✅";
-    await loadMyCard();
-    await loadMedia();
+    // UI загрузки (чтобы пользователь видел процесс)
+    ui.setState("running");
+    ui.setSummary(`Подготовка… (0/${files.length})`);
+    ui.setProgress(0);
+    ui.setFiles(files);
+
+    const btn = document.getElementById('btnUpload');
+    if(btn) btn.disabled = true;
+    input.disabled = true;
+
+    mediaMsg.textContent = "";
+
+    let done = 0;
+    try{
+      for(let idx = 0; idx < files.length; idx++){
+        const file = files[idx];
+        ui.setFileStatus(idx, "uploading", "Загружается…");
+        ui.setSummary(`Загрузка… (${done}/${files.length})`);
+        ui.setProgress(Math.round((done / files.length) * 100));
+
+        const isVideo = file.type.startsWith("video/");
+        const ext = (file.name.split(".").pop() || (isVideo ? "mp4" : "jpg")).toLowerCase();
+        const path = `experts/${myExpert.id}/${Date.now()}_${Math.random().toString(16).slice(2)}.${ext}`;
+
+        const { error: uerr } = await sb.storage.from(BUCKET).upload(path, file, { upsert:false });
+        if(uerr){
+          ui.setFileStatus(idx, "error", "Ошибка загрузки: " + uerr.message);
+          throw new Error(uerr.message);
+        }
+
+        const { error: ierr } = await sb.from("expert_media").insert({
+          user_id: user.id,
+          expert_id: myExpert.id,
+          media_type: isVideo ? "video" : "image",
+          storage_path: path
+        });
+
+        if(ierr){
+          // чтобы не оставлять "висящий" файл в storage
+          try{ await sb.storage.from(BUCKET).remove([path]); } catch(_e){}
+          ui.setFileStatus(idx, "error", "Ошибка записи: " + ierr.message);
+          throw new Error(ierr.message);
+        }
+
+        done++;
+        ui.setFileStatus(idx, "done", "Готово ✅");
+        ui.setSummary(`Загрузка… (${done}/${files.length})`);
+        ui.setProgress(Math.round((done / files.length) * 100));
+      }
+
+      ui.setProgress(100);
+      ui.setSummary(`Загружено ✅ (${done}/${files.length})`);
+      ui.setState("done");
+
+      input.value = "";
+      await loadMyCard();
+      await loadMedia();
+    } catch(e){
+      ui.setState("error");
+      ui.setSummary(`Ошибка. Загружено: ${done}/${files.length}`);
+      mediaMsg.textContent = "Ошибка загрузки: " + (e?.message || e);
+    } finally {
+      if(btn) btn.disabled = false;
+      input.disabled = false;
+    }
+  }
+
+  function ensureUploadUi(){
+    let root = document.getElementById('uploadUi');
+    if(root) return root._api;
+
+    const btn = document.getElementById('btnUpload');
+    const mount = btn?.parentElement || btn;
+    root = document.createElement('div');
+    root.id = 'uploadUi';
+    root.className = 'upload-ui';
+    root.innerHTML = `
+      <div class="upload-ui__top">
+        <div class="upload-ui__left">
+          <span class="upload-ui__spin" aria-hidden="true"></span>
+          <div class="upload-ui__summary" id="uploadUiSummary">Готово</div>
+        </div>
+        <button class="upload-ui__hide" type="button" id="uploadUiHide">Свернуть</button>
+      </div>
+      <div class="upload-ui__bar" aria-hidden="true">
+        <div class="upload-ui__barFill" id="uploadUiBar"></div>
+      </div>
+      <div class="upload-ui__list" id="uploadUiList"></div>
+    `;
+
+    // вставляем сразу после кнопки "Загрузить"
+    if(btn) btn.insertAdjacentElement('afterend', root);
+    else if(mount) mount.appendChild(root);
+
+    const hideBtn = root.querySelector('#uploadUiHide');
+    if(hideBtn){
+      hideBtn.addEventListener('click', () => {
+        root.classList.toggle('is-collapsed');
+        hideBtn.textContent = root.classList.contains('is-collapsed') ? "Развернуть" : "Свернуть";
+      });
+    }
+
+    const summaryEl = root.querySelector('#uploadUiSummary');
+    const barEl = root.querySelector('#uploadUiBar');
+    const listEl = root.querySelector('#uploadUiList');
+
+    const api = {
+      setState(state){
+        root.classList.remove('is-running','is-done','is-error');
+        if(state === 'running') root.classList.add('is-running');
+        if(state === 'done') root.classList.add('is-done');
+        if(state === 'error') root.classList.add('is-error');
+        root.style.display = '';
+      },
+      setSummary(text){
+        if(summaryEl) summaryEl.textContent = text || '';
+      },
+      setProgress(pct){
+        const v = Math.max(0, Math.min(100, Number(pct) || 0));
+        if(barEl) barEl.style.width = v + '%';
+      },
+      setFiles(files){
+        if(!listEl) return;
+        listEl.innerHTML = (files || []).map((f, i) => {
+          const size = formatBytes(f.size || 0);
+          return `
+            <div class="upload-ui__row" data-i="${i}">
+              <div class="upload-ui__name">${esc(f.name || 'file')}</div>
+              <div class="upload-ui__meta">${size}</div>
+              <div class="upload-ui__status is-queued">В очереди</div>
+            </div>
+          `;
+        }).join('');
+      },
+      setFileStatus(idx, kind, text){
+        if(!listEl) return;
+        const row = listEl.querySelector(`.upload-ui__row[data-i="${idx}"]`);
+        if(!row) return;
+        const st = row.querySelector('.upload-ui__status');
+        if(!st) return;
+        st.classList.remove('is-queued','is-uploading','is-done','is-error');
+        if(kind === 'queued') st.classList.add('is-queued');
+        if(kind === 'uploading') st.classList.add('is-uploading');
+        if(kind === 'done') st.classList.add('is-done');
+        if(kind === 'error') st.classList.add('is-error');
+        st.textContent = text || '';
+      }
+    };
+
+    root._api = api;
+    return api;
+  }
+
+  function formatBytes(bytes){
+    const b = Number(bytes) || 0;
+    if(b < 1024) return b + ' B';
+    const kb = b / 1024;
+    if(kb < 1024) return kb.toFixed(1) + ' KB';
+    const mb = kb / 1024;
+    if(mb < 1024) return mb.toFixed(1) + ' MB';
+    const gb = mb / 1024;
+    return gb.toFixed(2) + ' GB';
   }
 
   document.getElementById('btnSave').addEventListener('click', saveCard);
@@ -1819,6 +2265,137 @@ window.addEventListener('DOMContentLoaded', async function(){
   object-fit: contain !important; /* не обрезает */
   display: block;
   background: #000;
+}
+
+/* ===== UI загрузки файлов (понятно, что процесс идёт) ===== */
+.upload-ui{
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  border:1px solid rgba(255,255,255,.7);
+  background: rgba(245,248,252,.92);
+  box-shadow: 10px 10px 22px rgba(163,177,198,.25), -10px -10px 22px rgba(255,255,255,.85);
+  display:none; /* включаем, когда нужно */
+}
+.upload-ui.is-running,
+.upload-ui.is-done,
+.upload-ui.is-error{ display:block; }
+
+.upload-ui__top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+.upload-ui__left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+.upload-ui__summary{
+  font-weight:900;
+  color: rgba(19,35,63,.92);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.upload-ui__hide{
+  border:1px solid rgba(255,255,255,.75);
+  background: rgba(238,243,250,.9);
+  border-radius: 12px;
+  padding: 8px 10px;
+  cursor:pointer;
+  font-weight:800;
+}
+
+.upload-ui__spin{
+  width:16px;height:16px;
+  border-radius:50%;
+  border:2px solid rgba(19,35,63,.18);
+  border-top-color: rgba(30,120,255,.9);
+  display:inline-block;
+}
+.upload-ui.is-running .upload-ui__spin{
+  animation: uploadSpin .9s linear infinite;
+}
+.upload-ui.is-done .upload-ui__spin{
+  border-color: rgba(34,197,94,.22);
+  border-top-color: rgba(34,197,94,.9);
+}
+.upload-ui.is-error .upload-ui__spin{
+  border-color: rgba(239,68,68,.22);
+  border-top-color: rgba(239,68,68,.9);
+}
+@keyframes uploadSpin{ to { transform: rotate(360deg); } }
+
+.upload-ui__bar{
+  width:100%;
+  height:10px;
+  border-radius:999px;
+  overflow:hidden;
+  background: rgba(19,35,63,.10);
+  border:1px solid rgba(255,255,255,.7);
+  margin-bottom:10px;
+}
+.upload-ui__barFill{
+  width:0%;
+  height:100%;
+  background: linear-gradient(90deg, #1e78ff, #00b7ff);
+  border-radius:999px;
+  transition: width .25s ease;
+}
+
+.upload-ui__list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.upload-ui__row{
+  display:grid;
+  grid-template-columns: 1fr auto auto;
+  gap:10px;
+  align-items:center;
+  padding:10px;
+  border-radius: 14px;
+  border:1px solid rgba(255,255,255,.75);
+  background: rgba(255,255,255,.65);
+}
+.upload-ui__name{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-weight:800;
+  color: rgba(19,35,63,.9);
+}
+.upload-ui__meta{
+  font-size:12px;
+  color: rgba(19,35,63,.55);
+  white-space:nowrap;
+}
+.upload-ui__status{
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.upload-ui__status.is-queued{ color: rgba(19,35,63,.55); }
+.upload-ui__status.is-uploading{ color: rgba(30,120,255,.95); }
+.upload-ui__status.is-done{ color: rgba(34,197,94,.95); }
+.upload-ui__status.is-error{ color: rgba(239,68,68,.95); }
+
+.upload-ui.is-collapsed .upload-ui__bar,
+.upload-ui.is-collapsed .upload-ui__list{ display:none; }
+
+@media (max-width: 560px){
+  .upload-ui__row{ grid-template-columns: 1fr auto; grid-template-areas:
+    "name status"
+    "meta meta";
+  }
+  .upload-ui__name{ grid-area:name; }
+  .upload-ui__status{ grid-area:status; justify-self:end; }
+  .upload-ui__meta{ grid-area:meta; }
 }
 </style> <script>
 (function(){
@@ -2286,9 +2863,60 @@ window.addEventListener('DOMContentLoaded', async function(){
         return;
       }
 
-      window.open("/card?id=" + encodeURIComponent(data[0].id), "_blank");
+      // Открываем карточку в новой вкладке
+      const cardUrl = window.location.origin + "/page104196026.html?id=" + encodeURIComponent(data[0].id);
+      window.open(cardUrl, "_blank");
     });
   });
 })();
 </script> <!-- ====== /add END ====== --> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords--> <!-- Tilda copyright. Don't remove this line --><div class="t-tildalabel " id="tildacopy" data-tilda-sign="13172919#103811936"><a href="https://tilda.cc/" class="t-tildalabel__link"><div class="t-tildalabel__wrapper"><div class="t-tildalabel__txtleft">Made on </div><div class="t-tildalabel__wrapimg"><img src="https://static.tildacdn.com/img/tildacopy.png" class="t-tildalabel__img" fetchpriority="low" alt=""></div><div class="t-tildalabel__txtright">Tilda</div></div></a></div> <!-- Stat --> <script type="text/javascript">if(!window.mainTracker) {window.mainTracker='tilda';}
-window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.getElementsByTagName(o)[0],s=d.createElement(o),f=function(){n.parentNode.insertBefore(s,n);};s.type="text/javascript";s.async=true;s.key=k;s.id="tildastatscript";s.src=g;if(w.opera=="[object Opera]") {d.addEventListener("DOMContentLoaded",f,false);} else {f();}})(document,window,'b3e5db9cfc6c4460a026f51ee207b27b','script','https://static.tildacdn.com/js/tilda-stat-1.0.min.js');},2000);</script> </body> </html>
+window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.getElementsByTagName(o)[0],s=d.createElement(o),f=function(){n.parentNode.insertBefore(s,n);};s.type="text/javascript";s.async=true;s.key=k;s.id="tildastatscript";s.src=g;if(w.opera=="[object Opera]") {d.addEventListener("DOMContentLoaded",f,false);} else {f();}})(document,window,'b3e5db9cfc6c4460a026f51ee207b27b','script','https://static.tildacdn.com/js/tilda-stat-1.0.min.js');},2000);</script>
+
+<!-- Роутер для локальных файлов -->
+<script>
+(function() {
+  const routes = {
+    '/': 'index.html',
+    '/services': 'page103809416.html',
+    '/experts': 'page103811056.html',
+    '/cases': 'page103811306.html',
+    '/how': 'page103811576.html',
+    '/faq': 'page103811816.html',
+    '/apply': 'apply.html',
+    '/add': 'add.html',
+    '/auth': 'auth.html',
+    '/privacy': 'page103812116.html',
+    '/terms': 'page103812316.html',
+    '/card': 'page104196026.html',
+    '/video': 'page103813046.html',
+    '/expert-template': 'page103813286.html',
+    '/case-template': 'page103813646.html',
+    '/bots': 'page103813746.html',
+    '/design': 'page103813896.html',
+    '/marketplaces': 'page103814106.html',
+    '/sites': 'page103814276.html'
+  };
+  function handleLinkClick(e) {
+    const link = e.target.closest('a');
+    if (!link) return;
+    const href = link.getAttribute('href');
+    if (!href) return;
+    if (href.startsWith('/') && !href.startsWith('//')) {
+      e.preventDefault();
+      e.stopPropagation();
+      const path = href.split('?')[0].split('#')[0].replace(/\/$/, '') || '/';
+      const file = routes[path];
+      if (file) {
+        const query = href.includes('?') ? href.substring(href.indexOf('?')) : '';
+        const hash = href.includes('#') ? href.substring(href.indexOf('#')) : '';
+        window.location.href = file + query + hash;
+      } else {
+        window.location.href = href;
+      }
+    }
+  }
+  document.addEventListener('click', handleLinkClick, true);
+})();
+</script>
+
+</body> </html>

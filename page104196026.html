@@ -802,7 +802,8 @@ window.addEventListener('DOMContentLoaded', function () {
       host = document.querySelector(".h-card") || document.querySelector(".container") || document.body;
     }
 
-    // Контакты (Instagram/Сайт)
+    // Контакты (Instagram/Сайт) - ЗАКОММЕНТИРОВАНО, кнопки уже есть выше в карточке
+    /*
     const ig = normalizeInstagram(expert.instagram);
     const site = normalizeWebsite(expert.website);
 
@@ -833,6 +834,7 @@ window.addEventListener('DOMContentLoaded', function () {
         host.appendChild(row);
       }
     }
+    */
 
     // Если телега кнопка есть, но ссылка пустая — можем поправить
     const tg = tgLink(expert.telegram);
@@ -1959,6 +1961,37 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head
   display:block;
 }
 
+/* ===== Альбомы в карточке (исправление "всё мелкое" + адаптив + ориентация) ===== */
+#pMedia.ai-albums{
+  display:block !important;
+}
+.ai-album{
+  margin: 18px 0 26px;
+}
+.ai-album__title{
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 900;
+  color: rgba(19,35,63,.92);
+}
+.ai-album__grid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap:12px;
+}
+@media (max-width: 900px){ .ai-album__grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px){ .ai-album__grid{ grid-template-columns: 1fr; } }
+
+/* Внутри альбомов убираем фиксированную высоту и используем aspect-ratio (из JS) */
+#pMedia.ai-albums .media-item{
+  aspect-ratio: 4 / 3; /* дефолт, пока не подтянулись размеры */
+}
+#pMedia.ai-albums .media-item img,
+#pMedia.ai-albums .media-item video{
+  height:100% !important;
+  object-fit:cover;
+}
+
 /* ===== Lightbox (фикс чёрного экрана + свайп/стрелки/тап по половинам) ===== */
 .ai-lb{
   position:fixed;
@@ -2251,10 +2284,9 @@ window.addEventListener('DOMContentLoaded', async function () {
     .from("experts")
     .select("*")
     .eq("id", id)
-    .eq("status", "approved")
     .single();
 
-  if(error || !expert){ pMsg.textContent = "Карточка не найдена или не одобрена."; return; }
+  if(error || !expert){ pMsg.textContent = "Карточка не найдена."; return; }
 
   document.getElementById('pName').textContent = expert.name || "—";
   document.getElementById('pCat').textContent = (CAT_LABEL[expert.category] || expert.category || "");
@@ -2305,39 +2337,123 @@ window.addEventListener('DOMContentLoaded', async function () {
   // медиа
   const { data: media, error: me } = await sb
     .from("expert_media")
-    .select("id, media_type, storage_path, created_at")
+    .select("id, media_type, storage_path, album_id, created_at")
     .eq("expert_id", id)
     .order("created_at", { ascending:false });
 
   if(me){ pMsg.textContent = "Ошибка медиа: " + me.message; return; }
   if(!media || media.length===0){ pMsg.textContent = "У исполнителя пока нет медиа."; return; }
 
+  // Загружаем альбомы
+  const albumIds = [...new Set(media.map(m => m.album_id).filter(Boolean))];
+  let albumsMap = new Map();
+  
+  if(albumIds.length > 0) {
+    const { data: albums } = await sb
+      .from("expert_albums")
+      .select("id, title")
+      .in("id", albumIds);
+    
+    if(albums) {
+      albums.forEach(a => albumsMap.set(a.id, a.title));
+    }
+  }
+
   const paths = media.map(m => m.storage_path).filter(Boolean);
   const { data: urls } = await sb.storage.from(BUCKET).createSignedUrls(paths, 60*60);
   const urlByPath = new Map();
   (urls || []).forEach(x => { if(x?.path && x?.signedUrl) urlByPath.set(x.path, x.signedUrl); });
 
+  // Группируем медиа по альбомам
+  const mediaByAlbum = new Map();
+  const mediaWithoutAlbum = [];
+  
+  media.forEach(m => {
+    if(m.album_id && albumsMap.has(m.album_id)) {
+      if(!mediaByAlbum.has(m.album_id)) {
+        mediaByAlbum.set(m.album_id, []);
+      }
+      mediaByAlbum.get(m.album_id).push(m);
+    } else {
+      mediaWithoutAlbum.push(m);
+    }
+  });
+
   const items = [];
-  const html = media.map(m => {
-    const u = urlByPath.get(m.storage_path);
-    if(!u) return "";
-
-    const type = (String(m.media_type||"").toLowerCase()==="video") ? "video" : "image";
-    const idx = items.length;
-    items.push({ type, url: u });
-
-    return `
-      <div class="media-item" data-idx="${idx}" role="button" tabindex="0">
-        ${type==="video"
-          ? `<video src="${escAttr(u)}" muted playsinline preload="metadata"></video>`
-          : `<img src="${escAttr(u)}" alt="">`
-        }
-      </div>
-    `;
-  }).join("");
+  let html = "";
 
   const pMedia = document.getElementById('pMedia');
-  pMedia.innerHTML = html;
+  // Важно: #pMedia в верстке Tilda имеет class="media-grid" — это ломает альбомы (всё становится мелким).
+  // Делаем его обычным контейнером и рисуем отдельные сетки внутри.
+  if(pMedia){
+    pMedia.classList.remove('media-grid');
+    pMedia.classList.add('ai-albums');
+  }
+
+  function renderAlbumBlock(title, list){
+    let block = `
+      <section class="ai-album">
+        <div class="ai-album__title">${escapeHtml(title)}</div>
+        <div class="ai-album__grid">
+    `;
+
+    list.forEach(m => {
+      const u = urlByPath.get(m.storage_path);
+      if(!u) return;
+
+      const type = (String(m.media_type||"").toLowerCase()==="video") ? "video" : "image";
+      const idx = items.length;
+      items.push({ type, url: u });
+
+      block += `
+        <div class="media-item" data-idx="${idx}" role="button" tabindex="0">
+          ${type==="video"
+            ? `<video src="${escAttr(u)}" muted playsinline preload="metadata"></video>`
+            : `<img src="${escAttr(u)}" alt="">`
+          }
+        </div>
+      `;
+    });
+
+    block += `
+        </div>
+      </section>
+    `;
+    return block;
+  }
+
+  // Рендерим альбомы с медиа (в порядке, который вернул запрос альбомов)
+  if(mediaByAlbum.size > 0){
+    // пытаемся сохранить "естественный" порядок: сначала те альбомы, что пришли из базы
+    const orderedAlbumIds = Array.from(albumsMap.keys());
+    const rendered = new Set();
+
+    orderedAlbumIds.forEach((albumId) => {
+      const albumMedia = mediaByAlbum.get(albumId);
+      if(!albumMedia || albumMedia.length === 0) return;
+      rendered.add(albumId);
+      const albumTitle = albumsMap.get(albumId) || "Без названия";
+      html += renderAlbumBlock(albumTitle, albumMedia);
+    });
+
+    // на всякий случай — если вдруг встретились медиа с album_id, которого нет в albumsMap
+    mediaByAlbum.forEach((albumMedia, albumId) => {
+      if(rendered.has(albumId)) return;
+      const albumTitle = albumsMap.get(albumId) || "Без названия";
+      html += renderAlbumBlock(albumTitle, albumMedia);
+    });
+  }
+
+  // Рендерим медиа без альбома
+  if(mediaWithoutAlbum.length > 0){
+    const otherTitle = (mediaByAlbum.size > 0) ? "Другие медиа" : "Галерея";
+    html += renderAlbumBlock(otherTitle, mediaWithoutAlbum);
+  }
+
+  if(pMedia){
+    pMedia.innerHTML = html;
+    applyMediaAspectRatios(pMedia);
+  }
 
   // ✅ инициализация лайтбокса + перехват кликов (чтобы не было "черного старта")
   const lb = initLightbox(items);
@@ -2362,5 +2478,89 @@ window.addEventListener('DOMContentLoaded', async function () {
 
   pMsg.textContent = "";
 });
+
+// Ставит правильный aspect-ratio для карточек (вертикальные остаются вертикальными, горизонтальные — горизонтальными)
+function applyMediaAspectRatios(root){
+  if(!root) return;
+  const items = Array.from(root.querySelectorAll('.media-item'));
+  items.forEach((item) => {
+    const img = item.querySelector('img');
+    const video = item.querySelector('video');
+
+    const apply = (w, h) => {
+      const ww = Number(w) || 0;
+      const hh = Number(h) || 0;
+      if(!ww || !hh) return;
+      item.style.aspectRatio = `${ww} / ${hh}`;
+      item.dataset.orient = (hh > ww) ? 'portrait' : (ww > hh) ? 'landscape' : 'square';
+    };
+
+    if(img){
+      const onLoad = () => apply(img.naturalWidth, img.naturalHeight);
+      if(img.complete) onLoad();
+      else img.addEventListener('load', onLoad, { once:true });
+    } else if(video){
+      const onMeta = () => apply(video.videoWidth, video.videoHeight);
+      if(video.readyState >= 1) onMeta();
+      else video.addEventListener('loadedmetadata', onMeta, { once:true });
+    }
+  });
+}
+
+// Вспомогательная функция для экранирования HTML
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
 </script> <!-- ====== /card END ====== --> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords--> <!-- Tilda copyright. Don't remove this line --><div class="t-tildalabel " id="tildacopy" data-tilda-sign="13172919#104196026"><a href="https://tilda.cc/" class="t-tildalabel__link"><div class="t-tildalabel__wrapper"><div class="t-tildalabel__txtleft">Made on </div><div class="t-tildalabel__wrapimg"><img src="images/tildacopy.png" class="t-tildalabel__img" fetchpriority="low" alt=""></div><div class="t-tildalabel__txtright">Tilda</div></div></a></div> <!-- Stat --> <script type="text/javascript">if(!window.mainTracker) {window.mainTracker='tilda';}
-window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.getElementsByTagName(o)[0],s=d.createElement(o),f=function(){n.parentNode.insertBefore(s,n);};s.type="text/javascript";s.async=true;s.key=k;s.id="tildastatscript";s.src=g;if(w.opera=="[object Opera]") {d.addEventListener("DOMContentLoaded",f,false);} else {f();}})(document,window,'b3e5db9cfc6c4460a026f51ee207b27b','script','js/tilda-stat-1.0.min.js');},2000);</script> </body> </html>
+window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.getElementsByTagName(o)[0],s=d.createElement(o),f=function(){n.parentNode.insertBefore(s,n);};s.type="text/javascript";s.async=true;s.key=k;s.id="tildastatscript";s.src=g;if(w.opera=="[object Opera]") {d.addEventListener("DOMContentLoaded",f,false);} else {f();}})(document,window,'b3e5db9cfc6c4460a026f51ee207b27b','script','js/tilda-stat-1.0.min.js');},2000);</script>
+
+<!-- Роутер для локальных файлов -->
+<script>
+(function() {
+  const routes = {
+    '/': 'index.html',
+    '/services': 'page103809416.html',
+    '/experts': 'page103811056.html',
+    '/cases': 'page103811306.html',
+    '/how': 'page103811576.html',
+    '/faq': 'page103811816.html',
+    '/apply': 'apply.html',
+    '/add': 'add.html',
+    '/auth': 'auth.html',
+    '/privacy': 'page103812116.html',
+    '/terms': 'page103812316.html',
+    '/card': 'page104196026.html',
+    '/video': 'page103813046.html',
+    '/expert-template': 'page103813286.html',
+    '/case-template': 'page103813646.html',
+    '/bots': 'page103813746.html',
+    '/design': 'page103813896.html',
+    '/marketplaces': 'page103814106.html',
+    '/sites': 'page103814276.html'
+  };
+  function handleLinkClick(e) {
+    const link = e.target.closest('a');
+    if (!link) return;
+    const href = link.getAttribute('href');
+    if (!href) return;
+    if (href.startsWith('/') && !href.startsWith('//')) {
+      e.preventDefault();
+      e.stopPropagation();
+      const path = href.split('?')[0].split('#')[0].replace(/\/$/, '') || '/';
+      const file = routes[path];
+      if (file) {
+        const query = href.includes('?') ? href.substring(href.indexOf('?')) : '';
+        const hash = href.includes('#') ? href.substring(href.indexOf('#')) : '';
+        window.location.href = file + query + hash;
+      } else {
+        window.location.href = href;
+      }
+    }
+  }
+  document.addEventListener('click', handleLinkClick, true);
+})();
+</script>
+
+</body> </html>

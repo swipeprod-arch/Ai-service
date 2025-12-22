@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎲 Генератор данных (ПРОСТОЙ)</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+    .warning {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      color: #856404;
+    }
+    .warning strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-bottom: 15px;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .log {
+      background: #1a1a1a;
+      color: #00ff00;
+      padding: 20px;
+      border-radius: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      max-height: 400px;
+      overflow-y: auto;
+      line-height: 1.6;
+      display: none;
+    }
+    .log.active {
+      display: block;
+    }
+    .log-line {
+      margin-bottom: 5px;
+    }
+    .log-success { color: #00ff00; }
+    .log-error { color: #ff4444; }
+    .log-info { color: #44aaff; }
+    .log-warning { color: #ffaa00; }
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎲 Генератор данных</h1>
+    <p class="subtitle">Простая версия - укажи свой user_id</p>
+
+    <div class="warning">
+      <strong>⚠️ Инструкция:</strong>
+      1. Зайди на сайт и авторизуйся<br>
+      2. Открой консоль браузера (F12)<br>
+      3. Введи: <code style="background: #fff; padding: 2px 6px; border-radius: 4px; font-family: monospace;">(await supabase.auth.getUser()).data.user.id</code><br>
+      4. Скопируй свой user_id и вставь ниже
+    </div>
+
+    <label>Твой User ID:</label>
+    <input type="text" id="userId" value="5be410bf-b654-467e-ae97-70d65be3fa75">
+
+    <label>Количество карточек (1-100):</label>
+    <input type="number" id="count" value="10" min="1" max="100">
+
+    <button id="startBtn" onclick="generate()">🚀 Начать генерацию</button>
+
+    <div class="log" id="log"></div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://orxzpefskbkcyuoobkol.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_fj9X3SDLjXiL0v3pajtMwA_fTYhN3us";
+    const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+    const CATEGORIES = ['design', 'video', 'photo', 'text', 'audio'];
+    const ROLES = {
+      design: ['UI/UX Дизайнер', 'Графический дизайнер', 'Веб-дизайнер', 'Моушн-дизайнер'],
+      video: ['Видеограф', 'Видеомонтажер', 'Оператор', 'Режиссер'],
+      photo: ['Фотограф', 'Ретушер', 'Фуд-фотограф', 'Портретист'],
+      text: ['Копирайтер', 'Редактор', 'Контент-менеджер', 'SMM-специалист'],
+      audio: ['Звукорежиссер', 'Композитор', 'Диктор', 'Подкастер']
+    };
+    const NAMES = ['Александр', 'Мария', 'Дмитрий', 'Анна', 'Сергей', 'Елена', 'Андрей', 'Ольга'];
+    const SURNAMES = ['Смирнов', 'Иванов', 'Кузнецов', 'Попов', 'Соколов', 'Лебедев', 'Козлов'];
+
+    function log(msg, type = 'info') {
+      const logEl = document.getElementById('log');
+      logEl.classList.add('active');
+      const line = document.createElement('div');
+      line.className = `log-line log-${type}`;
+      line.textContent = `[${new Date().toLocaleTimeString('ru-RU')}] ${msg}`;
+      logEl.appendChild(line);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function random(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function randomItem(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function randomImageUrl() {
+      const w = random(800, 1920);
+      const h = random(600, 1080);
+      const id = random(1, 1000);
+      return `https://picsum.photos/id/${id}/${w}/${h}`;
+    }
+
+    window.generate = async function() {
+      const userId = document.getElementById('userId').value.trim();
+      const count = parseInt(document.getElementById('count').value);
+      const btn = document.getElementById('startBtn');
+
+      if (!userId) {
+        alert('❌ Введи свой user_id!');
+        return;
+      }
+
+      if (!sb) {
+        alert('❌ Supabase не загружен!');
+        return;
+      }
+
+      btn.disabled = true;
+      log('🚀 Начинаю генерацию...', 'info');
+
+      try {
+        // Авторизуемся от имени пользователя
+        log(`🔑 Использую user_id: ${userId}`, 'info');
+
+        for (let i = 0; i < count; i++) {
+          const category = randomItem(CATEGORIES);
+          const name = `${randomItem(NAMES)} ${randomItem(SURNAMES)}`;
+          
+          // Создаем эксперта
+          const { data: expert, error: expertError } = await sb
+            .from('experts')
+            .insert([{
+              user_id: userId,
+              category: category,
+              name: name,
+              role: randomItem(ROLES[category]),
+              description: 'Создаю крутой контент для брендов.',
+              short_info: `${random(1, 10)} лет опыта`,
+              price_from: `от ${random(5, 50)} 000 ₽`,
+              delivery_time: `${random(1, 14)} дней`,
+              telegram: `@${name.toLowerCase().replace(/\s+/g, '_')}`,
+              status: 'approved'
+            }])
+            .select()
+            .single();
+
+          if (expertError) {
+            log(`❌ Ошибка эксперта #${i+1}: ${expertError.message}`, 'error');
+            continue;
+          }
+
+          log(`✅ Эксперт #${i+1}: ${expert.name}`, 'success');
+
+          // Создаем 2-3 альбома
+          const albumCount = random(2, 3);
+          for (let j = 0; j < albumCount; j++) {
+            const { data: album } = await sb
+              .from('expert_albums')
+              .insert([{
+                expert_id: expert.id,
+                user_id: userId,
+                title: `Альбом ${j+1}`,
+                sort_order: j
+              }])
+              .select()
+              .single();
+
+            if (!album) continue;
+
+            // Создаем 3-5 медиа
+            const mediaCount = random(3, 5);
+            for (let k = 0; k < mediaCount; k++) {
+              await sb
+                .from('expert_media')
+                .insert([{
+                  expert_id: expert.id,
+                  user_id: userId,
+                  album_id: album.id,
+                  media_type: 'image',
+                  storage_path: randomImageUrl(),
+                  file_name: `image_${Date.now()}_${random(1000, 9999)}.jpg`,
+                  mime_type: 'image/jpeg',
+                  size_bytes: random(500000, 5000000),
+                  is_cover: k === 0
+                }]);
+            }
+          }
+
+          // Небольшая задержка
+          if (i % 5 === 0 && i > 0) {
+            await new Promise(r => setTimeout(r, 300));
+          }
+        }
+
+        log(`🎉 Готово! Создано ${count} экспертов`, 'success');
+
+      } catch (error) {
+        log(`❌ Ошибка: ${error.message}`, 'error');
+        console.error(error);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    log('✅ Готово к работе!', 'info');
+    log('💡 Введи свой user_id и нажми "Начать"', 'info');
+  </script>
+</body>
+</html>
+

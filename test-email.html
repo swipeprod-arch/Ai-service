@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тест Email Auth - Supabase</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    h1 { margin-top: 0; color: #13233F; }
+    h2 { color: #5B6C86; font-size: 18px; margin-top: 30px; }
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+    button {
+      background: #0ea5e9;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover { opacity: 0.9; }
+    button.secondary {
+      background: #64748b;
+    }
+    #log {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 15px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    .log-line {
+      margin: 4px 0;
+      padding: 4px 0;
+      border-bottom: 1px solid #334155;
+    }
+    .log-success { color: #4ade80; }
+    .log-error { color: #f87171; }
+    .log-warning { color: #fbbf24; }
+    .log-info { color: #60a5fa; }
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+    .status.ok { background: #4ade80; color: white; }
+    .status.fail { background: #f87171; color: white; }
+    .status.pending { background: #fbbf24; color: white; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🔍 Диагностика Email Auth - Supabase</h1>
+    <p>Эта страница поможет проверить, почему не приходят письма для входа.</p>
+    
+    <h2>1. Проверка подключения к Supabase</h2>
+    <button onclick="checkConnection()">Проверить подключение</button>
+    <span id="connectionStatus"></span>
+    
+    <h2>2. Проверка настроек Auth</h2>
+    <button onclick="checkAuthConfig()">Проверить настройки</button>
+    <span id="authStatus"></span>
+    
+    <h2>3. Тест отправки письма</h2>
+    <input type="email" id="testEmail" placeholder="Твой реальный email" />
+    <button onclick="sendTestEmail()">Отправить тестовое письмо</button>
+    <button class="secondary" onclick="clearLog()">Очистить лог</button>
+  </div>
+  
+  <div class="card">
+    <h2>📋 Логи</h2>
+    <div id="log"></div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://orxzpefskbkcyuoobkol.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_fj9X3SDLjXiL0v3pajtMwA_fTYhN3us";
+    
+    let sb;
+    const logDiv = document.getElementById('log');
+    
+    function log(message, type = 'info') {
+      const time = new Date().toLocaleTimeString();
+      const div = document.createElement('div');
+      div.className = `log-line log-${type}`;
+      div.textContent = `[${time}] ${message}`;
+      logDiv.appendChild(div);
+      logDiv.scrollTop = logDiv.scrollHeight;
+      console.log(message);
+    }
+    
+    function clearLog() {
+      logDiv.innerHTML = '';
+    }
+    
+    function setStatus(elementId, text, status) {
+      const el = document.getElementById(elementId);
+      el.innerHTML = `<span class="status ${status}">${text}</span>`;
+    }
+    
+    async function checkConnection() {
+      log('🔍 Проверяю подключение к Supabase...', 'info');
+      
+      try {
+        if (!window.supabase) {
+          log('❌ Библиотека Supabase не загружена!', 'error');
+          setStatus('connectionStatus', 'ОШИБКА', 'fail');
+          return;
+        }
+        
+        sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        log('✅ Supabase клиент создан', 'success');
+        
+        // Проверяем подключение к API
+        const { data, error } = await sb.auth.getSession();
+        
+        if (error) {
+          log(`❌ Ошибка подключения: ${error.message}`, 'error');
+          setStatus('connectionStatus', 'ОШИБКА', 'fail');
+        } else {
+          log('✅ Подключение к Supabase работает!', 'success');
+          log(`📊 URL: ${SUPABASE_URL}`, 'info');
+          setStatus('connectionStatus', 'OK', 'ok');
+        }
+      } catch (e) {
+        log(`❌ Критическая ошибка: ${e.message}`, 'error');
+        setStatus('connectionStatus', 'ОШИБКА', 'fail');
+      }
+    }
+    
+    async function checkAuthConfig() {
+      log('🔍 Проверяю настройки Auth...', 'info');
+      
+      if (!sb) {
+        log('⚠️ Сначала проверь подключение!', 'warning');
+        setStatus('authStatus', 'ПРОПУЩЕНО', 'pending');
+        return;
+      }
+      
+      try {
+        // Пытаемся получить сессию
+        const { data: sessionData } = await sb.auth.getSession();
+        log(`✅ Auth API доступен`, 'success');
+        
+        if (sessionData?.session) {
+          log(`✅ Есть активная сессия: ${sessionData.session.user.email}`, 'success');
+        } else {
+          log(`ℹ️ Нет активной сессии (это нормально для теста)`, 'info');
+        }
+        
+        // Проверяем настройки через публичные endpoint'ы
+        log('ℹ️ Проверяю доступность Email Auth...', 'info');
+        
+        setStatus('authStatus', 'OK', 'ok');
+        
+        log('⚠️ ВАЖНО: Проверь в Supabase Dashboard:', 'warning');
+        log('   1. Authentication → Providers → Email', 'warning');
+        log('   2. Убедись что "Enable Email provider" включен', 'warning');
+        log('   3. Проверь Email Templates → Magic Link', 'warning');
+        
+      } catch (e) {
+        log(`❌ Ошибка проверки: ${e.message}`, 'error');
+        setStatus('authStatus', 'ОШИБКА', 'fail');
+      }
+    }
+    
+    async function sendTestEmail() {
+      const email = document.getElementById('testEmail').value.trim();
+      
+      if (!email) {
+        log('⚠️ Введи email!', 'warning');
+        return;
+      }
+      
+      if (!sb) {
+        log('⚠️ Сначала проверь подключение!', 'warning');
+        return;
+      }
+      
+      log(`📧 Отправляю тестовое письмо на: ${email}`, 'info');
+      
+      try {
+        const { data, error } = await sb.auth.signInWithOtp({
+          email,
+          options: {
+            emailRedirectTo: window.location.origin
+            // Убрали shouldCreateUser - работает для всех пользователей
+          }
+        });
+        
+        if (error) {
+          log(`❌ ОШИБКА: ${error.message}`, 'error');
+          
+          // Дополнительная диагностика
+          if (error.message.includes('rate limit')) {
+            log('⚠️ Превышен лимит отправки. Подожди 60 секунд.', 'warning');
+          } else if (error.message.includes('invalid')) {
+            log('⚠️ Email невалидный. Используй реальный email.', 'warning');
+          } else if (error.message.includes('not authorized')) {
+            log('⚠️ Email Auth не включен в Supabase!', 'error');
+            log('   → Открой: Dashboard → Authentication → Providers', 'error');
+            log('   → Включи: "Enable Email provider"', 'error');
+          } else if (error.message.includes('SMTP')) {
+            log('⚠️ SMTP не настроен!', 'error');
+            log('   → Открой: Dashboard → Project Settings → Auth', 'error');
+            log('   → Настрой SMTP или используй встроенный', 'error');
+          }
+        } else {
+          log(`✅ УСПЕХ! Письмо отправлено!`, 'success');
+          log(`ℹ️ Проверь почту: ${email}`, 'info');
+          log(`ℹ️ Также проверь папку "Спам"`, 'info');
+          
+          if (data) {
+            log(`📊 Data: ${JSON.stringify(data)}`, 'info');
+          }
+        }
+      } catch (e) {
+        log(`❌ Критическая ошибка: ${e.message}`, 'error');
+      }
+    }
+    
+    // Автоматическая проверка при загрузке
+    window.addEventListener('load', () => {
+      log('🚀 Страница загружена. Начинаю диагностику...', 'info');
+      setTimeout(checkConnection, 500);
+    });
+  </script>
+</body>
+</html>
+
