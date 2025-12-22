@@ -1917,11 +1917,20 @@ window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.
     if(!h1) return;
     h1.textContent = 'Каталог ИИ специалистов для вашего бизнеса';
   }
+  function setHeroSub(){
+    const p = document.querySelector('#rec1689407041 .hero .h-sub');
+    if(!p) return;
+    p.textContent = 'Смотри портфолио и кейсы, пиши напрямую исполнителям';
+  }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setHeroTitle);
   else setHeroTitle();
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setHeroSub);
+  else setHeroSub();
   // Подстраховка для Tilda (иногда дорисовывает позже)
   setTimeout(setHeroTitle, 500);
   setTimeout(setHeroTitle, 1500);
+  setTimeout(setHeroSub, 500);
+  setTimeout(setHeroSub, 1500);
 })();
 </script>
 
