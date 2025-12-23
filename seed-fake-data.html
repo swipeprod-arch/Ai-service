@@ -163,37 +163,58 @@
   </style>
 <script id="ai-gallery-menu">
 (function(){
-  function addGalleryMenu(){
-    // РС‰РµРј nav-links
-    const navLinks = document.querySelector('.nav-links');
+  function fixNavMenu(){
+    var navLinks = document.querySelector('.nav-links');
     if(!navLinks) return;
     
-    // РџСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё СѓР¶Рµ СЃСЃС‹Р»РєР° РЅР° РіР°Р»РµСЂРµСЋ
-    if(navLinks.querySelector('a[href*="gallery"]')) return;
+    // РЈР±РёСЂР°РµРј "РЈСЃР»СѓРіРё" Рё "РљРµР№СЃС‹"
+    var links = navLinks.querySelectorAll('a');
+    links.forEach(function(a){
+      var text = a.textContent.trim().toLowerCase();
+      if(text === 'СѓСЃР»СѓРіРё' || text === 'РєРµР№СЃС‹' || a.href.indexOf('services') > -1 || a.href.indexOf('cases') > -1){
+        a.remove();
+      }
+    });
     
-    // РС‰РµРј СЃСЃС‹Р»РєСѓ РЅР° РёСЃРїРѕР»РЅРёС‚РµР»РµР№
-    const expertsLink = navLinks.querySelector('a[href*="experts"]');
-    if(!expertsLink) return;
+    // РџСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё СѓР¶Рµ РїСЂР°РІРёР»СЊРЅР°СЏ СЃСЃС‹Р»РєР° РЅР° РіР°Р»РµСЂРµСЋ
+    var hasGallery = false;
+    navLinks.querySelectorAll('a').forEach(function(a){
+      if(a.href.indexOf('gallery') > -1){
+        // РСЃРїСЂР°РІР»СЏРµРј С‚РµРєСЃС‚ Рё СЃСЃС‹Р»РєСѓ
+        a.textContent = 'Р“Р°Р»РµСЂРµСЏ СЂР°Р±РѕС‚';
+        a.href = '/gallery.html';
+        hasGallery = true;
+      }
+    });
     
-    // РЎРѕР·РґР°РµРј СЃСЃС‹Р»РєСѓ РЅР° РіР°Р»РµСЂРµСЋ
-    const galleryLink = document.createElement('a');
-    galleryLink.href = '/gallery';
-    galleryLink.textContent = 'Р“Р°Р»РµСЂРµСЏ СЂР°Р±РѕС‚';
-    
-    // Р’СЃС‚Р°РІР»СЏРµРј РїРѕСЃР»Рµ РёСЃРїРѕР»РЅРёС‚РµР»РµР№
-    expertsLink.insertAdjacentElement('afterend', galleryLink);
+    // Р•СЃР»Рё РЅРµС‚ - РґРѕР±Р°РІР»СЏРµРј РїРѕСЃР»Рµ "РСЃРїРѕР»РЅРёС‚РµР»Рё"
+    if(!hasGallery){
+      var expertsLink = null;
+      navLinks.querySelectorAll('a').forEach(function(a){
+        if(a.href.indexOf('experts') > -1 || a.textContent.toLowerCase().indexOf('РёСЃРїРѕР»РЅРёС‚РµР»') > -1){
+          expertsLink = a;
+        }
+      });
+      
+      if(expertsLink){
+        var galleryLink = document.createElement('a');
+        galleryLink.href = '/gallery.html';
+        galleryLink.textContent = 'Р“Р°Р»РµСЂРµСЏ СЂР°Р±РѕС‚';
+        expertsLink.insertAdjacentElement('afterend', galleryLink);
+      }
+    }
   }
   
-  if(document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', addGalleryMenu);
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', fixNavMenu);
   } else {
-    addGalleryMenu();
+    fixNavMenu();
   }
-  // РџРѕРІС‚РѕСЂСЏРµРј РЅР° СЃР»СѓС‡Р°Р№ РґРёРЅР°РјРёС‡РµСЃРєРѕР№ Р·Р°РіСЂСѓР·РєРё
-  setTimeout(addGalleryMenu, 500);
-  setTimeout(addGalleryMenu, 1500);
+  setTimeout(fixNavMenu, 300);
+  setTimeout(fixNavMenu, 1000);
 })();
-</script></head>
+</script><link rel="stylesheet" href="/css/mobile-menu.css?v=20251223b4">
+</head>
 <body>
   <div class="container">
     <h1>🎲 Генератор данных</h1>
@@ -637,6 +658,7 @@
     // Запускаем инициализацию
     window.addEventListener('DOMContentLoaded', init);
   </script>
+<script src="/js/mobile-menu.js?v=20251223b4"></script>
 </body>
 </html>
 

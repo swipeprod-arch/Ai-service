@@ -276,8 +276,8 @@ window.addEventListener('DOMContentLoaded', function () {
     // делаем ссылку абсолютной (чтобы "services.html" тоже поймать)
     if (!href.startsWith('/')) href = '/' + href;
 
-    // режем .html
-    if (href.endsWith('.html')) href = href.slice(0, -5);
+    // режем .html (но НЕ для /pageXXXXXXXX.html и /gallery.html — иначе ломаются переходы)
+    if (href.endsWith('.html') && !/\/page\d+\.html$/i.test(href) && href !== '/gallery.html') href = href.slice(0, -5);
 
     // index.html -> /
     if (href === '/index') href = '/';
@@ -1452,9 +1452,7 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
   @media (max-width: 560px){
     .nav a.brand{ flex: 0 0 auto !important; min-width: auto !important; }
     /* скрываем любой текстовый span внутри бренда (оставляем только .logo) */
-    .nav a.brand span:not(.logo){
-      display:none !important;
-    }
+    .nav a.brand span:not(.logo){display:block !important;font-size:12px !important;font-weight:700 !important;white-space:nowrap !important;}
     .nav a.brand .logo{
       width: 34px !important;
       height: 34px !important;
@@ -1464,59 +1462,8 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
       justify-content: flex-end;
     }
   }
-</style><script id="ai-mobile-brand-hide">
-(function(){
-  function apply(){
-    try{
-      var isMobile = window.matchMedia && window.matchMedia('(max-width: 560px)').matches;
-      var nodes = document.querySelectorAll('.nav a.brand span:not(.logo)');
-      nodes.forEach(function(sp){
-        try{
-          if(isMobile) sp.style.setProperty('display','none','important');
-          else sp.style.removeProperty('display');
-        }catch(e){}
-      });
-    }catch(e){}
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
-  else apply();
-  window.addEventListener('resize', apply);
-  setTimeout(apply, 200);
-  setTimeout(apply, 900);
-})();
-</script><script id="ai-gallery-menu">
-(function(){
-  function addGalleryMenu(){
-    // РС‰РµРј nav-links
-    const navLinks = document.querySelector('.nav-links');
-    if(!navLinks) return;
-    
-    // РџСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё СѓР¶Рµ СЃСЃС‹Р»РєР° РЅР° РіР°Р»РµСЂРµСЋ
-    if(navLinks.querySelector('a[href*="gallery"]')) return;
-    
-    // РС‰РµРј СЃСЃС‹Р»РєСѓ РЅР° РёСЃРїРѕР»РЅРёС‚РµР»РµР№
-    const expertsLink = navLinks.querySelector('a[href*="experts"]');
-    if(!expertsLink) return;
-    
-    // РЎРѕР·РґР°РµРј СЃСЃС‹Р»РєСѓ РЅР° РіР°Р»РµСЂРµСЋ
-    const galleryLink = document.createElement('a');
-    galleryLink.href = '/gallery';
-    galleryLink.textContent = 'Р“Р°Р»РµСЂРµСЏ СЂР°Р±РѕС‚';
-    
-    // Р’СЃС‚Р°РІР»СЏРµРј РїРѕСЃР»Рµ РёСЃРїРѕР»РЅРёС‚РµР»РµР№
-    expertsLink.insertAdjacentElement('afterend', galleryLink);
-  }
-  
-  if(document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', addGalleryMenu);
-  } else {
-    addGalleryMenu();
-  }
-  // РџРѕРІС‚РѕСЂСЏРµРј РЅР° СЃР»СѓС‡Р°Р№ РґРёРЅР°РјРёС‡РµСЃРєРѕР№ Р·Р°РіСЂСѓР·РєРё
-  setTimeout(addGalleryMenu, 500);
-  setTimeout(addGalleryMenu, 1500);
-})();
-</script></head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="103811056" data-tilda-page-alias="experts" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-page-headcode="yes" data-tilda-project-country="RU"> <div id="rec1689486501" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!-- ====== PAGE: Исполнители (ONE-PASTE, FULL) ====== --> <header class="nav"> <div class="container nav-inner"> <a class="brand" href="/"> <span class="logo" aria-hidden="true"></span> <span>AI-Биржа (MVP)</span> </a> <nav class="nav-links" aria-label="Навигация"> <a href="/services">Услуги</a> <a href="/experts">Исполнители</a> <a href="/cases">Кейсы</a> <a href="/how">Как это работает</a> <a href="/faq">FAQ</a> </nav> <div class="nav-cta"> <a class="btn" href="/add">Разместить услугу</a> <a class="btn primary" href="/apply">Оставить заявку</a> </div> </div> </header> <main> <!-- ФИЛЬТР НИШ --> <section class="section" id="experts-filter"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Фильтр</div> <h1 class="h-title" style="font-size:34px">Выбери нишу исполнителей</h1> <p class="h-sub">Одна ниша за раз. Можно сбросить фильтр и снова увидеть всех.</p> <div class="pick-grid cat-picker"> <button class="pick-btn" type="button" data-cat="video"><span class="ico" aria-hidden="true">&#127916;</span> AI-Видео</button> <button class="pick-btn" type="button" data-cat="design"><span class="ico" aria-hidden="true">&#127912;</span> AI-Дизайн</button> <button class="pick-btn" type="button" data-cat="bots"><span class="ico" aria-hidden="true">&#129302;</span> AI-Боты</button> <button class="pick-btn" type="button" data-cat="marketplaces"><span class="ico" aria-hidden="true">&#128722;</span> WB/Ozon</button> <button class="pick-btn" type="button" data-cat="sites"><span class="ico" aria-hidden="true">&#129513;</span> AI-Сайты</button> <button class="pick-btn ghost" type="button" data-cat="">Сбросить</button> </div> </div> </div> </section> <!-- HERO --> <section class="hero"> <div class="container hero-grid hero-grid--single"> <div class="h-card"> <div class="h-eyebrow">Каталог</div> <h1 class="h-title">Исполнители</h1> <p class="h-sub">Ищи по задаче или выбери нишу сверху. Превью берётся из выбранной обложки в карточке.</p> <div class="searchbox"> <form data-search style="display:flex;gap:10px;flex:1;flex-wrap:wrap"> <input name="q" placeholder="Например: 10 reels для стоматологии / карточка WB / бот в Telegram" /> <button class="btn primary" type="submit">Подобрать исполнителя</button> </form> </div> <div class="h-actions"> <a class="btn primary" href="/add">Добавить исполнителя</a> <a class="btn" href="/apply">Оставить заявку</a> </div> <div class="note">Без оплат на сайте. Договорённости напрямую.</div> </div> </div> </div> </div> </section> <!-- СПИСОК --> <section class="section" id="experts-list"> <div class="container"> <h2 class="section-title">Список исполнителей</h2> <p class="section-sub">Клик по карточке → открывается страница исполнителя.</p> <div class="grid" id="expertsGrid"></div> <div class="small" id="expertsMsg" style="margin-top:10px"></div> </div> </section> </main> <style>
+</style><link rel="stylesheet" href="/css/mobile-menu.css?v=20251223b4">
+</head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="103811056" data-tilda-page-alias="experts" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-page-headcode="yes" data-tilda-project-country="RU"> <div id="rec1689486501" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!-- ====== PAGE: Исполнители (ONE-PASTE, FULL) ====== --> <header class="nav"> <div class="container nav-inner"> <a class="brand" href="/"> <span class="logo" aria-hidden="true"></span> <span>AI-Биржа (MVP)</span> </a> <nav class="nav-links" aria-label="Навигация"> <a href="/experts">Исполнители</a> <a href="/gallery.html">Галерея работ</a> <a href="/how">Как это работает</a> <a href="/faq">FAQ</a> </nav> <div class="nav-cta"> <a class="btn" href="/add">Разместить услугу</a> <a class="btn primary" href="/apply">Оставить заявку</a> </div> </div> </header> <main> <!-- ФИЛЬТР НИШ --> <section class="section" id="experts-filter"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Фильтр</div> <h1 class="h-title" style="font-size:34px">Выбери нишу исполнителей</h1> <p class="h-sub">Одна ниша за раз. Можно сбросить фильтр и снова увидеть всех.</p> <div class="pick-grid cat-picker"> <button class="pick-btn" type="button" data-cat="video"><span class="ico" aria-hidden="true">&#127916;</span> AI-Видео</button> <button class="pick-btn" type="button" data-cat="design"><span class="ico" aria-hidden="true">&#127912;</span> AI-Дизайн</button> <button class="pick-btn" type="button" data-cat="bots"><span class="ico" aria-hidden="true">&#129302;</span> AI-Боты</button> <button class="pick-btn" type="button" data-cat="marketplaces"><span class="ico" aria-hidden="true">&#128722;</span> WB/Ozon</button> <button class="pick-btn" type="button" data-cat="sites"><span class="ico" aria-hidden="true">&#129513;</span> AI-Сайты</button> <button class="pick-btn ghost" type="button" data-cat="">Сбросить</button> </div> </div> </div> </section> <!-- HERO --> <section class="hero"> <div class="container hero-grid hero-grid--single"> <div class="h-card"> <div class="h-eyebrow">Каталог</div> <h1 class="h-title">Исполнители</h1> <p class="h-sub">Ищи по задаче или выбери нишу сверху. Превью берётся из выбранной обложки в карточке.</p> <div class="searchbox"> <form data-search style="display:flex;gap:10px;flex:1;flex-wrap:wrap"> <input name="q" placeholder="Например: 10 reels для стоматологии / карточка WB / бот в Telegram" /> <button class="btn primary" type="submit">Подобрать исполнителя</button> </form> </div> <div class="h-actions"> <a class="btn primary" href="/add">Добавить исполнителя</a> <a class="btn" href="/apply">Оставить заявку</a> </div> <div class="note">Без оплат на сайте. Договорённости напрямую.</div> </div> </div> </div> </div> </section> <!-- СПИСОК --> <section class="section" id="experts-list"> <div class="container"> <h2 class="section-title">Список исполнителей</h2> <p class="section-sub">Клик по карточке → открывается страница исполнителя.</p> <div class="grid" id="expertsGrid"></div> <div class="small" id="expertsMsg" style="margin-top:10px"></div> </div> </section> </main> <style>
 /* Белый текст на синем ВЕЗДЕ */
 .btn.primary, .btn.primary *{ color:#fff !important; }
 .badge, .badge *{ color:#fff !important; }
@@ -1896,20 +1843,42 @@ window.addEventListener('DOMContentLoaded', function () {
       nextB.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); next(); }, true);
     });
 
-    // swipe
-    let sx=0, sy=0, down=false;
-    coverEl.addEventListener("pointerdown", (e)=>{
-      down=true; sx=e.clientX; sy=e.clientY;
-    }, {passive:true});
-
-    coverEl.addEventListener("pointerup", (e)=>{
-      if(!down) return;
-      down=false;
-      const dx = e.clientX - sx;
-      const dy = e.clientY - sy;
-      if(Math.abs(dx) > 35 && Math.abs(dx) > Math.abs(dy)){
+    // swipe (touch + pointer для всех устройств)
+    let sx=0, sy=0, swiping=false;
+    
+    function handleStart(x, y){
+      swiping = true;
+      sx = x;
+      sy = y;
+    }
+    function handleEnd(x, y){
+      if(!swiping) return;
+      swiping = false;
+      const dx = x - sx;
+      const dy = y - sy;
+      if(Math.abs(dx) > 30 && Math.abs(dx) > Math.abs(dy)){
         dx < 0 ? next() : prev();
       }
+    }
+    
+    // Touch events (мобильные)
+    coverEl.addEventListener("touchstart", (e)=>{
+      if(e.touches.length === 1){
+        handleStart(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, {passive:true});
+    coverEl.addEventListener("touchend", (e)=>{
+      if(e.changedTouches.length === 1){
+        handleEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+      }
+    }, {passive:true});
+    
+    // Pointer events (ПК, stylus)
+    coverEl.addEventListener("pointerdown", (e)=>{
+      if(e.pointerType !== "touch") handleStart(e.clientX, e.clientY);
+    }, {passive:true});
+    coverEl.addEventListener("pointerup", (e)=>{
+      if(e.pointerType !== "touch") handleEnd(e.clientX, e.clientY);
     }, {passive:true});
 
     coverEl.addEventListener("pointercancel", ()=>{ down=false; }, {passive:true});
@@ -2064,4 +2033,5 @@ window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.
 })();
 </script>
 
+<script src="/js/mobile-menu.js?v=20251223b4"></script>
 </body> </html>

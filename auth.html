@@ -309,8 +309,8 @@ window.addEventListener('DOMContentLoaded', function () {
     // делаем ссылку абсолютной (чтобы "services.html" тоже поймать)
     if (!href.startsWith('/')) href = '/' + href;
 
-    // режем .html
-    if (href.endsWith('.html')) href = href.slice(0, -5);
+    // режем .html (но НЕ для /pageXXXXXXXX.html и /gallery.html — иначе ломаются переходы)
+    if (href.endsWith('.html') && !/\/page\d+\.html$/i.test(href) && href !== '/gallery.html') href = href.slice(0, -5);
 
     // index.html -> /
     if (href === '/index') href = '/';
@@ -1483,9 +1483,7 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
   @media (max-width: 560px){
     .nav a.brand{ flex: 0 0 auto !important; min-width: auto !important; }
     /* скрываем любой текстовый span внутри бренда (оставляем только .logo) */
-    .nav a.brand span:not(.logo){
-      display:none !important;
-    }
+    .nav a.brand span:not(.logo){display:block !important;font-size:12px !important;font-weight:700 !important;white-space:nowrap !important;}
     .nav a.brand .logo{
       width: 34px !important;
       height: 34px !important;
@@ -1495,39 +1493,8 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
       justify-content: flex-end;
     }
   }
-</style><script id="ai-gallery-menu">
-(function(){
-  function addGalleryMenu(){
-    // РС‰РµРј nav-links
-    const navLinks = document.querySelector('.nav-links');
-    if(!navLinks) return;
-    
-    // РџСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё СѓР¶Рµ СЃСЃС‹Р»РєР° РЅР° РіР°Р»РµСЂРµСЋ
-    if(navLinks.querySelector('a[href*="gallery"]')) return;
-    
-    // РС‰РµРј СЃСЃС‹Р»РєСѓ РЅР° РёСЃРїРѕР»РЅРёС‚РµР»РµР№
-    const expertsLink = navLinks.querySelector('a[href*="experts"]');
-    if(!expertsLink) return;
-    
-    // РЎРѕР·РґР°РµРј СЃСЃС‹Р»РєСѓ РЅР° РіР°Р»РµСЂРµСЋ
-    const galleryLink = document.createElement('a');
-    galleryLink.href = '/gallery';
-    galleryLink.textContent = 'Р“Р°Р»РµСЂРµСЏ СЂР°Р±РѕС‚';
-    
-    // Р’СЃС‚Р°РІР»СЏРµРј РїРѕСЃР»Рµ РёСЃРїРѕР»РЅРёС‚РµР»РµР№
-    expertsLink.insertAdjacentElement('afterend', galleryLink);
-  }
-  
-  if(document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', addGalleryMenu);
-  } else {
-    addGalleryMenu();
-  }
-  // РџРѕРІС‚РѕСЂСЏРµРј РЅР° СЃР»СѓС‡Р°Р№ РґРёРЅР°РјРёС‡РµСЃРєРѕР№ Р·Р°РіСЂСѓР·РєРё
-  setTimeout(addGalleryMenu, 500);
-  setTimeout(addGalleryMenu, 1500);
-})();
-</script></head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="104134416" data-tilda-page-alias="auth" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1694348421" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Аккаунт</div> <h1 class="h-title" style="font-size:34px">Вход / регистрация</h1> <p class="h-sub">Введи email и пароль для входа или регистрации.</p> <form class="form" id="authForm"> <div class="field"> <label>Email</label> <input id="authEmail" type="email" placeholder="you@mail.com" required> </div> <div class="field"> <label>Пароль</label> <input id="authPassword" type="password" placeholder="Минимум 6 символов" required> </div> <div style="display:flex;gap:10px;flex-wrap:wrap"> <button class="btn primary" type="submit">Войти</button> <button class="btn" id="registerBtn" type="button">Зарегистрироваться</button> </div> <div class="small" id="authMsg" style="margin-top:8px"></div> </form> <hr class="sep"> <div class="small" id="authState"></div> <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"> <a class="btn" href="/experts">В каталог</a> </div> </div> </div> </section> <script>
+</style><link rel="stylesheet" href="/css/mobile-menu.css?v=20251223b4">
+</head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="104134416" data-tilda-page-alias="auth" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1694348421" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Аккаунт</div> <h1 class="h-title" style="font-size:34px">Вход / регистрация</h1> <p class="h-sub">Введи email и пароль для входа или регистрации.</p> <form class="form" id="authForm"> <div class="field"> <label>Email</label> <input id="authEmail" type="email" placeholder="you@mail.com" required> </div> <div class="field"> <label>Пароль</label> <input id="authPassword" type="password" placeholder="Минимум 6 символов" required> </div> <div style="display:flex;gap:10px;flex-wrap:wrap"> <button class="btn primary" type="submit">Войти</button> <button class="btn" id="registerBtn" type="button">Зарегистрироваться</button> </div> <div class="small" id="authMsg" style="margin-top:8px"></div> </form> <hr class="sep"> <div class="small" id="authState"></div> <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"> <a class="btn" href="/experts">В каталог</a> </div> </div> </div> </section> <script>
 window.addEventListener('DOMContentLoaded', async function () {
   const msg = document.getElementById('authMsg');
   const state = document.getElementById('authState');
@@ -1723,4 +1690,5 @@ window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.
 })();
 </script>
 
+<script src="/js/mobile-menu.js?v=20251223b4"></script>
 </body> </html>

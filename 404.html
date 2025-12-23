@@ -20,9 +20,7 @@
   @media (max-width: 560px){
     .nav a.brand{ flex: 0 0 auto !important; min-width: auto !important; }
     /* скрываем любой текстовый span внутри бренда (оставляем только .logo) */
-    .nav a.brand span:not(.logo){
-      display:none !important;
-    }
+    .nav a.brand span:not(.logo){display:block !important;font-size:12px !important;font-weight:700 !important;white-space:nowrap !important;}
     .nav a.brand .logo{
       width: 34px !important;
       height: 34px !important;
@@ -32,36 +30,6 @@
       justify-content: flex-end;
     }
   }
-</style><script id="ai-gallery-menu">
-(function(){
-  function addGalleryMenu(){
-    // РС‰РµРј nav-links
-    const navLinks = document.querySelector('.nav-links');
-    if(!navLinks) return;
-    
-    // РџСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё СѓР¶Рµ СЃСЃС‹Р»РєР° РЅР° РіР°Р»РµСЂРµСЋ
-    if(navLinks.querySelector('a[href*="gallery"]')) return;
-    
-    // РС‰РµРј СЃСЃС‹Р»РєСѓ РЅР° РёСЃРїРѕР»РЅРёС‚РµР»РµР№
-    const expertsLink = navLinks.querySelector('a[href*="experts"]');
-    if(!expertsLink) return;
-    
-    // РЎРѕР·РґР°РµРј СЃСЃС‹Р»РєСѓ РЅР° РіР°Р»РµСЂРµСЋ
-    const galleryLink = document.createElement('a');
-    galleryLink.href = '/gallery';
-    galleryLink.textContent = 'Р“Р°Р»РµСЂРµСЏ СЂР°Р±РѕС‚';
-    
-    // Р’СЃС‚Р°РІР»СЏРµРј РїРѕСЃР»Рµ РёСЃРїРѕР»РЅРёС‚РµР»РµР№
-    expertsLink.insertAdjacentElement('afterend', galleryLink);
-  }
-  
-  if(document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', addGalleryMenu);
-  } else {
-    addGalleryMenu();
-  }
-  // РџРѕРІС‚РѕСЂСЏРµРј РЅР° СЃР»СѓС‡Р°Р№ РґРёРЅР°РјРёС‡РµСЃРєРѕР№ Р·Р°РіСЂСѓР·РєРё
-  setTimeout(addGalleryMenu, 500);
-  setTimeout(addGalleryMenu, 1500);
-})();
-</script></head><body style="background-color:#eee;"><table style="width:100%; height:100%;"><tr><td style="vertical-align: middle; text-align: center;"><a href="https://tilda.cc"><img src="//tilda.ws/img/logo404.png" border="0" alt="Tilda" /></a></td></tr></table></body></html>
+</style><link rel="stylesheet" href="/css/mobile-menu.css?v=20251223b4">
+</head><body style="background-color:#eee;"><table style="width:100%; height:100%;"><tr><td style="vertical-align: middle; text-align: center;"><a href="https://tilda.cc"><img src="//tilda.ws/img/logo404.png" border="0" alt="Tilda" /></a></td></tr></table><script src="/js/mobile-menu.js?v=20251223b4"></script>
+</body></html>

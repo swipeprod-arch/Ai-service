@@ -75,7 +75,7 @@ window.AI_BIRZHA = {
   }
   @media (max-width: 560px){
     .nav a.brand{ flex: 0 0 auto !important; min-width: auto !important; }
-    .nav a.brand span:not(.logo){ display:none !important; }
+    .nav a.brand span:not(.logo){display:block !important;font-size:12px !important;font-weight:700 !important;white-space:nowrap !important;}
     .nav a.brand .logo{ width: 34px !important; height: 34px !important; }
     .nav .nav-cta{ flex-wrap: wrap !important; justify-content: flex-end; }
   }
@@ -103,6 +103,7 @@ window.AI_BIRZHA = {
 *{box-sizing:border-box}
 html,body{
   margin:0;padding:0;
+  overflow-x:hidden;
   background: radial-gradient(1200px 700px at 15% -10%, rgba(30,120,255,.18), transparent 60%),
               radial-gradient(900px 600px at 90% 0%, rgba(0,183,255,.12), transparent 55%),
               var(--bg) !important;
@@ -112,7 +113,7 @@ html,body{
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
 
-.container{max-width:var(--max);margin:0 auto;padding:0 18px}
+.container{max-width:var(--max);margin:0 auto;padding:0 18px;width:100%;overflow:hidden}
 
 /* Навбар */
 .nav{
@@ -254,26 +255,42 @@ a{color:inherit;text-decoration:none}
   .filters-bar{
     flex-direction:column;
     align-items:stretch;
+    max-width: 100%;
+    overflow: hidden;
   }
   .cat-picker{
     overflow-x:auto;
     flex-wrap:nowrap;
     padding-bottom:8px;
     -webkit-overflow-scrolling: touch;
+    max-width: 100%;
   }
   .cat-picker::-webkit-scrollbar{ height:4px; }
   .cat-picker::-webkit-scrollbar-thumb{ background:rgba(163,177,198,.4); border-radius:4px; }
-  .sort-picker{ justify-content:center; }
+  .sort-picker{ justify-content:center; flex-wrap: wrap; }
 }
 
-/* Сетка галереи */
+/* Сетка галереи - masonry layout */
 .gallery-grid{
-  display:grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap:16px;
+  column-count: 4;
+  column-gap: 16px;
+  width: 100%;
 }
-@media (max-width: 1000px){ .gallery-grid{ grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 700px){ .gallery-grid{ grid-template-columns: repeat(2, 1fr); gap:10px; } }
+.gallery-grid .media-card{
+  break-inside: avoid;
+  margin-bottom: 16px;
+  width: 100%;
+}
+@media (max-width: 1000px){ .gallery-grid{ column-count: 3; } }
+@media (max-width: 768px){ 
+  .gallery-grid{ column-count: 2; column-gap: 10px; } 
+  .gallery-grid .media-card{ margin-bottom: 10px; } 
+}
+@media (max-width: 480px){ 
+  .gallery-grid{ column-count: 2; column-gap: 8px; } 
+  .gallery-grid .media-card{ margin-bottom: 8px; } 
+  .container{ padding: 0 12px; }
+}
 
 /* Карточка медиа */
 .media-card{
@@ -293,15 +310,13 @@ a{color:inherit;text-decoration:none}
 .media-card:hover .media-overlay{ opacity:1; }
 
 .media-thumb{
-  aspect-ratio: 1/1;
   background: rgba(163,177,198,.15);
   position:relative;
   overflow:hidden;
 }
 .media-thumb img, .media-thumb video{
   width:100%;
-  height:100%;
-  object-fit:cover;
+  height:auto;
   display:block;
 }
 .media-thumb .play-icon{
@@ -592,6 +607,7 @@ a{color:inherit;text-decoration:none}
   text-align:center;
 }
 </style>
+<link rel="stylesheet" href="/css/mobile-menu.css?v=20251223b4">
 </head>
 <body>
   <header class="nav">
@@ -601,14 +617,16 @@ a{color:inherit;text-decoration:none}
           <span class="logo"></span>
           <span>AI-Биржа</span>
         </a>
-        <nav class="nav-links">
-          <a href="/experts">Исполнители</a>
-          <a href="/gallery" class="active">Галерея работ</a>
-          <a href="/apply">Оставить заявку</a>
+        <nav class="nav-links" aria-label="Навигация">
+          <a href="/page103811056.html">Исполнители</a>
+          <a href="/gallery.html" class="active">Галерея работ</a>
+          <a href="/page103811576.html">Как это работает</a>
+          <a href="/page103811816.html">FAQ</a>
         </nav>
         <div class="nav-cta">
-          <button class="btn" id="authBtn">Войти</button>
-          <a href="/add" class="btn primary" id="cabinetBtn" style="display:none">Кабинет</a>
+          <a class="btn" href="/add.html">Разместить услугу</a>
+          <a class="btn primary" href="#" id="authBtn">Вход/регистрация</a>
+          <a class="btn primary" href="/add.html" id="cabinetBtn" style="display:none">Личный кабинет</a>
         </div>
       </div>
     </div>
@@ -648,7 +666,7 @@ a{color:inherit;text-decoration:none}
         <div class="empty-state-icon">🎨</div>
         <div class="empty-state-title">Работ пока нет</div>
         <p class="empty-state-text">Будьте первым, кто добавит работу в галерею!</p>
-        <a href="/experts" class="btn primary">Смотреть исполнителей</a>
+        <a href="/page103811056.html" class="btn primary">Смотреть исполнителей</a>
       </div>
       <div id="loadMoreWrap" class="load-more-wrap" style="display:none">
         <button class="btn" id="loadMoreBtn">Загрузить ещё</button>
@@ -798,9 +816,8 @@ a{color:inherit;text-decoration:none}
         created_at,
         media_type,
         storage_path,
-        experts!inner(id, name, category, status)
+        experts!inner(id, name, category)
       `)
-      .eq('experts.status', 'approved')
       .range(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE - 1);
     
     // Filter by category
@@ -889,6 +906,7 @@ a{color:inherit;text-decoration:none}
       return;
     }
     
+    emptyState.style.display = 'none';
     renderGallery(sortedData, !reset);
     loadMoreWrap.style.display = hasMore ? '' : 'none';
   }
@@ -1211,6 +1229,7 @@ a{color:inherit;text-decoration:none}
   setTimeout(removeTildaLabel, 1000);
 })();
 </script>
+<script src="/js/mobile-menu.js?v=20251223b4"></script>
 </body>
 </html>
 

@@ -276,8 +276,8 @@ window.addEventListener('DOMContentLoaded', function () {
     // делаем ссылку абсолютной (чтобы "services.html" тоже поймать)
     if (!href.startsWith('/')) href = '/' + href;
 
-    // режем .html
-    if (href.endsWith('.html')) href = href.slice(0, -5);
+    // режем .html (но НЕ для /pageXXXXXXXX.html и /gallery.html — иначе ломаются переходы)
+    if (href.endsWith('.html') && !/\/page\d+\.html$/i.test(href) && href !== '/gallery.html') href = href.slice(0, -5);
 
     // index.html -> /
     if (href === '/index') href = '/';
@@ -1927,9 +1927,7 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
   @media (max-width: 560px){
     .nav a.brand{ flex: 0 0 auto !important; min-width: auto !important; }
     /* скрываем любой текстовый span внутри бренда (оставляем только .logo) */
-    .nav a.brand span:not(.logo){
-      display:none !important;
-    }
+    .nav a.brand span:not(.logo){display:block !important;font-size:12px !important;font-weight:700 !important;white-space:nowrap !important;}
     .nav a.brand .logo{
       width: 34px !important;
       height: 34px !important;
@@ -1939,59 +1937,8 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
       justify-content: flex-end;
     }
   }
-</style><script id="ai-mobile-brand-hide">
-(function(){
-  function apply(){
-    try{
-      var isMobile = window.matchMedia && window.matchMedia('(max-width: 560px)').matches;
-      var nodes = document.querySelectorAll('.nav a.brand span:not(.logo)');
-      nodes.forEach(function(sp){
-        try{
-          if(isMobile) sp.style.setProperty('display','none','important');
-          else sp.style.removeProperty('display');
-        }catch(e){}
-      });
-    }catch(e){}
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
-  else apply();
-  window.addEventListener('resize', apply);
-  setTimeout(apply, 200);
-  setTimeout(apply, 900);
-})();
-</script><script id="ai-gallery-menu">
-(function(){
-  function addGalleryMenu(){
-    // РС‰РµРј nav-links
-    const navLinks = document.querySelector('.nav-links');
-    if(!navLinks) return;
-    
-    // РџСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё СѓР¶Рµ СЃСЃС‹Р»РєР° РЅР° РіР°Р»РµСЂРµСЋ
-    if(navLinks.querySelector('a[href*="gallery"]')) return;
-    
-    // РС‰РµРј СЃСЃС‹Р»РєСѓ РЅР° РёСЃРїРѕР»РЅРёС‚РµР»РµР№
-    const expertsLink = navLinks.querySelector('a[href*="experts"]');
-    if(!expertsLink) return;
-    
-    // РЎРѕР·РґР°РµРј СЃСЃС‹Р»РєСѓ РЅР° РіР°Р»РµСЂРµСЋ
-    const galleryLink = document.createElement('a');
-    galleryLink.href = '/gallery';
-    galleryLink.textContent = 'Р“Р°Р»РµСЂРµСЏ СЂР°Р±РѕС‚';
-    
-    // Р’СЃС‚Р°РІР»СЏРµРј РїРѕСЃР»Рµ РёСЃРїРѕР»РЅРёС‚РµР»РµР№
-    expertsLink.insertAdjacentElement('afterend', galleryLink);
-  }
-  
-  if(document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', addGalleryMenu);
-  } else {
-    addGalleryMenu();
-  }
-  // РџРѕРІС‚РѕСЂСЏРµРј РЅР° СЃР»СѓС‡Р°Р№ РґРёРЅР°РјРёС‡РµСЃРєРѕР№ Р·Р°РіСЂСѓР·РєРё
-  setTimeout(addGalleryMenu, 500);
-  setTimeout(addGalleryMenu, 1500);
-})();
-</script></head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="104196026" data-tilda-page-alias="card" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-page-headcode="yes" data-tilda-project-country="RU"> <div id="rec1695392371" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!-- ====== /card • страница пользователя (ONE-PASTE) ====== --> <header class="nav"> <div class="container nav-inner"> <a class="brand" href="/"> <span class="logo" aria-hidden="true"></span> <span>AI-Биржа (MVP)</span> </a> <nav class="nav-links" aria-label="Навигация"> <a href="/services">Услуги</a> <a href="/experts">Исполнители</a> <a href="/cases">Кейсы</a> <a href="/how">Как это работает</a> <a href="/faq">FAQ</a> </nav> <div class="nav-cta"> <a class="btn" href="/add">Разместить услугу</a> <a class="btn primary" href="/apply">Оставить заявку</a> </div> </div> </header> <main> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Карточка исполнителя</div> <h1 class="h-title" style="font-size:34px" id="pName">Загрузка...</h1> <p class="h-sub" id="pCat"></p> <div class="expert-cover" id="pCover"> <div class="ph">PREVIEW</div> </div> <div class="expert-short"> <div class="expert-short-label">Краткая информация</div> <div class="expert-short-text" id="pShort">—</div> </div> <hr class="sep"> <div id="pDesc" class="section-sub" style="margin:0 0 10px">—</div> <div class="tagrow" id="pTags"></div> <hr class="sep"> <!-- ✅ ПРАВИЛЬНЫЙ ПОРЯДОК КНОПОК: Сайт → Instagram → Telegram → Назад --> <!-- ✅ И РАСПОЛОЖЕНИЕ: прямо перед блоком "Галерея" --> <div class="expert-actions ai-card-actions" style="margin:14px 0 18px"> <a class="btn" id="pSite" href="#" target="_blank" rel="noopener" style="display:none">Сайт</a> <a class="btn" id="pIg" href="#" target="_blank" rel="noopener" style="display:none">Instagram</a> <a class="btn primary" id="pTg" href="#" target="_blank" rel="noopener" style="display:none">
+</style><link rel="stylesheet" href="/css/mobile-menu.css?v=20251223b4">
+</head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="104196026" data-tilda-page-alias="card" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-page-headcode="yes" data-tilda-project-country="RU"> <div id="rec1695392371" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!-- ====== /card • страница пользователя (ONE-PASTE) ====== --> <header class="nav"> <div class="container nav-inner"> <a class="brand" href="/"> <span class="logo" aria-hidden="true"></span> <span>AI-Биржа (MVP)</span> </a> <nav class="nav-links" aria-label="Навигация"> <a href="/experts">Исполнители</a> <a href="/gallery.html">Галерея работ</a> <a href="/how">Как это работает</a> <a href="/faq">FAQ</a> </nav> <div class="nav-cta"> <a class="btn" href="/add">Разместить услугу</a> <a class="btn primary" href="/apply">Оставить заявку</a> </div> </div> </header> <main> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Карточка исполнителя</div> <h1 class="h-title" style="font-size:34px" id="pName">Загрузка...</h1> <p class="h-sub" id="pCat"></p> <div class="expert-cover" id="pCover"> <div class="ph">PREVIEW</div> </div> <div class="expert-short"> <div class="expert-short-label">Краткая информация</div> <div class="expert-short-text" id="pShort">—</div> </div> <hr class="sep"> <div id="pDesc" class="section-sub" style="margin:0 0 10px">—</div> <div class="tagrow" id="pTags"></div> <hr class="sep"> <!-- ✅ ПРАВИЛЬНЫЙ ПОРЯДОК КНОПОК: Сайт → Instagram → Telegram → Назад --> <!-- ✅ И РАСПОЛОЖЕНИЕ: прямо перед блоком "Галерея" --> <div class="expert-actions ai-card-actions" style="margin:14px 0 18px"> <a class="btn" id="pSite" href="#" target="_blank" rel="noopener" style="display:none">Сайт</a> <a class="btn" id="pIg" href="#" target="_blank" rel="noopener" style="display:none">Instagram</a> <a class="btn primary" id="pTg" href="#" target="_blank" rel="noopener" style="display:none">
             Написать сообщение в Telegram
           </a> <a class="btn" id="pBack" href="/experts">← Назад в каталог</a> </div> <h2 class="section-title" style="margin:0 0 10px">Галерея</h2> <div class="media-grid" id="pMedia"></div> <div class="small" id="pMsg" style="margin-top:10px"></div> </div> </div> </section> </main> <style>
 /* белый текст на синем */
@@ -2670,4 +2617,5 @@ window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.
 })();
 </script>
 
+<script src="/js/mobile-menu.js?v=20251223b4"></script>
 </body> </html>

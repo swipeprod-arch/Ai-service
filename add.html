@@ -309,8 +309,8 @@ window.addEventListener('DOMContentLoaded', function () {
     // делаем ссылку абсолютной (чтобы "services.html" тоже поймать)
     if (!href.startsWith('/')) href = '/' + href;
 
-    // режем .html
-    if (href.endsWith('.html')) href = href.slice(0, -5);
+    // режем .html (но НЕ для /pageXXXXXXXX.html и /gallery.html — иначе ломаются переходы)
+    if (href.endsWith('.html') && !/\/page\d+\.html$/i.test(href) && href !== '/gallery.html') href = href.slice(0, -5);
 
     // index.html -> /
     if (href === '/index') href = '/';
@@ -1774,9 +1774,7 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
   @media (max-width: 560px){
     .nav a.brand{ flex: 0 0 auto !important; min-width: auto !important; }
     /* скрываем любой текстовый span внутри бренда (оставляем только .logo) */
-    .nav a.brand span:not(.logo){
-      display:none !important;
-    }
+    .nav a.brand span:not(.logo){display:block !important;font-size:12px !important;font-weight:700 !important;white-space:nowrap !important;}
     .nav a.brand .logo{
       width: 34px !important;
       height: 34px !important;
@@ -1786,59 +1784,8 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
       justify-content: flex-end;
     }
   }
-</style><script id="ai-mobile-brand-hide">
-(function(){
-  function apply(){
-    try{
-      var isMobile = window.matchMedia && window.matchMedia('(max-width: 560px)').matches;
-      var nodes = document.querySelectorAll('.nav a.brand span:not(.logo)');
-      nodes.forEach(function(sp){
-        try{
-          if(isMobile) sp.style.setProperty('display','none','important');
-          else sp.style.removeProperty('display');
-        }catch(e){}
-      });
-    }catch(e){}
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
-  else apply();
-  window.addEventListener('resize', apply);
-  setTimeout(apply, 200);
-  setTimeout(apply, 900);
-})();
-</script><script id="ai-gallery-menu">
-(function(){
-  function addGalleryMenu(){
-    // РС‰РµРј nav-links
-    const navLinks = document.querySelector('.nav-links');
-    if(!navLinks) return;
-    
-    // РџСЂРѕРІРµСЂСЏРµРј, РµСЃС‚СЊ Р»Рё СѓР¶Рµ СЃСЃС‹Р»РєР° РЅР° РіР°Р»РµСЂРµСЋ
-    if(navLinks.querySelector('a[href*="gallery"]')) return;
-    
-    // РС‰РµРј СЃСЃС‹Р»РєСѓ РЅР° РёСЃРїРѕР»РЅРёС‚РµР»РµР№
-    const expertsLink = navLinks.querySelector('a[href*="experts"]');
-    if(!expertsLink) return;
-    
-    // РЎРѕР·РґР°РµРј СЃСЃС‹Р»РєСѓ РЅР° РіР°Р»РµСЂРµСЋ
-    const galleryLink = document.createElement('a');
-    galleryLink.href = '/gallery';
-    galleryLink.textContent = 'Р“Р°Р»РµСЂРµСЏ СЂР°Р±РѕС‚';
-    
-    // Р’СЃС‚Р°РІР»СЏРµРј РїРѕСЃР»Рµ РёСЃРїРѕР»РЅРёС‚РµР»РµР№
-    expertsLink.insertAdjacentElement('afterend', galleryLink);
-  }
-  
-  if(document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', addGalleryMenu);
-  } else {
-    addGalleryMenu();
-  }
-  // РџРѕРІС‚РѕСЂСЏРµРј РЅР° СЃР»СѓС‡Р°Р№ РґРёРЅР°РјРёС‡РµСЃРєРѕР№ Р·Р°РіСЂСѓР·РєРё
-  setTimeout(addGalleryMenu, 500);
-  setTimeout(addGalleryMenu, 1500);
-})();
-</script></head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="103811936" data-tilda-page-alias="add" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1689498121" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!-- ====== /add • кабинет исполнителя (NO MODERATION) ====== --> <script>
+</style><link rel="stylesheet" href="/css/mobile-menu.css?v=20251223b4">
+</head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="103811936" data-tilda-page-alias="add" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1689498121" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!-- ====== /add • кабинет исполнителя (NO MODERATION) ====== --> <script>
 (async function(){
   async function waitSb(){
     for(let i=0;i<40;i++){
@@ -1858,7 +1805,7 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
     location.replace("/auth?redirect=" + encodeURIComponent(here));
   }
 })();
-</script> <header class="nav"> <div class="container nav-inner"> <a class="brand" href="/"> <span class="logo" aria-hidden="true"></span> <span>AI-Биржа (MVP)</span> </a> <nav class="nav-links" aria-label="Навигация"> <a href="/services">Услуги</a> <a href="/experts">Исполнители</a> <a href="/cases">Кейсы</a> <a href="/how">Как это работает</a> <a href="/faq">FAQ</a> </nav> <div class="nav-cta"> <a class="btn" href="/experts">В каталог</a> <a class="btn primary" href="/apply">Оставить заявку</a> </div> </div> </header> <main> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Кабинет</div> <h1 class="h-title" style="font-size:34px;margin-bottom:8px">Добавить / обновить карточку</h1> <p class="h-sub">Модерации нет: карточка появляется в каталоге сразу после сохранения.</p> <div class="two"> <div class="form"> <div class="field"> <label>Имя / Ник</label> <input id="f_name" placeholder="Например: Алексей" /> </div> <div class="field"> <label>Категория</label> <select id="f_category"> <option value="video">AI-Видео</option> <option value="design">AI-Дизайн</option> <option value="bots">AI-Боты</option> <option value="marketplaces">WB/Ozon</option> <option value="sites">AI-Сайты</option> </select> </div> <div class="field"> <label>Роль / специализация (теги через запятую)</label> <input id="f_role" placeholder="Например: reels, монтаж, субтитры, озвучка" /> <div class="small">Пиши через запятую — в каталоге покажем отдельными плашками.</div> </div> <div class="field"> <label>Краткая информация (в превью карточки)</label> <textarea id="f_short" placeholder="1–2 предложения по делу."></textarea> <div class="small">Совет: коротко, конкретно, без воды.</div> </div> <div class="field"> <label>Описание (подробнее)</label> <textarea id="f_desc" placeholder="Опиши, что делаешь, сроки, результат"></textarea> </div> <div class="two"> <div class="field"> <label>Цена (пример)</label> <input id="f_price" placeholder="от 15 000 ₽" /> </div> <div class="field"> <label>Срок (пример)</label> <input id="f_time" placeholder="5–7 дней" /> </div> </div> <div class="field"> <label>Telegram (для кнопки “Написать сообщение”)</label> <div class="prefix-wrap"> <span class="prefix">@</span> <input id="f_tg" placeholder="username" inputmode="text" autocomplete="off" /> </div> <div class="small">Пиши только ник. Если вставишь ссылку — я сам вытащу ник.</div> </div> <div class="two"> <div class="field"> <label>Instagram</label> <input id="f_ig" placeholder="@username или https://instagram.com/username" /> </div> <div class="field"> <label>Сайт</label> <input id="f_site" placeholder="site.ru или https://site.ru" /> </div> </div> <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px"> <button class="btn primary" id="btnSave" type="button">Сохранить</button> <button class="btn" id="btnLogout" type="button">Выйти</button> </div> <div class="small" id="saveMsg" style="margin-top:8px"></div> </div> <div class="form"> <h2 class="section-title" style="margin:0 0 8px">Медиа</h2> <p class="section-sub" style="margin:0 0 10px">Загрузи фото/видео и выбери превью.</p> <div class="field"> <label>Загрузка файлов</label> <input id="mediaInput" type="file" multiple accept="image/*,video/*" /> <div class="small">Можно несколько файлов.</div> </div> <div style="display:flex;gap:10px;flex-wrap:wrap"> <button class="btn primary" id="btnUpload" type="button">Загрузить</button> <button class="btn" id="btnRefresh" type="button">Обновить список</button> </div> <hr class="sep"> <div class="small" style="margin-bottom:8px">Нажми “Сделать превью” — это станет обложкой карточки.</div> <div class="media-grid" id="mediaGrid"></div> <div class="small" id="mediaMsg" style="margin-top:10px"></div> </div> </div> </div> </div> </section> </main> <style>
+</script> <header class="nav"> <div class="container nav-inner"> <a class="brand" href="/"> <span class="logo" aria-hidden="true"></span> <span>AI-Биржа (MVP)</span> </a> <nav class="nav-links" aria-label="Навигация"> <a href="/experts">Исполнители</a> <a href="/gallery.html">Галерея работ</a> <a href="/how">Как это работает</a> <a href="/faq">FAQ</a> </nav> <div class="nav-cta"> <a class="btn" href="/experts">В каталог</a> <a class="btn primary" href="/apply">Оставить заявку</a> </div> </div> </header> <main> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Кабинет</div> <h1 class="h-title" style="font-size:34px;margin-bottom:8px">Добавить / обновить карточку</h1> <p class="h-sub">Модерации нет: карточка появляется в каталоге сразу после сохранения.</p> <div class="two"> <div class="form"> <div class="field"> <label>Имя / Ник</label> <input id="f_name" placeholder="Например: Алексей" /> </div> <div class="field"> <label>Категория</label> <select id="f_category"> <option value="video">AI-Видео</option> <option value="design">AI-Дизайн</option> <option value="bots">AI-Боты</option> <option value="marketplaces">WB/Ozon</option> <option value="sites">AI-Сайты</option> </select> </div> <div class="field"> <label>Роль / специализация (теги через запятую)</label> <input id="f_role" placeholder="Например: reels, монтаж, субтитры, озвучка" /> <div class="small">Пиши через запятую — в каталоге покажем отдельными плашками.</div> </div> <div class="field"> <label>Краткая информация (в превью карточки)</label> <textarea id="f_short" placeholder="1–2 предложения по делу."></textarea> <div class="small">Совет: коротко, конкретно, без воды.</div> </div> <div class="field"> <label>Описание (подробнее)</label> <textarea id="f_desc" placeholder="Опиши, что делаешь, сроки, результат"></textarea> </div> <div class="two"> <div class="field"> <label>Цена (пример)</label> <input id="f_price" placeholder="от 15 000 ₽" /> </div> <div class="field"> <label>Срок (пример)</label> <input id="f_time" placeholder="5–7 дней" /> </div> </div> <div class="field"> <label>Telegram (для кнопки “Написать сообщение”)</label> <div class="prefix-wrap"> <span class="prefix">@</span> <input id="f_tg" placeholder="username" inputmode="text" autocomplete="off" /> </div> <div class="small">Пиши только ник. Если вставишь ссылку — я сам вытащу ник.</div> </div> <div class="two"> <div class="field"> <label>Instagram</label> <input id="f_ig" placeholder="@username или https://instagram.com/username" /> </div> <div class="field"> <label>Сайт</label> <input id="f_site" placeholder="site.ru или https://site.ru" /> </div> </div> <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px"> <button class="btn primary" id="btnSave" type="button">Сохранить</button> <button class="btn" id="btnLogout" type="button">Выйти</button> </div> <div class="small" id="saveMsg" style="margin-top:8px"></div> </div> <div class="form"> <h2 class="section-title" style="margin:0 0 8px">Медиа</h2> <p class="section-sub" style="margin:0 0 10px">Загрузи фото/видео и выбери превью.</p> <div class="field"> <label>Загрузка файлов</label> <input id="mediaInput" type="file" multiple accept="image/*,video/*" /> <div class="small">Можно несколько файлов.</div> </div> <div style="display:flex;gap:10px;flex-wrap:wrap"> <button class="btn primary" id="btnUpload" type="button">Загрузить</button> <button class="btn" id="btnRefresh" type="button">Обновить список</button> </div> <hr class="sep"> <div class="small" style="margin-bottom:8px">Нажми “Сделать превью” — это станет обложкой карточки.</div> <div class="media-grid" id="mediaGrid"></div> <div class="small" id="mediaMsg" style="margin-top:10px"></div> </div> </div> </div> </div> </section> </main> <style>
 /* белый текст на синей */
 .btn.primary, .btn.primary *{ color:#fff !important; -webkit-text-fill-color:#fff !important; }
 
@@ -3026,4 +2973,5 @@ window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.
 })();
 </script>
 
+<script src="/js/mobile-menu.js?v=20251223b4"></script>
 </body> </html>

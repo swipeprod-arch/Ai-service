@@ -1,0 +1,383 @@
+/**
+ * AI-Биржа: Мобильное бургер-меню
+ */
+
+/* ===== Бургер-кнопка ===== */
+.ai-burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 1001;
+  border-radius: 12px;
+  transition: background 0.2s;
+}
+
+.ai-burger:hover {
+  background: rgba(30, 120, 255, 0.1);
+}
+
+.ai-burger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #13233F;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.ai-burger.open span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.ai-burger.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.ai-burger.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* ===== Overlay ===== */
+.ai-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(19, 35, 63, 0.5);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  z-index: 1000;
+}
+
+.ai-menu-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ===== Боковое меню (Sidebar) ===== */
+.ai-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  max-width: 85vw;
+  height: 100%;
+  background: linear-gradient(180deg, #F8FBFF 0%, #EEF3FA 100%);
+  box-shadow: 4px 0 24px rgba(19, 35, 63, 0.15);
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1002;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.ai-sidebar.open {
+  transform: translateX(0);
+}
+
+/* ===== Шапка сайдбара ===== */
+.ai-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(163, 177, 198, 0.25);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.ai-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #13233F;
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.ai-sidebar-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: 
+    url("/images/ai-logo.png") center / cover no-repeat,
+    linear-gradient(135deg, #1E78FF 0%, #00B7FF 100%);
+}
+
+/* Фоллбек для лого в шапке (если на странице нет своих стилей .logo) */
+.brand .logo,
+.nav .brand .logo,
+header .brand .logo{
+  border-radius: 50%;
+  background:
+    url("/images/ai-logo.png") center / cover no-repeat,
+    linear-gradient(135deg, #1E78FF 0%, #00B7FF 100%);
+}
+
+.ai-sidebar-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(163, 177, 198, 0.15);
+  border: none;
+  border-radius: 50%;
+  font-size: 18px;
+  color: #5B6C86;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ai-sidebar-close:hover {
+  background: rgba(229, 57, 53, 0.1);
+  color: #E53935;
+}
+
+/* ===== Навигация в сайдбаре ===== */
+.ai-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px;
+  gap: 4px;
+}
+
+.ai-sidebar-link {
+  display: block;
+  padding: 14px 16px;
+  color: #13233F;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+
+.ai-sidebar-link:hover,
+.ai-sidebar-link:focus {
+  background: rgba(30, 120, 255, 0.08);
+  color: #1E78FF;
+}
+
+.ai-sidebar-btn {
+  display: block;
+  padding: 14px 16px;
+  margin-top: 8px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 14px;
+  background: #EEF3FA;
+  color: #13233F;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 6px 6px 14px rgba(163, 177, 198, 0.35), -6px -6px 14px rgba(255, 255, 255, 0.9);
+  transition: all 0.2s;
+}
+
+.ai-sidebar-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 8px 8px 18px rgba(163, 177, 198, 0.4), -8px -8px 18px rgba(255, 255, 255, 0.95);
+}
+
+.ai-sidebar-btn.primary {
+  background: linear-gradient(135deg, #1E78FF 0%, #00B7FF 100%);
+  color: #fff;
+  border-color: rgba(30, 120, 255, 0.18);
+  box-shadow: 8px 8px 18px rgba(30, 120, 255, 0.25), -6px -6px 14px rgba(255, 255, 255, 0.7);
+}
+
+.ai-sidebar-btn.primary:hover {
+  filter: brightness(1.05);
+}
+
+/* ===== Универсальная модалка авторизации (iframe auth.html) ===== */
+.ai-auth-modal{
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.ai-auth-modal.open{
+  display: flex;
+}
+
+.ai-auth-modal-overlay{
+  position: absolute;
+  inset: 0;
+  background: rgba(19, 35, 63, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+.ai-auth-modal-card{
+  position: relative;
+  width: min(92vw, 520px);
+  height: min(86vh, 740px);
+  background: rgba(255,255,255,0.92);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 18px 60px rgba(19,35,63,.35);
+  border: 1px solid rgba(255,255,255,0.65);
+}
+
+.ai-auth-modal-close{
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: rgba(30,120,255,0.12);
+  color: #1E78FF;
+  font-size: 28px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.ai-auth-iframe{
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+}
+
+/* ===== Мобильные стили ===== */
+@media (max-width: 900px) {
+  .ai-burger {
+    display: flex !important;
+  }
+  
+  /* Скрываем десктопную навигацию */
+  .nav-links,
+  nav.nav-links,
+  .nav .nav-links,
+  header .nav-links,
+  .nav-inner .nav-links {
+    display: none !important;
+  }
+  
+  .nav-cta,
+  .nav .nav-cta,
+  header .nav-cta,
+  .nav-inner .nav-cta {
+    display: none !important;
+  }
+  
+  /* Хедер на мобильном - компактный */
+  .nav-inner,
+  .nav .nav-inner,
+  header .nav-inner,
+  .container.nav-inner {
+    justify-content: space-between !important;
+    padding: 8px 12px !important;
+    min-height: auto !important;
+    height: auto !important;
+    max-height: 56px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    gap: 10px !important;
+  }
+  
+  .nav-inner .brand,
+  .nav .brand,
+  header .brand {
+    flex: 0 1 auto !important;
+  }
+  
+  /* Текст бренда на мобильном - в одну строку */
+  .brand,
+  .nav .brand,
+  a.brand {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .brand span:not(.logo),
+  .nav .brand span:not(.logo),
+  a.brand span:not(.logo) {
+    display: block !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    color: #13233F !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  
+  .brand .logo,
+  .nav .brand .logo,
+  a.brand .logo {
+    width: 32px !important;
+    height: 32px !important;
+    flex-shrink: 0 !important;
+  }
+}
+
+/* Супер-специфичные оверрайды для Тильды (index.html иногда перерисовывает/прячет бренд) */
+@media (max-width: 900px) {
+  #allrecords .nav-inner a.brand,
+  .t-records .nav-inner a.brand,
+  header.nav .nav-inner a.brand,
+  .nav-inner a.brand {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  #allrecords .nav-inner a.brand .logo,
+  .t-records .nav-inner a.brand .logo,
+  header.nav .nav-inner a.brand .logo,
+  .nav-inner a.brand .logo {
+    display: block !important;
+    width: 32px !important;
+    height: 32px !important;
+  }
+}
+
+/* Очень узкие телефоны: уменьшаем размер шрифта, но НЕ скрываем бренд */
+@media (max-width: 360px) {
+  .brand span:not(.logo),
+  .nav .brand span:not(.logo),
+  a.brand span:not(.logo) {
+    font-size: 11px !important;
+  }
+}
+
+/* На совсем маленьких экранах */
+@media (max-width: 400px) {
+  .ai-sidebar {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .ai-sidebar-link,
+  .ai-sidebar-btn {
+    font-size: 16px;
+    padding: 16px;
+  }
+}
+
