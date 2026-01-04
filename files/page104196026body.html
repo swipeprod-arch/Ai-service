@@ -415,6 +415,8 @@ window.addEventListener('DOMContentLoaded', async function () {
       wrap.innerHTML = (String(expert.cover_type||"").toLowerCase()==="video")
         ? `<video src="${escAttr(url)}" controls muted playsinline preload="metadata"></video>`
         : `<img src="${escAttr(url)}" alt="">`;
+      // ✅ Фикс превью видео-обложки на мобильных
+      forceVideoThumbnails(wrap);
     }
   }
 
@@ -476,8 +478,77 @@ window.addEventListener('DOMContentLoaded', async function () {
     });
   });
 
+  // ✅ Фикс превью видео на мобильных: принудительно загружаем первый кадр
+  forceVideoThumbnails(pMedia);
+
   pMsg.textContent = "";
 });
+
+// ✅ Принудительная загрузка превью видео на мобильных устройствах (iOS/Safari)
+function forceVideoThumbnails(root){
+  if(!root) return;
+  const videos = Array.from(root.querySelectorAll('video'));
+  
+  videos.forEach((video) => {
+    // Добавляем атрибуты для лучшей совместимости с iOS
+    video.setAttribute('webkit-playsinline', '');
+    video.setAttribute('x5-playsinline', '');
+    
+    // Функция для загрузки первого кадра
+    const loadThumbnail = () => {
+      try {
+        // Устанавливаем время на 0.1 сек — это заставит браузер загрузить кадр
+        if(video.readyState >= 1) {
+          video.currentTime = 0.1;
+        }
+      } catch(e) {
+        console.warn('Video thumbnail load error:', e);
+      }
+    };
+
+    // Слушаем событие loadeddata (более надёжно чем loadedmetadata на мобильных)
+    video.addEventListener('loadeddata', () => {
+      try {
+        video.currentTime = 0.1;
+      } catch(e) {}
+    }, { once: true });
+
+    // Если метаданные уже загружены — применяем сразу
+    if(video.readyState >= 1) {
+      loadThumbnail();
+    } else {
+      // Дополнительно слушаем loadedmetadata
+      video.addEventListener('loadedmetadata', loadThumbnail, { once: true });
+    }
+
+    // Принудительно запускаем загрузку
+    try {
+      video.load();
+    } catch(e) {}
+  });
+
+  // Повторная попытка через небольшую задержку (для медленных соединений)
+  setTimeout(() => {
+    videos.forEach((video) => {
+      try {
+        if(video.readyState >= 1 && video.currentTime < 0.05) {
+          video.currentTime = 0.1;
+        }
+      } catch(e) {}
+    });
+  }, 500);
+
+  // Ещё одна попытка через секунду
+  setTimeout(() => {
+    videos.forEach((video) => {
+      try {
+        if(video.readyState >= 1 && video.currentTime < 0.05) {
+          video.currentTime = 0.1;
+        }
+      } catch(e) {}
+    });
+  }, 1500);
+}
 </script> <!-- ====== /card END ====== --> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords-->
 <style id="ai-logo-css">
   /* ЛОГО: /images/ai-logo.png + запасной градиент */
