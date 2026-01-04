@@ -431,3 +431,123 @@ header .brand .logo{
   }
 }
 
+/* ===== Нижняя навигация (Bottom Navigation Bar) ===== */
+.ai-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: linear-gradient(180deg, rgba(248, 251, 255, 0.98) 0%, rgba(238, 243, 250, 0.98) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(163, 177, 198, 0.25);
+  box-shadow: 0 -4px 20px rgba(19, 35, 63, 0.08);
+  z-index: 999;
+  padding: 0 4px;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.ai-bottom-nav-inner {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.ai-bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 6px 2px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  color: #5B6C86;
+  transition: color 0.2s ease, transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ai-bottom-nav-item:hover,
+.ai-bottom-nav-item:focus {
+  color: #1E78FF;
+}
+
+.ai-bottom-nav-item:active {
+  transform: scale(0.95);
+}
+
+.ai-bottom-nav-item.active {
+  color: #1E78FF;
+}
+
+.ai-bottom-nav-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ai-bottom-nav-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ai-bottom-nav-label {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Показываем нижнюю навигацию только на мобильных */
+@media (max-width: 900px) {
+  .ai-bottom-nav {
+    display: block;
+  }
+  
+  /* Добавляем отступ снизу для контента, чтобы не перекрывался навигацией */
+  body {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0)) !important;
+  }
+  
+  /* Footer не должен быть скрыт под навигацией */
+  .footer,
+  footer {
+    margin-bottom: 0 !important;
+    padding-bottom: 20px !important;
+  }
+}
+
+/* Еще более узкие экраны - уменьшаем шрифт */
+@media (max-width: 360px) {
+  .ai-bottom-nav-label {
+    font-size: 9px;
+  }
+  
+  .ai-bottom-nav-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+

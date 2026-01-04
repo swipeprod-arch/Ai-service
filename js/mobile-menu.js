@@ -625,7 +625,209 @@
 
     // Запускаем слежение за авторизацией (чтобы пункт меню обновлялся сразу после логина)
     ensureAuthWatcherStarted();
+    
+    // Создаём нижнюю навигацию
+    createBottomNav();
+    
     return true;
+  }
+
+  // ====== Нижняя навигация (Bottom Navigation Bar) ======
+  
+  // SVG иконки для нижней навигации
+  const bottomNavIcons = {
+    catalog: `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>`,
+    projects: `<svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>`,
+    gallery: `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`,
+    card: `<svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="10" x2="18" y2="10"/><line x1="6" y1="14" x2="14" y2="14"/></svg>`,
+    cabinet: `<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`
+  };
+
+  function createBottomNav() {
+    // Если уже есть — не создаём повторно
+    if (document.getElementById('ai-bottom-nav')) return;
+    
+    const nav = document.createElement('nav');
+    nav.id = 'ai-bottom-nav';
+    nav.className = 'ai-bottom-nav';
+    nav.setAttribute('aria-label', 'Основная навигация');
+    
+    nav.innerHTML = `
+      <div class="ai-bottom-nav-inner">
+        <a href="/page103811056.html" class="ai-bottom-nav-item" data-nav="catalog">
+          <span class="ai-bottom-nav-icon">${bottomNavIcons.catalog}</span>
+          <span class="ai-bottom-nav-label">Каталог</span>
+        </a>
+        <a href="/projects.html" class="ai-bottom-nav-item" data-nav="projects">
+          <span class="ai-bottom-nav-icon">${bottomNavIcons.projects}</span>
+          <span class="ai-bottom-nav-label">Проекты</span>
+        </a>
+        <a href="/gallery.html" class="ai-bottom-nav-item" data-nav="gallery">
+          <span class="ai-bottom-nav-icon">${bottomNavIcons.gallery}</span>
+          <span class="ai-bottom-nav-label">Галерея</span>
+        </a>
+        <button type="button" class="ai-bottom-nav-item" data-nav="card" data-requires-auth="card">
+          <span class="ai-bottom-nav-icon">${bottomNavIcons.card}</span>
+          <span class="ai-bottom-nav-label">Моя карточка</span>
+        </button>
+        <button type="button" class="ai-bottom-nav-item" data-nav="cabinet" data-requires-auth="cabinet">
+          <span class="ai-bottom-nav-icon">${bottomNavIcons.cabinet}</span>
+          <span class="ai-bottom-nav-label">Кабинет</span>
+        </button>
+      </div>
+    `;
+    
+    document.body.appendChild(nav);
+    
+    // Подсвечиваем текущую страницу
+    highlightCurrentNavItem();
+    
+    // Обработчики кликов
+    nav.addEventListener('click', handleBottomNavClick);
+    
+    // Следим за авторизацией для обновления состояния кнопок
+    initBottomNavAuthWatcher();
+  }
+
+  function highlightCurrentNavItem() {
+    const nav = document.getElementById('ai-bottom-nav');
+    if (!nav) return;
+    
+    const path = normalizePath(location.pathname);
+    const items = nav.querySelectorAll('.ai-bottom-nav-item');
+    
+    items.forEach(item => {
+      item.classList.remove('active');
+      const href = item.getAttribute('href');
+      if (href) {
+        const itemPath = normalizePath(href);
+        // Проверяем совпадение пути
+        if (path === itemPath || 
+            (path === '' && itemPath === '/index') ||
+            (path === '/experts' && itemPath === '/page103811056') ||
+            (path.includes('page103811056') && itemPath.includes('page103811056')) ||
+            (path.includes('gallery') && itemPath.includes('gallery')) ||
+            (path.includes('projects') && itemPath.includes('projects'))) {
+          item.classList.add('active');
+        }
+      }
+      // Для кнопок кабинета и карточки
+      const navType = item.getAttribute('data-nav');
+      if (navType === 'cabinet' && path.includes('/add')) {
+        item.classList.add('active');
+      }
+      if (navType === 'card' && path.includes('/card')) {
+        item.classList.add('active');
+      }
+    });
+  }
+
+  async function handleBottomNavClick(e) {
+    const item = e.target.closest('.ai-bottom-nav-item');
+    if (!item) return;
+    
+    const requiresAuth = item.getAttribute('data-requires-auth');
+    
+    // Если это обычная ссылка (не требует авторизации) — пусть браузер обработает
+    if (!requiresAuth) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Проверяем авторизацию
+    const sb = getSbClient();
+    let isAuthed = false;
+    let userId = null;
+    
+    if (sb && sb.auth) {
+      try {
+        const { data } = await sb.auth.getSession();
+        isAuthed = !!(data && data.session && data.session.user);
+        userId = data?.session?.user?.id;
+      } catch (_) {}
+    }
+    
+    if (!isAuthed) {
+      // Не авторизован — открываем модалку авторизации
+      openAuthModalAny();
+      return;
+    }
+    
+    // Авторизован — обрабатываем действие
+    if (requiresAuth === 'cabinet') {
+      // Переход в личный кабинет
+      window.location.href = '/add.html';
+    } else if (requiresAuth === 'card') {
+      // Моя карточка — нужно найти ID карточки пользователя
+      await goToMyCard(sb, userId);
+    }
+  }
+
+  async function goToMyCard(sb, userId) {
+    if (!sb || !userId) {
+      openAuthModalAny();
+      return;
+    }
+    
+    try {
+      // Ищем карточку пользователя
+      const { data, error } = await sb
+        .from('experts')
+        .select('id')
+        .eq('user_id', userId)
+        .limit(1);
+      
+      if (error || !data || data.length === 0) {
+        // Карточки нет — отправляем создавать
+        alert('У вас ещё нет карточки. Создайте её в личном кабинете.');
+        window.location.href = '/add.html';
+        return;
+      }
+      
+      // Карточка есть — открываем её
+      const expertId = data[0].id;
+      window.location.href = '/page104196026.html?id=' + expertId;
+    } catch (err) {
+      console.error('Ошибка при получении карточки:', err);
+      window.location.href = '/add.html';
+    }
+  }
+
+  // Следим за авторизацией для обновления иконок в нижней навигации
+  function initBottomNavAuthWatcher() {
+    const sb = getSbClient();
+    if (!sb || !sb.auth) {
+      // Пробуем позже, когда supabase загрузится
+      setTimeout(initBottomNavAuthWatcher, 500);
+      return;
+    }
+    
+    // Начальная синхронизация
+    try {
+      sb.auth.getSession().then((res) => {
+        updateBottomNavAuth(res && res.data ? res.data.session : null);
+      }).catch(() => {});
+    } catch (_) {}
+    
+    // Подписка на изменения авторизации
+    try {
+      sb.auth.onAuthStateChange((event, session) => {
+        updateBottomNavAuth(session);
+      });
+    } catch (_) {}
+  }
+
+  function updateBottomNavAuth(session) {
+    const nav = document.getElementById('ai-bottom-nav');
+    if (!nav) return;
+    
+    const isAuthed = !!(session && session.user);
+    const cardBtn = nav.querySelector('[data-nav="card"]');
+    const cabinetBtn = nav.querySelector('[data-nav="cabinet"]');
+    
+    // Можно визуально показать состояние авторизации (например, другой цвет иконки)
+    // Пока просто обновляем подсветку
+    highlightCurrentNavItem();
   }
 })();
 
