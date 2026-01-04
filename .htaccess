@@ -1,22 +1,13 @@
 RewriteEngine On
 RewriteBase /
 
-# Красивые URL для страниц
+# Красивые URL для страниц с кодовыми именами
 RewriteRule ^experts/?$ /page103811056.html [L]
 RewriteRule ^how/?$ /page103811576.html [L]
 RewriteRule ^faq/?$ /page103811816.html [L]
-
-# Убираем .html из URL (внешний редирект)
-RewriteCond %{THE_REQUEST} /([^.]+)\.html [NC]
-RewriteCond %1 !^(page103811056|page103811576|page103811816)$ 
-RewriteRule ^ /%1 [NC,L,R=301]
 
 # Если запрос не файл и не папка, пробуем добавить .html
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}.html -f
 RewriteRule ^(.*)$ $1.html [L]
-
-# Редирект с index.html на /
-RewriteCond %{THE_REQUEST} ^.*/index\.html 
-RewriteRule ^(.*)index.html$ /$1 [R=301,L]
