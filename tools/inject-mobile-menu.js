@@ -24,7 +24,7 @@ const files = walk(root)
   .map((p) => path.relative(root, p).replace(/\\/g, '/'));
 
 // CSS и JS для добавления (c cache-busting, чтобы на телефонах не тянулся старый кеш)
-const VERSION = '20251223b4';
+const VERSION = '20260104a1';
 const cssLink = `<link rel="stylesheet" href="/css/mobile-menu.css?v=${VERSION}">`;
 const jsScript = `<script src="/js/mobile-menu.js?v=${VERSION}"></script>`;
 

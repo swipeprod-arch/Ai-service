@@ -26,7 +26,7 @@ window.addEventListener('DOMContentLoaded', async function () {
   const STORAGE_KEY = "AI_BIRZHA_AFTER_AUTH";
 
   function safeRedirect(raw){
-    if(!raw) return "/add";
+    if(!raw) return "/";
     try{ raw = decodeURIComponent(raw); }catch(e){}
     if(raw.startsWith("/")) return raw;
 
@@ -36,7 +36,7 @@ window.addEventListener('DOMContentLoaded', async function () {
         if(u.origin === PUBLIC_ORIGIN) return u.pathname + u.search + u.hash;
       }catch(e){}
     }
-    return "/add";
+    return "/";
   }
 
   // Берём redirect из URL и сохраняем
@@ -45,7 +45,7 @@ window.addEventListener('DOMContentLoaded', async function () {
   if(incomingRedirect){
     localStorage.setItem(STORAGE_KEY, safeRedirect(incomingRedirect));
   } else {
-    if(!localStorage.getItem(STORAGE_KEY)) localStorage.setItem(STORAGE_KEY, "/add");
+    if(!localStorage.getItem(STORAGE_KEY)) localStorage.setItem(STORAGE_KEY, "/");
   }
 
   async function renderState(){
@@ -61,7 +61,7 @@ window.addEventListener('DOMContentLoaded', async function () {
     const user = data?.session?.user;
     if(!user) return false;
 
-    const dest = safeRedirect(localStorage.getItem(STORAGE_KEY) || "/add");
+    const dest = safeRedirect(localStorage.getItem(STORAGE_KEY) || "/");
     localStorage.removeItem(STORAGE_KEY);
 
     if(msg) msg.textContent = "Готово ✅ Перенаправляю...";

@@ -5,7 +5,7 @@
 (function() {
   'use strict';
 
-  const MOBILE_MENU_VERSION = '20251223b4';
+  const MOBILE_MENU_VERSION = '20260104a1';
   const MOBILE_MENU_CSS_URL = `/css/mobile-menu.css?v=${MOBILE_MENU_VERSION}`;
   window.AI_MOBILE_MENU_VERSION = MOBILE_MENU_VERSION;
 
@@ -81,6 +81,109 @@
     m.open();
   }
 
+  // ====== Авторизация: синхронизация пункта меню (Вход/регистрация ↔ Личный кабинет) ======
+  function getSbClient() {
+    try {
+      return window.AI_BIRZHA && window.AI_BIRZHA.sb ? window.AI_BIRZHA.sb : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function normalizePath(p) {
+    try {
+      return (p || '').split('#')[0].split('?')[0].replace(/\/+$/, '');
+    } catch (_) {
+      return (p || '').replace(/\/+$/, '');
+    }
+  }
+
+  function updateBurgerAuthLink(session) {
+    const sidebar = document.getElementById('ai-mobile-menu');
+    if (!sidebar) return;
+
+    const isAuthed = !!(session && session.user);
+    const all = Array.from(sidebar.querySelectorAll('a'));
+    const candidates = all.filter((a) => {
+      const t = ((a.textContent || '').trim().toLowerCase());
+      const hasAttr = a.getAttribute('data-ai-auth') === '1' || a.getAttribute('data-ai-cabinet') === '1';
+      const looks = t.includes('вход') || t.includes('регистрац') || t.includes('кабинет');
+      return hasAttr || looks;
+    });
+    if (!candidates.length) return;
+
+    const main = candidates[0];
+    for (let i = 1; i < candidates.length; i++) {
+      try { candidates[i].style.display = 'none'; } catch (_) {}
+    }
+
+    if (isAuthed) {
+      main.textContent = 'Личный кабинет';
+      main.setAttribute('href', '/add');
+      main.className = 'ai-sidebar-btn primary';
+      main.removeAttribute('data-ai-auth');
+      main.setAttribute('data-ai-cabinet', '1');
+    } else {
+      main.textContent = 'Вход/регистрация';
+      main.setAttribute('href', '#auth');
+      main.className = 'ai-sidebar-btn primary';
+      main.setAttribute('data-ai-auth', '1');
+      main.removeAttribute('data-ai-cabinet');
+    }
+  }
+
+  function ensureAuthWatcherStarted() {
+    if (window.__AI_MOBILE_MENU_AUTH_WATCH_STARTED) return;
+    window.__AI_MOBILE_MENU_AUTH_WATCH_STARTED = true;
+
+    function attach(sb) {
+      if (!sb || !sb.auth) return;
+
+      // начальная синхронизация
+      try {
+        sb.auth.getSession().then((res) => {
+          updateBurgerAuthLink(res && res.data ? res.data.session : null);
+        }).catch(() => {});
+      } catch (_) {}
+
+      // подписка на изменения
+      try {
+        if (window.__AI_MOBILE_MENU_AUTH_SUB && window.__AI_MOBILE_MENU_AUTH_SUB.unsubscribe) {
+          try { window.__AI_MOBILE_MENU_AUTH_SUB.unsubscribe(); } catch (_) {}
+        }
+      } catch (_) {}
+
+      try {
+        const out = sb.auth.onAuthStateChange((event, session) => {
+          updateBurgerAuthLink(session);
+        });
+        const sub = out && out.data ? out.data.subscription : null;
+        if (sub && sub.unsubscribe) window.__AI_MOBILE_MENU_AUTH_SUB = sub;
+      } catch (_) {}
+
+      // фоллбек: иногда логин происходит внутри iframe/модалки — проверим ещё раз
+      setTimeout(() => {
+        try {
+          sb.auth.getSession().then((res) => updateBurgerAuthLink(res && res.data ? res.data.session : null)).catch(() => {});
+        } catch (_) {}
+      }, 1200);
+      setTimeout(() => {
+        try {
+          sb.auth.getSession().then((res) => updateBurgerAuthLink(res && res.data ? res.data.session : null)).catch(() => {});
+        } catch (_) {}
+      }, 3500);
+    }
+
+    // ждём supabase клиент (он может появиться позже)
+    const startedAt = Date.now();
+    (function waitLoop() {
+      const sb = getSbClient();
+      if (sb) return attach(sb);
+      if (Date.now() - startedAt > 12000) return;
+      setTimeout(waitLoop, 250);
+    })();
+  }
+
   // Ждём загрузки DOM + ретраи (Tilda может дорисовывать шапку после DOMContentLoaded)
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);
@@ -107,18 +210,33 @@
     setTimeout(attempt, 700);
     setTimeout(attempt, 1500);
     setTimeout(attempt, 3000);
+    // иногда Тильда/скрипты “доперерисовывают” шапку позже
+    setTimeout(attempt, 8000);
+    setTimeout(attempt, 20000);
+    setTimeout(attempt, 60000);
 
-    // и наблюдатель DOM на 20 секунд — ловим позднюю отрисовку/перерисовку шапки Тильдой
+    // и наблюдатель DOM — ловим позднюю отрисовку/перерисовку шапки Тильдой
     try {
       mo = new MutationObserver(attempt);
       mo.observe(document.documentElement, { childList: true, subtree: true });
-      setTimeout(() => { try { mo.disconnect(); } catch (_) {} }, 20000);
+      // дольше, потому что на некоторых страницах блоки догружаются с задержкой
+      setTimeout(() => { try { mo.disconnect(); } catch (_) {} }, 120000);
     } catch (_) {}
   }
 
   function initOnce() {
-    const nav = document.querySelector('.nav, header.nav, .nav-inner');
-    if (!nav) return false;
+    const header =
+      document.querySelector('header.nav') ||
+      document.querySelector('.nav') ||
+      document.querySelector('header');
+    if (!header) return false;
+
+    // берём именно “внутренний контейнер” шапки, если он есть,
+    // иначе используем сам header (чтобы бургер не “улетал” к краю экрана)
+    const navInnerPreferred =
+      (header.querySelector && header.querySelector('.nav-inner')) ||
+      document.querySelector('.nav-inner') ||
+      header;
 
     // На некоторых "склеенных" Tilda-страницах <link> в head может не подхватиться.
     // Поэтому гарантируем подключение CSS программно (JS у нас точно загружается).
@@ -172,9 +290,9 @@
             .ai-burger{display:flex !important}
             .nav-inner,.nav .nav-inner,header .nav-inner,.container.nav-inner{display:flex !important;align-items:center !important;gap:10px !important;justify-content:space-between !important;padding:8px 12px !important;min-height:auto !important;height:auto !important;max-height:56px !important}
             .brand,.nav .brand,a.brand{display:flex !important;align-items:center !important;gap:8px !important}
-            .brand{min-width:0 !important;max-width:calc(100% - 54px) !important;overflow:hidden !important}
+            .brand{flex:0 0 auto !important}
             .ai-burger{flex:0 0 auto !important}
-            .brand span:not(.logo),.nav .brand span:not(.logo),a.brand span:not(.logo){display:block !important;font-size:12px !important;font-weight:700 !important;white-space:nowrap !important;color:#13233F !important;overflow:hidden !important;text-overflow:ellipsis !important}
+            .brand span:not(.logo),.nav .brand span:not(.logo),a.brand span:not(.logo){display:block !important;font-size:12px !important;font-weight:700 !important;white-space:nowrap !important;color:#13233F !important}
             .brand .logo,.nav .brand .logo,a.brand .logo{width:32px !important;height:32px !important;flex-shrink:0 !important}
           }
         `;
@@ -185,6 +303,19 @@
     function ensureHeaderBrand(navInnerEl) {
       try {
         if (!navInnerEl || !navInnerEl.querySelector) return;
+
+        // Чистим “висящий” текст внутри контейнера шапки (частая причина: остаётся один текст бренда без тегов)
+        // ВАЖНО: чистим только прямые текстовые узлы, чтобы не ломать вложенные элементы
+        try {
+          const nodes = navInnerEl.childNodes;
+          for (let i = nodes.length - 1; i >= 0; i--) {
+            const n = nodes[i];
+            if (n && n.nodeType === 3 && (n.textContent || '').trim()) {
+              n.parentNode && n.parentNode.removeChild(n);
+            }
+          }
+        } catch (_) {}
+
         const existing = navInnerEl.querySelector('a.brand');
         if (existing) {
           // Если бренд есть, но структура сломана — восстановим (лого + текст)
@@ -194,6 +325,12 @@
             existing.innerHTML = '<span class="logo" aria-hidden="true"></span><span>Маркетплейс ИИ услуг</span>';
           }
           try { existing.setAttribute('href', '/index.html'); } catch (_) {}
+
+          // Бренд должен быть первым элементом внутри nav-inner (чтобы не исчезать при сжатии)
+          try {
+            const firstEl = navInnerEl.firstElementChild;
+            if (firstEl && firstEl !== existing) navInnerEl.insertBefore(existing, firstEl);
+          } catch (_) {}
           return;
         }
 
@@ -218,15 +355,15 @@
     function forceHeaderBrandVisible() {
       if (window.innerWidth > 900) return;
       try {
-        const navInnerEl = document.querySelector('.nav-inner') || nav;
+        const navInnerEl = navInnerPreferred;
         const brandEl = navInnerEl && navInnerEl.querySelector ? navInnerEl.querySelector('a.brand') : null;
         if (navInnerEl) {
           navInnerEl.style.cssText += 'display:flex !important;align-items:center !important;justify-content:space-between !important;gap:10px !important;width:100% !important;max-width:100% !important;box-sizing:border-box !important;';
         }
         if (brandEl) {
-          brandEl.style.cssText += 'display:flex !important;align-items:center !important;gap:8px !important;min-width:0 !important;max-width:calc(100% - 54px) !important;overflow:hidden !important;visibility:visible !important;opacity:1 !important;';
+          brandEl.style.cssText += 'display:flex !important;align-items:center !important;gap:8px !important;flex:0 0 auto !important;visibility:visible !important;opacity:1 !important;';
           const text = brandEl.querySelector('span:not(.logo)');
-          if (text) text.style.cssText += 'display:inline !important;font-size:12px !important;font-weight:700 !important;white-space:nowrap !important;overflow:hidden !important;text-overflow:ellipsis !important;';
+          if (text) text.style.cssText += 'display:block !important;font-size:12px !important;font-weight:700 !important;white-space:nowrap !important;color:#13233F !important;';
           const logo = brandEl.querySelector('.logo');
           if (logo) {
             logo.style.cssText += 'display:block !important;width:32px !important;height:32px !important;flex:0 0 32px !important;border-radius:50% !important;background:url("/images/ai-logo.png") center/cover no-repeat,linear-gradient(135deg,#1E78FF 0%,#00B7FF 100%) !important;';
@@ -255,7 +392,7 @@
       document.head.appendChild(style);
     }
 
-    const navInner = document.querySelector('.nav-inner') || nav;
+    const navInner = navInnerPreferred;
     // Если в nav-inner нет нормального бренда (иногда Тильда оставляет просто текст) — создаём
     ensureHeaderBrand(navInner);
     forceHeaderBrandVisible();
@@ -265,6 +402,14 @@
     const existingSidebar = document.getElementById('ai-mobile-menu');
     const existingOverlay = document.getElementById('ai-menu-overlay');
     if (existingBurger && existingSidebar && existingOverlay) {
+      // меню уже есть — но пункт авторизации может устареть после логина
+      ensureAuthWatcherStarted();
+      try {
+        const sb = getSbClient();
+        if (sb && sb.auth && sb.auth.getSession) {
+          sb.auth.getSession().then((res) => updateBurgerAuthLink(res && res.data ? res.data.session : null)).catch(() => {});
+        }
+      } catch (_) {}
       return true;
     }
 
@@ -282,9 +427,9 @@
       } catch (_) {}
       if (brandText) {
         brandText.textContent = 'Маркетплейс ИИ услуг';
-        brandText.style.cssText = 'display:inline !important;font-size:12px !important;font-weight:700 !important;white-space:nowrap !important;color:#13233F !important;overflow:hidden !important;text-overflow:ellipsis !important;max-width:100% !important;';
+        brandText.style.cssText = 'display:block !important;font-size:12px !important;font-weight:700 !important;white-space:nowrap !important;color:#13233F !important;';
         const b = brandText.closest('.brand');
-        if (b) b.style.cssText += 'flex:1 1 auto !important;min-width:0 !important;max-width:calc(100% - 54px) !important;overflow:hidden !important;';
+        if (b) b.style.cssText += 'flex:0 0 auto !important;';
       }
     }
 
@@ -304,6 +449,7 @@
         if (tNorm === 'Какэтоработает') href = '/page103811576.html';
         if (tNorm === 'FAQ') href = '/page103811816.html';
         if (tNorm === 'Галереяработ') href = '/gallery.html';
+        if (normalizePath(href) === '/gallery') href = '/gallery.html';
         links.push({ href, text, isBtn: false, isAuth: text.replace(/\s+/g, '') === 'Вход/регистрация' });
       });
     }
@@ -358,7 +504,7 @@
       } catch (_) {}
 
       try {
-        burger.style.cssText += 'display:flex !important;flex-direction:column !important;justify-content:center !important;align-items:center !important;gap:5px !important;width:44px !important;height:44px !important;padding:10px !important;background:transparent !important;border:none !important;cursor:pointer !important;border-radius:12px !important;';
+        burger.style.cssText += 'display:flex !important;flex-direction:column !important;justify-content:center !important;align-items:center !important;gap:5px !important;width:44px !important;height:44px !important;padding:10px !important;background:transparent !important;border:none !important;cursor:pointer !important;border-radius:12px !important;position:relative !important;flex-shrink:0 !important;margin-left:auto !important;';
         burger.querySelectorAll('span').forEach((s) => {
           s.style.cssText = 'display:block !important;width:22px !important;height:2px !important;background:#13233F !important;border-radius:2px !important;';
         });
@@ -447,6 +593,18 @@
         return;
       }
 
+      // Жёсткий фикс: если ссылка ведёт на /gallery (алиас), открываем гарантированно /gallery.html
+      try {
+        const href = a.getAttribute('href') || '';
+        if (normalizePath(href) === '/gallery') {
+          e.preventDefault();
+          e.stopPropagation();
+          closeMenu();
+          window.location.href = '/gallery.html';
+          return;
+        }
+      } catch (_) {}
+
       // Остальные ссылки — закрываем меню и даём браузеру перейти по href
       setTimeout(closeMenu, 100);
     });
@@ -464,6 +622,9 @@
         closeMenu();
       }
     });
+
+    // Запускаем слежение за авторизацией (чтобы пункт меню обновлялся сразу после логина)
+    ensureAuthWatcherStarted();
     return true;
   }
 })();

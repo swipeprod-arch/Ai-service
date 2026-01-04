@@ -37,3 +37,4 @@ foreach($f in $files){
 Write-Host ("Updated files: " + $updated + " (token=" + $NewToken + ")")
 
 
+

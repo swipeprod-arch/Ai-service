@@ -37,3 +37,4 @@ const processDir = (dir) => {
 processDir(root);
 console.log('Done!');
 
+

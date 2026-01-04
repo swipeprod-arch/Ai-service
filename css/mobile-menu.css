@@ -272,15 +272,33 @@ header .brand .logo{
   nav.nav-links,
   .nav .nav-links,
   header .nav-links,
-  .nav-inner .nav-links {
+  .nav-inner .nav-links,
+  .container.nav-inner .nav-links,
+  header.nav .container.nav-inner .nav-links,
+  #allrecords .nav-links {
     display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
   }
   
   .nav-cta,
   .nav .nav-cta,
   header .nav-cta,
-  .nav-inner .nav-cta {
+  .nav-inner .nav-cta,
+  .container.nav-inner .nav-cta,
+  header.nav .container.nav-inner .nav-cta,
+  #allrecords .nav-cta {
     display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
   }
   
   /* Хедер на мобильном - компактный */
@@ -288,8 +306,10 @@ header .brand .logo{
   .nav .nav-inner,
   header .nav-inner,
   .container.nav-inner {
+    display: flex !important;
     justify-content: space-between !important;
-    padding: 8px 12px !important;
+    align-items: center !important;
+    padding: 8px 16px !important;
     min-height: auto !important;
     height: auto !important;
     max-height: 56px !important;
@@ -297,6 +317,16 @@ header .brand .logo{
     max-width: 100% !important;
     box-sizing: border-box !important;
     gap: 10px !important;
+    overflow: visible !important;
+  }
+  
+  /* Кнопка меню внутри контейнера */
+  .ai-burger {
+    position: relative !important;
+    right: auto !important;
+    margin-left: auto !important;
+    margin-right: 8px !important;
+    flex-shrink: 0 !important;
   }
   
   .nav-inner .brand,
@@ -314,6 +344,9 @@ header .brand .logo{
     gap: 8px !important;
     visibility: visible !important;
     opacity: 1 !important;
+    overflow: visible !important;
+    max-width: none !important;
+    flex: 1 1 auto !important;
   }
   
   .brand span:not(.logo),
@@ -324,8 +357,11 @@ header .brand .logo{
     font-weight: 700 !important;
     white-space: nowrap !important;
     color: #13233F !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    max-width: none !important;
   }
   
   .brand .logo,
@@ -355,6 +391,20 @@ header .brand .logo{
     display: block !important;
     width: 32px !important;
     height: 32px !important;
+  }
+  
+  /* Текст бренда должен быть видимым */
+  #allrecords .nav-inner a.brand span:not(.logo),
+  .t-records .nav-inner a.brand span:not(.logo),
+  header.nav .nav-inner a.brand span:not(.logo),
+  .nav-inner a.brand span:not(.logo) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    color: #13233F !important;
   }
 }
 

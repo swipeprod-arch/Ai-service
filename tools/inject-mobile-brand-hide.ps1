@@ -80,3 +80,4 @@ foreach($f in $files){
 Write-Host ("Injected mobile brand hide into: " + $patched + " files; skipped: " + $skipped)
 
 
+

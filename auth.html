@@ -1493,8 +1493,8 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
       justify-content: flex-end;
     }
   }
-</style><link rel="stylesheet" href="/css/mobile-menu.css?v=20251223b4">
-</head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="104134416" data-tilda-page-alias="auth" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1694348421" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Аккаунт</div> <h1 class="h-title" style="font-size:34px">Вход / регистрация</h1> <p class="h-sub">Введи email и пароль для входа или регистрации.</p> <form class="form" id="authForm"> <div class="field"> <label>Email</label> <input id="authEmail" type="email" placeholder="you@mail.com" required> </div> <div class="field"> <label>Пароль</label> <input id="authPassword" type="password" placeholder="Минимум 6 символов" required> </div> <div style="display:flex;gap:10px;flex-wrap:wrap"> <button class="btn primary" type="submit">Войти</button> <button class="btn" id="registerBtn" type="button">Зарегистрироваться</button> </div> <div class="small" id="authMsg" style="margin-top:8px"></div> </form> <hr class="sep"> <div class="small" id="authState"></div> <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"> <a class="btn" href="/experts">В каталог</a> </div> </div> </div> </section> <script>
+</style><link rel="stylesheet" href="/css/mobile-menu.css?v=20260104a1">
+</head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="104134416" data-tilda-page-alias="auth" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1694348421" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <section class="section"> <div class="container"> <div class="h-card"> <div class="h-eyebrow">Аккаунт</div> <h1 class="h-title" style="font-size:34px">Вход / регистрация</h1> <p class="h-sub">Введи email и пароль для входа или регистрации.</p> <form class="form" id="authForm"> <div class="field"> <label>Email</label> <input id="authEmail" type="email" placeholder="you@mail.com" required> </div> <div class="field"> <label>Пароль</label> <input id="authPassword" type="password" placeholder="Минимум 6 символов" required> </div> <div style="display:flex;gap:10px;flex-wrap:wrap"> <button class="btn primary" type="submit">Войти</button> <button class="btn" id="registerBtn" type="button">Зарегистрироваться</button> </div> <div style="margin-top:8px"> <a href="#" id="forgotPasswordLink" style="font-size:13px;color:var(--muted);text-decoration:underline;cursor:pointer">Забыли пароль?</a> </div> <div class="small" id="authMsg" style="margin-top:8px"></div> </form> <hr class="sep"> <div class="small" id="authState"></div> <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"> <a class="btn" href="/experts">В каталог</a> </div> </div> </div> </section> <script>
 window.addEventListener('DOMContentLoaded', async function () {
   const msg = document.getElementById('authMsg');
   const state = document.getElementById('authState');
@@ -1522,7 +1522,7 @@ window.addEventListener('DOMContentLoaded', async function () {
   const STORAGE_KEY = "AI_BIRZHA_AFTER_AUTH";
 
   function safeRedirect(raw){
-    if(!raw) return "/add";
+    if(!raw) return "/";
     try{ raw = decodeURIComponent(raw); }catch(e){}
     if(raw.startsWith("/")) return raw;
 
@@ -1532,7 +1532,7 @@ window.addEventListener('DOMContentLoaded', async function () {
         if(u.origin === PUBLIC_ORIGIN) return u.pathname + u.search + u.hash;
       }catch(e){}
     }
-    return "/add";
+    return "/";
   }
 
   // Берём redirect из URL и сохраняем
@@ -1541,7 +1541,7 @@ window.addEventListener('DOMContentLoaded', async function () {
   if(incomingRedirect){
     localStorage.setItem(STORAGE_KEY, safeRedirect(incomingRedirect));
   } else {
-    if(!localStorage.getItem(STORAGE_KEY)) localStorage.setItem(STORAGE_KEY, "/add");
+    if(!localStorage.getItem(STORAGE_KEY)) localStorage.setItem(STORAGE_KEY, "/");
   }
 
   async function renderState(){
@@ -1557,12 +1557,20 @@ window.addEventListener('DOMContentLoaded', async function () {
     const user = data?.session?.user;
     if(!user) return false;
 
-    const dest = safeRedirect(localStorage.getItem(STORAGE_KEY) || "/add");
+    const dest = safeRedirect(localStorage.getItem(STORAGE_KEY) || "/");
     localStorage.removeItem(STORAGE_KEY);
 
     if(msg) msg.textContent = "Готово ✅ Перенаправляю...";
     localStorage.setItem("AI_BIRZHA_LOGIN_FLASH", user.email || "");
 localStorage.setItem("AI_BIRZHA_LOGIN_FLASH_TS", String(Date.now()));
+    // Если страница авторизации открыта в iframe (например, из бургер-меню),
+    // редиректим ВЕСЬ сайт, а не только iframe.
+    try{
+      if (window.top && window.top !== window && window.top.location) {
+        window.top.location.href = dest;
+        return true;
+      }
+    }catch(e){}
     window.location.replace(dest);
     return true;
   }
@@ -1634,6 +1642,49 @@ localStorage.setItem("AI_BIRZHA_LOGIN_FLASH_TS", String(Date.now()));
     });
   }
 
+  // Восстановление пароля
+  const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+  if(forgotPasswordLink){
+    forgotPasswordLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('authEmail')?.value?.trim() || "";
+      
+      if(!email){
+        msg.textContent = "Введи email для восстановления пароля.";
+        msg.style.color = "red";
+        return;
+      }
+
+      msg.style.color = "";
+      msg.textContent = "Отправляю ссылку для сброса пароля...";
+
+      const redirectTo = PUBLIC_ORIGIN + AUTH_PATH;
+
+      const { error } = await sb.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectTo
+      });
+
+      if(error){
+        console.error('Ошибка восстановления пароля:', error);
+        
+        // Проверяем тип ошибки
+        if(error.message && error.message.includes('Email rate limit exceeded')){
+          msg.textContent = "⚠️ Слишком много попыток. Попробуй через несколько минут.";
+        } else if(error.message && error.message.includes('recovery email')){
+          msg.textContent = "⚠️ Не удалось отправить письмо. Проверь, что email указан верно, или обратись к администратору сайта.";
+        } else {
+          msg.textContent = "Ошибка: " + error.message;
+        }
+        msg.style.color = "red";
+        return;
+      }
+
+      msg.textContent = "✅ Письмо отправлено! Проверь почту (включая папку Спам) и перейди по ссылке для сброса пароля.";
+      msg.style.color = "green";
+    });
+  }
+
   // На всякий случай слушаем смену статуса
   sb.auth.onAuthStateChange(async () => {
     await renderState();
@@ -1653,6 +1704,7 @@ window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.
     '/cases': 'page103811306.html',
     '/how': 'page103811576.html',
     '/faq': 'page103811816.html',
+    '/gallery': 'gallery.html',
     '/apply': 'apply.html',
     '/add': 'add.html',
     '/auth': 'auth.html',
@@ -1690,5 +1742,5 @@ window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.
 })();
 </script>
 
-<script src="/js/mobile-menu.js?v=20251223b4"></script>
+<script src="/js/mobile-menu.js?v=20260104a1"></script>
 </body> </html>
