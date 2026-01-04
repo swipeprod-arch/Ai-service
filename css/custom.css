@@ -70,5 +70,11 @@
     overflow: hidden !important;
     text-overflow: ellipsis !important;
   }
+
+  /* Скрыть плашку "Made on Tilda" на мобильных */
+  #tildacopy,
+  .t-tildalabel{
+    display: none !important;
+  }
 }
 
