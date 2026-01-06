@@ -2099,12 +2099,18 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
   padding:10px 12px;
   background:rgba(255,255,255,.92);
   border-top:1px solid rgba(163,177,198,.2);
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
 }
 .media-item__desc{
   font-size:13px;
   color:rgba(19,35,63,.85);
   line-height:1.4;
   margin-bottom:4px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 .media-item__price{
   font-size:14px;
