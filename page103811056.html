@@ -661,8 +661,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", runAll);
   else runAll();
-
- 
+})();
 </script> <style>
 /* ===== FAST TAGS (без MutationObserver) ===== */
 #roleChips{ margin-top:10px; display:flex; flex-wrap:wrap; gap:8px; }
@@ -1594,7 +1593,7 @@ window.addEventListener('DOMContentLoaded', function () {
       .select("id, category, name, role, short_info, price_from, delivery_time, telegram, cover_path, cover_type, status, created_at")
       .eq("status", "approved")
       .order("created_at", { ascending:false })
-      .limit(60);
+      .limit(200);
 
     if (cat) q = q.eq("category", cat);
 
