@@ -1507,11 +1507,25 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
   border-radius: 18px;
   overflow:hidden;
   border:1px solid rgba(255,255,255,.7);
-  background: linear-gradient(135deg, rgba(30,120,255,.12), rgba(0,183,255,.10));
+  background: linear-gradient(90deg, #e8eef5 25%, #f5f8fc 50%, #e8eef5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
   box-shadow: inset 10px 10px 22px rgba(163,177,198,.25), inset -10px -10px 22px rgba(255,255,255,.85);
   margin-bottom:10px;
 }
-.expert-cover img, .expert-cover video{ width:100%; height:100%; object-fit:cover; display:block; }
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.expert-cover img, .expert-cover video{ 
+  width:100%; height:100%; object-fit:cover; display:block;
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.expert-cover img.loaded, .expert-cover video.loaded{ opacity: 1; }
+.expert-cover:has(img.loaded), .expert-cover:has(video.loaded){
+  animation: none;
+  background: linear-gradient(135deg, rgba(30,120,255,.12), rgba(0,183,255,.10));
+}
 .expert-cover .ph{
   width:100%;height:100%;
   display:flex;align-items:center;justify-content:center;
@@ -1551,6 +1565,13 @@ window.addEventListener('DOMContentLoaded', function () {
     }[m]));
   }
   function escAttr(s){ return esc(s).replace(/"/g, "&quot;"); }
+
+  // Функция для создания URL превью (уменьшенная версия через Supabase Transform)
+  function getThumbUrl(originalUrl, width = 400) {
+    if(!originalUrl) return originalUrl;
+    const separator = originalUrl.includes('?') ? '&' : '?';
+    return originalUrl + separator + `width=${width}&quality=75&resize=contain`;
+  }
 
   async function waitSb(){
     for(let i=0;i<40;i++){
@@ -1621,8 +1642,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
       const coverHtml = coverUrl
         ? (coverType === "video"
-            ? `<div class="expert-cover"><video src="${escAttr(coverUrl)}" muted playsinline preload="metadata"></video></div>`
-            : `<div class="expert-cover"><img src="${escAttr(coverUrl)}" alt=""></div>`
+            ? `<div class="expert-cover"><video src="${escAttr(coverUrl)}" muted playsinline preload="metadata" onloadeddata="this.classList.add('loaded')"></video></div>`
+            : `<div class="expert-cover"><img src="${escAttr(getThumbUrl(coverUrl, 400))}" alt="" loading="lazy" onload="this.classList.add('loaded')"></div>`
           )
         : `<div class="expert-cover"><div class="ph">PREVIEW</div></div>`;
 
@@ -2288,8 +2309,8 @@ window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.
           if (mediaUrl) {
             const isVideo = String(media.type || '').toLowerCase() === 'video';
             html += isVideo 
-              ? '<div class="search-detail-gallery-item"><video src="' + escA(mediaUrl) + '" muted preload="metadata"></video></div>'
-              : '<div class="search-detail-gallery-item"><img src="' + escA(mediaUrl) + '" alt=""></div>';
+              ? '<div class="search-detail-gallery-item"><video src="' + escA(mediaUrl) + '" muted preload="metadata" onloadeddata="this.classList.add(\'loaded\')"></video></div>'
+              : '<div class="search-detail-gallery-item"><img src="' + escA(getThumbUrl(mediaUrl, 300)) + '" alt="" loading="lazy" onload="this.classList.add(\'loaded\')"></div>';
           }
         });
         html += '</div>';
@@ -2355,7 +2376,7 @@ window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.
           .map(m => '<span class="search-match-tag">✓ ' + esc(m) + '</span>').join('');
         
         let coverHtml = coverUrl 
-          ? (coverType === 'video' ? '<video src="' + escA(coverUrl) + '" muted preload="metadata"></video>' : '<img src="' + escA(coverUrl) + '" alt="">')
+          ? (coverType === 'video' ? '<video src="' + escA(coverUrl) + '" muted preload="metadata" onloadeddata="this.classList.add(\'loaded\')"></video>' : '<img src="' + escA(getThumbUrl(coverUrl, 300)) + '" alt="" loading="lazy" onload="this.classList.add(\'loaded\')">')
           : '<div class="placeholder">👤</div>';
         
         const tgLink = buildTgLink(expert.telegram);
@@ -2397,6 +2418,7 @@ window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.
   
   function esc(s) { return String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
   function escA(s) { return esc(s).replace(/"/g, '&quot;'); }
+  function getThumbUrl(u, w) { if(!u) return u; return u + (u.includes('?') ? '&' : '?') + 'width=' + (w||400) + '&quality=75&resize=contain'; }
   function buildTgLink(raw) { if(!raw) return null; const t=raw.trim(); if(!t) return null; if(t.startsWith('@')) return 'https://t.me/'+t.slice(1); if(t.includes('t.me/')) return t; return 'https://t.me/'+t; }
   function getWordEnding(c) { const l2=c%100,l1=c%10; if(l2>=11&&l2<=14)return'ей'; if(l1===1)return'ь'; if(l1>=2&&l1<=4)return'я'; return'ей'; }
   

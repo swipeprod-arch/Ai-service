@@ -2002,16 +2002,31 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
   border-radius: 16px;
   overflow:hidden;
   border:1px solid rgba(255,255,255,.7);
-  background: var(--surface);
+  background: linear-gradient(90deg, #e8eef5 25%, #f5f8fc 50%, #e8eef5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
   box-shadow: 10px 10px 22px rgba(163,177,198,.25), -10px -10px 22px rgba(255,255,255,.85);
   cursor:pointer;
   position:relative;
 }
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 .media-item img, .media-item video{
   width:100%;
   height:260px;
-  object-fit:cover; /* превью — ровные, без “полей” */
+  object-fit:cover;
   display:block;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.media-item img.loaded, .media-item video.loaded{
+  opacity: 1;
+}
+.media-item:has(img.loaded), .media-item:has(video.loaded){
+  animation: none;
+  background: var(--surface);
 }
 
 /* ===== Альбомы в карточке (исправление "всё мелкое" + адаптив + ориентация) ===== */
@@ -2127,7 +2142,9 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
   justify-content:center;
   padding:14px;
   user-select:none;
-  touch-action: pan-y; /* свайп по X, скролл по Y */
+  touch-action: none; /* JS обрабатывает все жесты */
+  will-change: transform;
+  transform-origin: center center;
 }
 
 .ai-lb-media{
@@ -2336,8 +2353,9 @@ window.addEventListener('DOMContentLoaded', async function () {
       if(e.key === 'ArrowRight') goNext();
     });
 
-    // свайп (горизонтальный - листание, вертикальный - закрытие)
+    // свайп (горизонтальный - листание, вертикальный - закрытие) с анимацией
     let touchStartX = 0, touchStartY = 0, isSwiping = false;
+    let currentDy = 0; // текущее смещение по Y
     
     // Touch события для мобильных
     lb.addEventListener('touchstart', (e) => {
@@ -2345,13 +2363,34 @@ window.addEventListener('DOMContentLoaded', async function () {
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
         isSwiping = true;
+        currentDy = 0;
+        // Убираем transition для мгновенного отклика при свайпе
+        stage.style.transition = 'none';
+        lb.style.transition = 'none';
       }
     }, {passive: true});
     
-    // Предотвращаем скролл страницы под лайтбоксом при свайпе
+    // Анимация при свайпе - двигаем контент
     lb.addEventListener('touchmove', (e) => {
-      if(isSwiping && lb.classList.contains('open')){
-        e.preventDefault();
+      if(!isSwiping || !lb.classList.contains('open')) return;
+      e.preventDefault();
+      
+      const touch = e.touches[0];
+      const dx = touch.clientX - touchStartX;
+      const dy = touch.clientY - touchStartY;
+      const adx = Math.abs(dx);
+      const ady = Math.abs(dy);
+      
+      // Вертикальный свайп - двигаем контент и меняем прозрачность фона
+      if(ady > 10 && ady > adx){
+        currentDy = dy;
+        const progress = Math.min(Math.abs(dy) / 200, 1); // 0-1
+        stage.style.transform = `translateY(${dy}px) scale(${1 - progress * 0.1})`;
+        lb.style.background = `rgba(0,0,0,${0.78 * (1 - progress * 0.5)})`;
+      }
+      // Горизонтальный свайп - небольшой сдвиг для фидбека
+      else if(adx > 10 && adx > ady){
+        stage.style.transform = `translateX(${dx * 0.3}px)`;
       }
     }, {passive: false});
     
@@ -2365,18 +2404,45 @@ window.addEventListener('DOMContentLoaded', async function () {
       const adx = Math.abs(dx);
       const ady = Math.abs(dy);
       
-      // Вертикальный свайп - закрытие (вверх или вниз)
-      if(ady > 50 && ady > adx){
-        close();
+      // Включаем transition для плавной анимации
+      stage.style.transition = 'transform 0.25s ease-out';
+      lb.style.transition = 'background 0.25s ease-out';
+      
+      // Вертикальный свайп - закрытие с анимацией (вверх или вниз)
+      if(ady > 80 && ady > adx){
+        // Анимация ухода за экран
+        const direction = dy > 0 ? 1 : -1;
+        stage.style.transform = `translateY(${direction * window.innerHeight}px) scale(0.8)`;
+        lb.style.background = 'rgba(0,0,0,0)';
+        setTimeout(() => {
+          stage.style.transition = 'none';
+          stage.style.transform = '';
+          lb.style.transition = 'none';
+          lb.style.background = '';
+          close();
+        }, 250);
         return;
       }
+      
       // Горизонтальный свайп - листание
-      if(adx > 40 && adx > ady){
+      if(adx > 50 && adx > ady){
+        stage.style.transform = '';
         dx < 0 ? goNext() : goPrev();
+        return;
       }
+      
+      // Если свайп не достаточный - возвращаем на место
+      stage.style.transform = '';
+      lb.style.background = '';
     }, {passive: true});
     
-    lb.addEventListener('touchcancel', () => { isSwiping = false; }, {passive: true});
+    lb.addEventListener('touchcancel', () => { 
+      isSwiping = false;
+      stage.style.transition = 'transform 0.2s ease-out';
+      stage.style.transform = '';
+      lb.style.transition = 'background 0.2s ease-out';
+      lb.style.background = '';
+    }, {passive: true});
     
     // Pointer события для десктопа (мышь)
     let mouseDown = false, mouseX = 0, mouseY = 0;
@@ -2531,6 +2597,14 @@ window.addEventListener('DOMContentLoaded', async function () {
     pMedia.classList.add('ai-albums');
   }
 
+  // Функция для создания URL превью (уменьшенная версия через Supabase Transform)
+  function getThumbUrl(originalUrl, width = 400) {
+    if(!originalUrl) return originalUrl;
+    // Supabase signed URL поддерживает параметры трансформации
+    const separator = originalUrl.includes('?') ? '&' : '?';
+    return originalUrl + separator + `width=${width}&quality=75&resize=contain`;
+  }
+
   function renderAlbumBlock(title, list){
     let block = `
       <section class="ai-album">
@@ -2546,11 +2620,14 @@ window.addEventListener('DOMContentLoaded', async function () {
       const idx = items.length;
       items.push({ type, url: u });
 
+      // Создаём URL для превью (уменьшенная версия)
+      const thumbUrl = type === "image" ? getThumbUrl(u, 400) : u;
+      
       block += `
-        <div class="media-item" data-idx="${idx}" role="button" tabindex="0">
+        <div class="media-item" data-idx="${idx}" role="button" tabindex="0" data-full="${escAttr(u)}">
           ${type==="video"
-            ? `<video src="${escAttr(u)}" muted playsinline preload="metadata"></video>`
-            : `<img src="${escAttr(u)}" alt="">`
+            ? `<video src="${escAttr(u)}" muted playsinline preload="metadata" onloadeddata="this.classList.add('loaded')"></video>`
+            : `<img src="${escAttr(thumbUrl)}" alt="" loading="lazy" onload="this.classList.add('loaded')">`
           }
         </div>
       `;
