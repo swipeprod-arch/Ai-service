@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Создать проект — AI-Биржа</title>
+  <meta property="og:title" content="Создать проект — AI-Биржа">
+  <meta property="og:description" content="Разместите задание и найдите исполнителя">
+  <link rel="shortcut icon" href="images/tildafavicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/tilda-grid-3.0.min.css" type="text/css" media="all">
+  <link rel="stylesheet" type="text/css" href="css/custom.css?t=1767535575">
+  <link rel="stylesheet" href="css/fonts-tildasans.css" type="text/css" media="all">
+  
+  <script>
+window.AI_BIRZHA = {
+  SUPABASE_URL: "https://orxzpefskbkcyuoobkol.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_fj9X3SDLjXiL0v3pajtMwA_fTYhN3us",
+  LOCAL_URL: "http://project13172919-.test",
+  PRODUCTION_URL: "https://e45318ft.beget.tech",
+  ENVIRONMENT: "auto",
+  AUTH_PATH: "/auth",
+  CLIENT_CABINET_PATH: "/client-cabinet"
+};
+
+(function() {
+  const config = window.AI_BIRZHA;
+  if (config.ENVIRONMENT === "auto") {
+    const isLocal = /localhost|\.test|127\.0\.0\.1/.test(location.hostname);
+    config.PUBLIC_ORIGIN = isLocal ? config.LOCAL_URL : config.PRODUCTION_URL;
+  } else if (config.ENVIRONMENT === "local") {
+    config.PUBLIC_ORIGIN = config.LOCAL_URL;
+  } else if (config.ENVIRONMENT === "production") {
+    config.PUBLIC_ORIGIN = config.PRODUCTION_URL;
+  } else {
+    config.PUBLIC_ORIGIN = location.origin;
+  }
+})();
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+(function initSupabase(){
+  function tryInit(){
+    if(!window.AI_BIRZHA) return;
+    if(window.AI_BIRZHA.sb) return;
+    if(window.supabase && typeof window.supabase.createClient === "function"){
+      window.AI_BIRZHA.sb = window.supabase.createClient(
+        window.AI_BIRZHA.SUPABASE_URL,
+        window.AI_BIRZHA.SUPABASE_ANON_KEY
+      );
+      return;
+    }
+    setTimeout(tryInit, 80);
+  }
+  tryInit();
+})();
+</script>
+
+<style id="ai-logo-css">
+  .nav a.brand{
+    display:flex !important;
+    align-items:center !important;
+    gap:10px !important;
+    text-decoration:none !important;
+  }
+  .nav a.brand .logo{
+    width: 36px !important;
+    height: 36px !important;
+    flex: 0 0 auto !important;
+    border-radius: 999px !important;
+    background:
+      url("/images/ai-logo.png") center / cover no-repeat,
+      linear-gradient(135deg, #1E78FF 0%, #00B7FF 100%) !important;
+  }
+  @media (max-width: 560px){
+    .nav a.brand{ flex: 0 0 auto !important; min-width: auto !important; }
+    .nav a.brand span:not(.logo){display:block !important;font-size:12px !important;font-weight:700 !important;white-space:nowrap !important;}
+    .nav a.brand .logo{ width: 34px !important; height: 34px !important; }
+    .nav .nav-cta{ flex-wrap: wrap !important; justify-content: flex-end; }
+  }
+</style>
+
+<style>
+/* ====== AI-Биржа • Neumorphism Light Theme ====== */
+:root{
+  --bg:#EEF3FA;
+  --surface:#EEF3FA;
+  --surface2:#F6F9FF;
+  --text:#13233F;
+  --muted:#5B6C86;
+  --radius:22px;
+  --radius-sm:16px;
+  --max:800px;
+  --shadow-dark: rgba(163,177,198,.55);
+  --shadow-light: rgba(255,255,255,.92);
+  --stroke: rgba(255,255,255,.65);
+  --accent1:#1E78FF;
+  --accent2:#00B7FF;
+  --accent-grad: linear-gradient(135deg, var(--accent1) 0%, var(--accent2) 100%);
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;padding:0;
+  background: radial-gradient(1200px 700px at 15% -10%, rgba(30,120,255,.18), transparent 60%),
+              radial-gradient(900px 600px at 90% 0%, rgba(0,183,255,.12), transparent 55%),
+              var(--bg) !important;
+  color:var(--text) !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.container{max-width:var(--max);margin:0 auto;padding:0 18px}
+
+/* навбар */
+.nav{
+  position:sticky;top:0;z-index:50;
+  background: rgba(238,243,250,.75) !important;
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255,255,255,.55);
+  box-shadow: 10px 10px 22px rgba(163,177,198,.35);
+}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0;}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.2px}
+.logo{
+  width:34px;height:34px;border-radius:14px;
+  background: var(--accent-grad);
+  box-shadow: 10px 10px 20px rgba(163,177,198,.45), -10px -10px 20px rgba(255,255,255,.85);
+}
+.nav-links{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.nav-links a{padding:10px 12px;border-radius:16px;color:var(--muted) !important;background: transparent;}
+.nav-links a:hover{color:var(--text) !important;background: var(--surface);box-shadow: 8px 8px 18px rgba(163,177,198,.35), -8px -8px 18px rgba(255,255,255,.9);}
+
+/* кнопки */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:12px 16px;border-radius:18px;
+  border:1px solid var(--stroke);
+  background: var(--surface);
+  color:var(--text);
+  cursor:pointer;
+  transition: .15s transform ease, .15s box-shadow ease, .15s filter ease;
+  box-shadow: 10px 10px 22px rgba(163,177,198,.45), -10px -10px 22px rgba(255,255,255,.9);
+  font-size: 14px;
+  font-weight: 600;
+}
+.btn:hover{transform: translateY(-1px); filter:saturate(1.05)}
+.btn:active{transform: translateY(0);box-shadow: inset 10px 10px 22px rgba(163,177,198,.45), inset -10px -10px 22px rgba(255,255,255,.9);}
+.btn.primary{background: var(--accent-grad);border-color: rgba(30,120,255,.18);color:#fff !important;box-shadow: 12px 12px 26px rgba(30,120,255,.28), -10px -10px 22px rgba(255,255,255,.75);}
+.btn.primary:hover{filter:saturate(1.1) brightness(1.02)}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+/* карточки */
+.h-card{
+  background: linear-gradient(145deg, #F8FBFF, #E7EDF7) !important;
+  border:1px solid rgba(255,255,255,.65);
+  border-radius: var(--radius);
+  padding:26px;
+  box-shadow: 14px 14px 28px rgba(163,177,198,.45), -14px -14px 28px rgba(255,255,255,.92);
+}
+
+/* заголовки */
+.h-eyebrow{color:var(--muted);font-weight:700;letter-spacing:.2px;font-size:13px}
+.h-title{
+  font-size:28px;line-height:1.1;margin:8px 0 12px;font-weight:900;
+  background: var(--accent-grad);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.h-sub{color:var(--muted);line-height:1.55}
+
+/* формы */
+input,select,textarea{
+  width:100%;
+  padding:14px 16px;border-radius:16px;
+  border:1px solid rgba(255,255,255,.7);
+  background: var(--surface);
+  color: var(--text);
+  outline:none;
+  font-size: 15px;
+  box-shadow: inset 10px 10px 22px rgba(163,177,198,.40), inset -10px -10px 22px rgba(255,255,255,.92);
+}
+input:focus,select:focus,textarea:focus{
+  border-color: var(--accent1);
+  box-shadow: inset 10px 10px 22px rgba(163,177,198,.40), inset -10px -10px 22px rgba(255,255,255,.92), 0 0 0 3px rgba(30,120,255,.15);
+}
+label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+.field{margin-bottom:18px}
+textarea{resize:vertical;min-height:140px}
+select{cursor:pointer}
+
+/* две колонки */
+.two-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:560px){.two-cols{grid-template-columns:1fr}}
+
+/* секции */
+.section{padding:30px 0}
+.footer{padding:34px 0;color:var(--muted);border-top:1px solid rgba(163,177,198,.35);margin-top:34px;}
+@media (max-width: 900px){.nav-links{display:none}}
+
+/* Сообщения */
+.msg{padding:12px 16px;border-radius:12px;margin:12px 0;font-size:14px}
+.msg.success{background:rgba(16,185,129,.12);color:#059669;border:1px solid rgba(16,185,129,.25)}
+.msg.error{background:rgba(239,68,68,.12);color:#dc2626;border:1px solid rgba(239,68,68,.25)}
+.msg.info{background:rgba(59,130,246,.12);color:#2563eb;border:1px solid rgba(59,130,246,.25)}
+
+/* Загрузка файлов */
+.upload-zone{
+  border:2px dashed rgba(163,177,198,.5);
+  border-radius:18px;
+  padding:32px 20px;
+  text-align:center;
+  cursor:pointer;
+  transition:.2s all;
+  background: rgba(255,255,255,.4);
+}
+.upload-zone:hover{
+  border-color:var(--accent1);
+  background: rgba(30,120,255,.05);
+}
+.upload-zone.dragover{
+  border-color:var(--accent1);
+  background: rgba(30,120,255,.1);
+}
+.upload-zone svg{
+  width:48px;height:48px;
+  stroke:var(--muted);
+  margin-bottom:12px;
+}
+.upload-zone h4{margin:0 0 4px;color:var(--text);font-size:16px}
+.upload-zone p{margin:0;color:var(--muted);font-size:13px}
+
+/* Превью файлов */
+.files-preview{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:16px;
+}
+.file-item{
+  position:relative;
+  width:100px;
+  border-radius:12px;
+  overflow:hidden;
+  background: var(--surface);
+  border:1px solid rgba(255,255,255,.6);
+  box-shadow: 6px 6px 14px rgba(163,177,198,.3), -6px -6px 14px rgba(255,255,255,.9);
+}
+.file-item img,.file-item video{
+  width:100%;
+  height:80px;
+  object-fit:cover;
+  display:block;
+}
+.file-item .file-icon{
+  width:100%;
+  height:80px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(163,177,198,.15);
+}
+.file-item .file-icon svg{
+  width:32px;height:32px;
+  stroke:var(--muted);
+}
+.file-item .file-name{
+  padding:6px 8px;
+  font-size:11px;
+  color:var(--muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.file-item .remove-btn{
+  position:absolute;
+  top:4px;right:4px;
+  width:22px;height:22px;
+  border-radius:50%;
+  background:rgba(239,68,68,.9);
+  color:#fff;
+  border:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  line-height:1;
+}
+.file-item .remove-btn:hover{background:#dc2626}
+
+/* Прогресс */
+.progress-bar{
+  height:6px;
+  background:rgba(163,177,198,.3);
+  border-radius:3px;
+  overflow:hidden;
+  margin-top:8px;
+}
+.progress-bar .fill{
+  height:100%;
+  background: var(--accent-grad);
+  width:0%;
+  transition:.3s width;
+}
+
+/* Loading */
+.spinner{
+  width:20px;height:20px;
+  border:3px solid rgba(255,255,255,.3);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  display:inline-block;
+  margin-right:8px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+
+<link rel="stylesheet" href="/css/mobile-menu.css?v=20260104c1">
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner" style="max-width:1120px">
+      <a class="brand" href="/index.html">
+        <span class="logo" aria-hidden="true"></span>
+        <span>Маркетплейс ИИ услуг</span>
+      </a>
+      <nav class="nav-links" aria-label="Навигация">
+        <a href="/page103811056.html">Исполнители</a>
+        <a href="/projects.html">Проекты</a>
+        <a href="/gallery.html">Галерея работ</a>
+      </nav>
+      <div class="nav-cta">
+        <a class="btn" href="/client-cabinet.html">Мой кабинет</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        
+        <a href="/client-cabinet.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;margin-bottom:16px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Назад в кабинет
+        </a>
+        
+        <div class="h-card">
+          <div class="h-eyebrow">Новое задание</div>
+          <h1 class="h-title">Создать проект</h1>
+          <p class="h-sub">Опишите задачу, укажите бюджет — исполнители увидят ваш проект и смогут написать вам.</p>
+          
+          <form id="projectForm" style="margin-top:24px">
+            
+            <div class="field">
+              <label for="f_title">Название проекта *</label>
+              <input type="text" id="f_title" placeholder="Например: Монтаж видеоролика для YouTube" required maxlength="150">
+            </div>
+            
+            <div class="field">
+              <label for="f_category">Категория *</label>
+              <select id="f_category" required>
+                <option value="">Выберите категорию</option>
+                <option value="video">Видео</option>
+                <option value="design">Дизайн</option>
+                <option value="bots">Боты</option>
+                <option value="marketplaces">Маркетплейсы</option>
+                <option value="sites">Сайты</option>
+              </select>
+            </div>
+            
+            <div class="field">
+              <label for="f_desc">Описание задачи *</label>
+              <textarea id="f_desc" placeholder="Подробно опишите, что нужно сделать. Чем детальнее описание, тем точнее будут отклики исполнителей." required minlength="50"></textarea>
+              <div style="font-size:12px;color:var(--muted);margin-top:4px">Минимум 50 символов</div>
+            </div>
+            
+            <div class="two-cols">
+              <div class="field">
+                <label for="f_budget_from">Бюджет от (₽)</label>
+                <input type="number" id="f_budget_from" placeholder="5000" min="0">
+              </div>
+              <div class="field">
+                <label for="f_budget_to">Бюджет до (₽)</label>
+                <input type="number" id="f_budget_to" placeholder="15000" min="0">
+              </div>
+            </div>
+            
+            <div class="field">
+              <label for="f_deadline">Желаемый срок выполнения</label>
+              <input type="text" id="f_deadline" placeholder="Например: 5 дней, до 15 января, срочно">
+            </div>
+            
+            <div class="field">
+              <label>Прикрепить файлы (до 100 МБ каждый)</label>
+              <div class="upload-zone" id="uploadZone">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M12 16V4m0 0L8 8m4-4l4 4M20 16.7V19c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-2.3"/>
+                </svg>
+                <h4>Перетащите файлы сюда</h4>
+                <p>или нажмите для выбора • jpg, png, gif, mp4, pdf, doc, zip</p>
+              </div>
+              <input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.zip,.rar" style="display:none">
+              <div class="files-preview" id="filesPreview"></div>
+              <div id="uploadProgress" style="display:none">
+                <div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+                <div style="font-size:12px;color:var(--muted);margin-top:4px" id="uploadStatus">Загрузка...</div>
+              </div>
+            </div>
+            
+            <div id="formMsg" class="msg" style="display:none"></div>
+            
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px">
+              <button type="submit" class="btn primary" id="submitBtn">
+                <span id="btnText">Опубликовать проект</span>
+              </button>
+              <a href="/client-cabinet.html" class="btn">Отмена</a>
+            </div>
+            
+          </form>
+        </div>
+        
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container" style="max-width:1120px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span class="logo" style="width:28px;height:28px;border-radius:10px"></span>
+        <strong>AI-Биржа</strong>
+      </div>
+      <div>Каталог AI-специалистов. Без оплат на сайте. Договорённости напрямую.</div>
+      <div class="small" style="margin-top:10px">© 2025</div>
+    </div>
+  </footer>
+
+  <script>
+(async function(){
+  const AUTH_PATH = window.AI_BIRZHA?.AUTH_PATH || '/auth';
+  const CLIENT_CABINET = window.AI_BIRZHA?.CLIENT_CABINET_PATH || '/client-cabinet';
+  
+  // Ждём Supabase
+  async function waitSb(){
+    for(let i=0;i<80;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r=>setTimeout(r,100));
+    }
+    return null;
+  }
+  
+  const sb = await waitSb();
+  if(!sb){
+    showMsg('Ошибка: Supabase не подключен', 'error');
+    return;
+  }
+  
+  // Проверяем авторизацию
+  const { data: authData } = await sb.auth.getUser();
+  const user = authData?.user;
+  
+  if(!user){
+    const redirect = encodeURIComponent(location.pathname);
+    location.href = AUTH_PATH + '?redirect=' + redirect;
+    return;
+  }
+  
+  // Проверяем профиль заказчика
+  const { data: clientData } = await sb.from('clients').select('*').eq('user_id', user.id).limit(1);
+  const myClient = clientData && clientData[0];
+  
+  if(!myClient){
+    showMsg('Сначала заполните профиль заказчика', 'error');
+    setTimeout(() => location.href = CLIENT_CABINET + '.html', 2000);
+    return;
+  }
+  
+  // UI элементы
+  const form = document.getElementById('projectForm');
+  const uploadZone = document.getElementById('uploadZone');
+  const fileInput = document.getElementById('fileInput');
+  const filesPreview = document.getElementById('filesPreview');
+  const uploadProgress = document.getElementById('uploadProgress');
+  const progressFill = document.getElementById('progressFill');
+  const uploadStatus = document.getElementById('uploadStatus');
+  const formMsg = document.getElementById('formMsg');
+  const submitBtn = document.getElementById('submitBtn');
+  const btnText = document.getElementById('btnText');
+  
+  // Файлы для загрузки
+  let filesToUpload = [];
+  const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB
+  
+  // Drag & Drop
+  uploadZone.addEventListener('click', () => fileInput.click());
+  
+  uploadZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadZone.classList.add('dragover');
+  });
+  
+  uploadZone.addEventListener('dragleave', () => {
+    uploadZone.classList.remove('dragover');
+  });
+  
+  uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+  });
+  
+  fileInput.addEventListener('change', () => {
+    handleFiles(fileInput.files);
+    fileInput.value = '';
+  });
+  
+  function handleFiles(fileList){
+    for(const file of fileList){
+      if(file.size > MAX_FILE_SIZE){
+        alert(`Файл "${file.name}" слишком большой. Максимум 100 МБ.`);
+        continue;
+      }
+      
+      // Проверяем, что файл ещё не добавлен
+      if(filesToUpload.some(f => f.name === file.name && f.size === file.size)){
+        continue;
+      }
+      
+      filesToUpload.push(file);
+    }
+    
+    renderFilesPreview();
+  }
+  
+  function renderFilesPreview(){
+    filesPreview.innerHTML = '';
+    
+    for(let i = 0; i < filesToUpload.length; i++){
+      const file = filesToUpload[i];
+      const item = document.createElement('div');
+      item.className = 'file-item';
+      
+      const isImage = file.type.startsWith('image/');
+      const isVideo = file.type.startsWith('video/');
+      
+      if(isImage){
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        item.appendChild(img);
+      } else if(isVideo){
+        const video = document.createElement('video');
+        video.src = URL.createObjectURL(file);
+        video.muted = true;
+        item.appendChild(video);
+      } else {
+        const iconDiv = document.createElement('div');
+        iconDiv.className = 'file-icon';
+        iconDiv.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>`;
+        item.appendChild(iconDiv);
+      }
+      
+      const nameDiv = document.createElement('div');
+      nameDiv.className = 'file-name';
+      nameDiv.textContent = file.name;
+      item.appendChild(nameDiv);
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-btn';
+      removeBtn.innerHTML = '×';
+      removeBtn.type = 'button';
+      removeBtn.addEventListener('click', () => {
+        filesToUpload.splice(i, 1);
+        renderFilesPreview();
+      });
+      item.appendChild(removeBtn);
+      
+      filesPreview.appendChild(item);
+    }
+  }
+  
+  // Отправка формы
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const title = document.getElementById('f_title').value.trim();
+    const category = document.getElementById('f_category').value;
+    const description = document.getElementById('f_desc').value.trim();
+    const budgetFrom = parseInt(document.getElementById('f_budget_from').value) || null;
+    const budgetTo = parseInt(document.getElementById('f_budget_to').value) || null;
+    const deadline = document.getElementById('f_deadline').value.trim();
+    
+    if(!title || !category || !description){
+      showMsg('Заполните обязательные поля', 'error');
+      return;
+    }
+    
+    if(description.length < 50){
+      showMsg('Описание должно быть минимум 50 символов', 'error');
+      return;
+    }
+    
+    // Блокируем кнопку
+    submitBtn.disabled = true;
+    btnText.innerHTML = '<span class="spinner"></span>Создаю проект...';
+    
+    try {
+      // 1. Создаём проект
+      const { data: project, error: projectError } = await sb.from('projects').insert({
+        client_id: myClient.id,
+        user_id: user.id,
+        title,
+        category,
+        description,
+        budget_from: budgetFrom,
+        budget_to: budgetTo,
+        deadline: deadline || null,
+        telegram: myClient.telegram,
+        status: 'active'
+      }).select().single();
+      
+      if(projectError){
+        throw new Error(projectError.message);
+      }
+      
+      // 2. Загружаем файлы
+      if(filesToUpload.length > 0){
+        uploadProgress.style.display = 'block';
+        
+        for(let i = 0; i < filesToUpload.length; i++){
+          const file = filesToUpload[i];
+          const progress = Math.round((i / filesToUpload.length) * 100);
+          progressFill.style.width = progress + '%';
+          uploadStatus.textContent = `Загрузка ${i + 1} из ${filesToUpload.length}: ${file.name}`;
+          
+          // Определяем тип файла
+          let fileType = 'document';
+          if(file.type.startsWith('image/')) fileType = 'image';
+          else if(file.type.startsWith('video/')) fileType = 'video';
+          
+          // Генерируем путь
+          const ext = file.name.split('.').pop();
+          const fileName = `${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+          const filePath = `${user.id}/${project.id}/${fileName}`;
+          
+          // Загружаем в Storage
+          const { error: uploadError } = await sb.storage
+            .from('project-files')
+            .upload(filePath, file, { contentType: file.type });
+          
+          if(uploadError){
+            console.error('Ошибка загрузки файла:', uploadError);
+            continue;
+          }
+          
+          // Сохраняем запись о файле
+          await sb.from('project_media').insert({
+            project_id: project.id,
+            user_id: user.id,
+            file_path: filePath,
+            file_name: file.name,
+            file_type: fileType,
+            mime_type: file.type,
+            file_size: file.size
+          });
+        }
+        
+        progressFill.style.width = '100%';
+        uploadStatus.textContent = 'Файлы загружены!';
+      }
+      
+      showMsg('Проект создан! Перенаправляю...', 'success');
+      
+      setTimeout(() => {
+        location.href = CLIENT_CABINET + '.html';
+      }, 1500);
+      
+    } catch(err){
+      showMsg('Ошибка: ' + err.message, 'error');
+      submitBtn.disabled = false;
+      btnText.textContent = 'Опубликовать проект';
+    }
+  });
+  
+  function showMsg(text, type){
+    formMsg.textContent = text;
+    formMsg.className = 'msg ' + type;
+    formMsg.style.display = 'block';
+  }
+  
+})();
+</script>
+
+<script src="/js/mobile-menu.js?v=20260104c1"></script>
+</body>
+</html>
+

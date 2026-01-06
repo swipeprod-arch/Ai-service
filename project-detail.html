@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Проект — AI-Биржа</title>
+  <meta property="og:title" content="Проект — AI-Биржа">
+  <meta property="og:description" content="Детали проекта на AI-Бирже">
+  <link rel="shortcut icon" href="images/tildafavicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/tilda-grid-3.0.min.css" type="text/css" media="all">
+  <link rel="stylesheet" type="text/css" href="css/custom.css?t=1767535575">
+  <link rel="stylesheet" href="css/fonts-tildasans.css" type="text/css" media="all">
+  
+  <script>
+window.AI_BIRZHA = {
+  SUPABASE_URL: "https://orxzpefskbkcyuoobkol.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_fj9X3SDLjXiL0v3pajtMwA_fTYhN3us",
+  LOCAL_URL: "http://project13172919-.test",
+  PRODUCTION_URL: "https://e45318ft.beget.tech",
+  ENVIRONMENT: "auto"
+};
+
+(function() {
+  const config = window.AI_BIRZHA;
+  if (config.ENVIRONMENT === "auto") {
+    const isLocal = /localhost|\.test|127\.0\.0\.1/.test(location.hostname);
+    config.PUBLIC_ORIGIN = isLocal ? config.LOCAL_URL : config.PRODUCTION_URL;
+  } else if (config.ENVIRONMENT === "local") {
+    config.PUBLIC_ORIGIN = config.LOCAL_URL;
+  } else if (config.ENVIRONMENT === "production") {
+    config.PUBLIC_ORIGIN = config.PRODUCTION_URL;
+  } else {
+    config.PUBLIC_ORIGIN = location.origin;
+  }
+})();
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+(function initSupabase(){
+  function tryInit(){
+    if(!window.AI_BIRZHA) return;
+    if(window.AI_BIRZHA.sb) return;
+    if(window.supabase && typeof window.supabase.createClient === "function"){
+      window.AI_BIRZHA.sb = window.supabase.createClient(
+        window.AI_BIRZHA.SUPABASE_URL,
+        window.AI_BIRZHA.SUPABASE_ANON_KEY
+      );
+      return;
+    }
+    setTimeout(tryInit, 80);
+  }
+  tryInit();
+})();
+</script>
+
+<style id="ai-logo-css">
+  .nav a.brand{
+    display:flex !important;
+    align-items:center !important;
+    gap:10px !important;
+    text-decoration:none !important;
+  }
+  .nav a.brand .logo{
+    width: 36px !important;
+    height: 36px !important;
+    flex: 0 0 auto !important;
+    border-radius: 999px !important;
+    background:
+      url("/images/ai-logo.png") center / cover no-repeat,
+      linear-gradient(135deg, #1E78FF 0%, #00B7FF 100%) !important;
+  }
+  @media (max-width: 560px){
+    .nav a.brand{ flex: 0 0 auto !important; min-width: auto !important; }
+    .nav a.brand span:not(.logo){display:block !important;font-size:12px !important;font-weight:700 !important;white-space:nowrap !important;}
+    .nav a.brand .logo{ width: 34px !important; height: 34px !important; }
+    .nav .nav-cta{ flex-wrap: wrap !important; justify-content: flex-end; }
+  }
+</style>
+
+<style>
+/* ====== AI-Биржа • Neumorphism Light Theme ====== */
+:root{
+  --bg:#EEF3FA;
+  --surface:#EEF3FA;
+  --surface2:#F6F9FF;
+  --text:#13233F;
+  --muted:#5B6C86;
+  --radius:22px;
+  --radius-sm:16px;
+  --max:900px;
+  --shadow-dark: rgba(163,177,198,.55);
+  --shadow-light: rgba(255,255,255,.92);
+  --stroke: rgba(255,255,255,.65);
+  --accent1:#1E78FF;
+  --accent2:#00B7FF;
+  --accent-grad: linear-gradient(135deg, var(--accent1) 0%, var(--accent2) 100%);
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;padding:0;
+  background: radial-gradient(1200px 700px at 15% -10%, rgba(30,120,255,.18), transparent 60%),
+              radial-gradient(900px 600px at 90% 0%, rgba(0,183,255,.12), transparent 55%),
+              var(--bg) !important;
+  color:var(--text) !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.container{max-width:var(--max);margin:0 auto;padding:0 18px}
+
+/* навбар */
+.nav{
+  position:sticky;top:0;z-index:50;
+  background: rgba(238,243,250,.75) !important;
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255,255,255,.55);
+  box-shadow: 10px 10px 22px rgba(163,177,198,.35);
+}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0;}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.2px}
+.logo{
+  width:34px;height:34px;border-radius:14px;
+  background: var(--accent-grad);
+  box-shadow: 10px 10px 20px rgba(163,177,198,.45), -10px -10px 20px rgba(255,255,255,.85);
+}
+.nav-links{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.nav-links a{padding:10px 12px;border-radius:16px;color:var(--muted) !important;background: transparent;}
+.nav-links a:hover{color:var(--text) !important;background: var(--surface);box-shadow: 8px 8px 18px rgba(163,177,198,.35), -8px -8px 18px rgba(255,255,255,.9);}
+
+/* кнопки */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:14px 20px;border-radius:18px;
+  border:1px solid var(--stroke);
+  background: var(--surface);
+  color:var(--text);
+  cursor:pointer;
+  transition: .15s transform ease, .15s box-shadow ease, .15s filter ease;
+  box-shadow: 10px 10px 22px rgba(163,177,198,.45), -10px -10px 22px rgba(255,255,255,.9);
+  font-size: 15px;
+  font-weight: 700;
+}
+.btn:hover{transform: translateY(-1px); filter:saturate(1.05)}
+.btn:active{transform: translateY(0);box-shadow: inset 10px 10px 22px rgba(163,177,198,.45), inset -10px -10px 22px rgba(255,255,255,.9);}
+.btn.primary{background: var(--accent-grad);border-color: rgba(30,120,255,.18);color:#fff !important;box-shadow: 12px 12px 26px rgba(30,120,255,.28), -10px -10px 22px rgba(255,255,255,.75);}
+.btn.telegram{background: linear-gradient(135deg, #0088cc 0%, #00aced 100%);border-color: rgba(0,136,204,.18);color:#fff !important;font-size:16px;padding:16px 28px;}
+
+/* карточки */
+.h-card{
+  background: linear-gradient(145deg, #F8FBFF, #E7EDF7) !important;
+  border:1px solid rgba(255,255,255,.65);
+  border-radius: var(--radius);
+  padding:28px;
+  box-shadow: 14px 14px 28px rgba(163,177,198,.45), -14px -14px 28px rgba(255,255,255,.92);
+}
+
+/* заголовки */
+.h-eyebrow{color:var(--muted);font-weight:700;letter-spacing:.2px;font-size:13px}
+.h-title{
+  font-size:28px;line-height:1.15;margin:10px 0 16px;font-weight:900;
+  color:var(--text);
+}
+.section-title{font-size:18px;margin:0 0 12px;font-weight:900;background: var(--accent-grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.h-sub{color:var(--muted);line-height:1.55}
+
+/* секции */
+.section{padding:30px 0}
+.footer{padding:34px 0;color:var(--muted);border-top:1px solid rgba(163,177,198,.35);margin-top:34px;}
+@media (max-width: 900px){.nav-links{display:none}}
+
+/* Badges */
+.badge{
+  font-size:13px;
+  padding:8px 14px;
+  border-radius:999px;
+  background: var(--surface);
+  color: var(--muted);
+  border:1px solid rgba(255,255,255,.6);
+  box-shadow: inset 4px 4px 10px rgba(163,177,198,.2), inset -4px -4px 10px rgba(255,255,255,.9);
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+.badge.category{
+  background: var(--accent-grad);
+  color:#fff;
+  border:none;
+  box-shadow:none;
+}
+.badge.budget{
+  background: rgba(16,185,129,.12);
+  color:#059669;
+  border-color: rgba(16,185,129,.2);
+  font-weight:700;
+}
+.badge.status-active{
+  background: rgba(16,185,129,.12);
+  color:#059669;
+}
+.badge.status-closed{
+  background: rgba(107,114,128,.12);
+  color:#6b7280;
+}
+
+.badges-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+/* Описание */
+.description{
+  color:var(--text);
+  font-size:15px;
+  line-height:1.7;
+  white-space:pre-wrap;
+}
+
+/* Инфо блоки */
+.info-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap:14px;
+  margin:20px 0;
+}
+.info-item{
+  padding:16px;
+  border-radius:16px;
+  background: var(--surface);
+  border:1px solid rgba(255,255,255,.6);
+  box-shadow: inset 6px 6px 14px rgba(163,177,198,.25), inset -6px -6px 14px rgba(255,255,255,.9);
+}
+.info-item .label{font-size:12px;color:var(--muted);margin-bottom:4px}
+.info-item .value{font-size:16px;font-weight:700;color:var(--text)}
+
+/* Клиент */
+.client-card{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:18px;
+  border-radius:18px;
+  background: var(--surface);
+  border:1px solid rgba(255,255,255,.6);
+  box-shadow: inset 6px 6px 14px rgba(163,177,198,.2), inset -6px -6px 14px rgba(255,255,255,.9);
+  margin:20px 0;
+}
+.client-avatar{
+  width:50px;height:50px;
+  border-radius:50%;
+  background: var(--accent-grad);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-weight:900;
+  font-size:20px;
+  flex-shrink:0;
+}
+.client-info h4{margin:0 0 4px;font-size:16px;color:var(--text)}
+.client-info p{margin:0;font-size:13px;color:var(--muted)}
+
+/* Галерея */
+.gallery{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap:12px;
+  margin-top:16px;
+}
+.gallery-item{
+  position:relative;
+  border-radius:14px;
+  overflow:hidden;
+  background: var(--surface);
+  border:1px solid rgba(255,255,255,.6);
+  box-shadow: 6px 6px 14px rgba(163,177,198,.3), -6px -6px 14px rgba(255,255,255,.9);
+  cursor:pointer;
+  transition:.2s transform;
+}
+.gallery-item:hover{transform:scale(1.03)}
+.gallery-item img,.gallery-item video{
+  width:100%;
+  height:120px;
+  object-fit:cover;
+  display:block;
+}
+.gallery-item .file-icon{
+  width:100%;
+  height:120px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:rgba(163,177,198,.1);
+}
+.gallery-item .file-icon svg{
+  width:36px;height:36px;
+  stroke:var(--muted);
+  margin-bottom:8px;
+}
+.gallery-item .file-icon span{
+  font-size:11px;
+  color:var(--muted);
+  max-width:90%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* CTA блок */
+.cta-block{
+  text-align:center;
+  padding:28px;
+  border-radius:18px;
+  background: linear-gradient(135deg, rgba(30,120,255,.08) 0%, rgba(0,183,255,.08) 100%);
+  border:1px solid rgba(30,120,255,.15);
+  margin-top:24px;
+}
+.cta-block h3{margin:0 0 8px;font-size:18px;color:var(--text)}
+.cta-block p{margin:0 0 16px;color:var(--muted);font-size:14px}
+
+/* Loading */
+.loading{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:60px;
+  color:var(--muted);
+}
+.spinner{
+  width:28px;height:28px;
+  border:3px solid rgba(163,177,198,.3);
+  border-top-color:var(--accent1);
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin-right:14px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Лайтбокс */
+.lightbox{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:rgba(10,20,40,.85);
+  backdrop-filter:blur(8px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.lightbox.open{display:flex}
+.lightbox-content{
+  max-width:95vw;
+  max-height:90vh;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.4);
+}
+.lightbox-content img,.lightbox-content video{
+  max-width:100%;
+  max-height:85vh;
+  display:block;
+}
+.lightbox-close{
+  position:absolute;
+  top:20px;right:20px;
+  width:44px;height:44px;
+  border-radius:50%;
+  background:rgba(255,255,255,.9);
+  border:none;
+  cursor:pointer;
+  font-size:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Not found */
+.not-found{
+  text-align:center;
+  padding:60px 24px;
+}
+.not-found svg{
+  width:80px;height:80px;
+  stroke:var(--muted);
+  opacity:.4;
+  margin-bottom:16px;
+}
+.not-found h2{margin:0 0 8px;font-size:22px;color:var(--text)}
+.not-found p{margin:0 0 20px;color:var(--muted)}
+</style>
+
+<link rel="stylesheet" href="/css/mobile-menu.css?v=20260104c1">
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner" style="max-width:1120px">
+      <a class="brand" href="/index.html">
+        <span class="logo" aria-hidden="true"></span>
+        <span>Маркетплейс ИИ услуг</span>
+      </a>
+      <nav class="nav-links" aria-label="Навигация">
+        <a href="/page103811056.html">Исполнители</a>
+        <a href="/projects.html">Проекты</a>
+        <a href="/gallery.html">Галерея работ</a>
+      </nav>
+      <div class="nav-cta">
+        <a class="btn" href="/projects.html">Все проекты</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        
+        <a href="/projects.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;margin-bottom:16px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Все проекты
+        </a>
+        
+        <div id="projectContainer">
+          <div class="loading">
+            <div class="spinner"></div>
+            Загрузка проекта...
+          </div>
+        </div>
+        
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container" style="max-width:1120px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span class="logo" style="width:28px;height:28px;border-radius:10px"></span>
+        <strong>AI-Биржа</strong>
+      </div>
+      <div>Каталог AI-специалистов. Без оплат на сайте. Договорённости напрямую.</div>
+      <div class="small" style="margin-top:10px">© 2025</div>
+    </div>
+  </footer>
+
+  <!-- Лайтбокс -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose">×</button>
+    <div class="lightbox-content" id="lightboxContent"></div>
+  </div>
+
+  <script>
+(async function(){
+  
+  // Ждём Supabase
+  async function waitSb(){
+    for(let i=0;i<80;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r=>setTimeout(r,100));
+    }
+    return null;
+  }
+  
+  const sb = await waitSb();
+  const container = document.getElementById('projectContainer');
+  
+  if(!sb){
+    container.innerHTML = '<div class="not-found"><h2>Ошибка подключения</h2><p>Не удалось подключиться к базе данных</p></div>';
+    return;
+  }
+  
+  // Получаем ID проекта
+  const qs = new URLSearchParams(location.search);
+  const projectId = qs.get('id');
+  
+  if(!projectId){
+    container.innerHTML = `
+      <div class="not-found">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
+        </svg>
+        <h2>Проект не найден</h2>
+        <p>Укажите ID проекта в URL</p>
+        <a href="/projects.html" class="btn primary">Все проекты</a>
+      </div>
+    `;
+    return;
+  }
+  
+  // Хелперы
+  function esc(s){ return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  
+  const categoryNames = {
+    video: 'Видео',
+    design: 'Дизайн',
+    bots: 'Боты',
+    marketplaces: 'Маркетплейсы',
+    sites: 'Сайты'
+  };
+  
+  // Загрузка проекта
+  const { data: project, error } = await sb
+    .from('projects')
+    .select(`
+      *,
+      clients (
+        id,
+        name,
+        description,
+        telegram,
+        website
+      )
+    `)
+    .eq('id', projectId)
+    .single();
+  
+  if(error || !project){
+    container.innerHTML = `
+      <div class="not-found">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
+        </svg>
+        <h2>Проект не найден</h2>
+        <p>Возможно, он был удалён или ещё не опубликован</p>
+        <a href="/projects.html" class="btn primary">Все проекты</a>
+      </div>
+    `;
+    return;
+  }
+  
+  // Загрузка медиа
+  const { data: media } = await sb
+    .from('project_media')
+    .select('*')
+    .eq('project_id', projectId)
+    .order('created_at', { ascending: true });
+  
+  // Обновляем заголовок страницы
+  document.title = project.title + ' — AI-Биржа';
+  
+  const client = project.clients;
+  const clientName = client?.name || 'Заказчик';
+  const clientInitial = clientName.charAt(0).toUpperCase();
+  const telegram = project.telegram || client?.telegram || '';
+  
+  const budget = project.budget_from || project.budget_to 
+    ? (project.budget_from && project.budget_to 
+        ? `${project.budget_from.toLocaleString()} — ${project.budget_to.toLocaleString()} ₽` 
+        : (project.budget_from ? `от ${project.budget_from.toLocaleString()} ₽` : `до ${project.budget_to.toLocaleString()} ₽`))
+    : null;
+  
+  const createdAt = new Date(project.created_at);
+  const dateStr = createdAt.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+  
+  const statusClass = project.status === 'active' ? 'status-active' : 'status-closed';
+  const statusText = project.status === 'active' ? 'Активный' : 'Закрыт';
+  
+  // Генерируем HTML
+  let html = `
+    <div class="h-card">
+      <div class="h-eyebrow">${dateStr}</div>
+      <h1 class="h-title">${esc(project.title)}</h1>
+      
+      <div class="badges-row">
+        <span class="badge category">${categoryNames[project.category] || project.category}</span>
+        <span class="badge ${statusClass}">${statusText}</span>
+        ${budget ? `<span class="badge budget">${budget}</span>` : ''}
+      </div>
+      
+      <div class="info-grid">
+        ${budget ? `
+          <div class="info-item">
+            <div class="label">Бюджет</div>
+            <div class="value">${budget}</div>
+          </div>
+        ` : ''}
+        ${project.deadline ? `
+          <div class="info-item">
+            <div class="label">Желаемый срок</div>
+            <div class="value">${esc(project.deadline)}</div>
+          </div>
+        ` : ''}
+        <div class="info-item">
+          <div class="label">Категория</div>
+          <div class="value">${categoryNames[project.category] || project.category}</div>
+        </div>
+      </div>
+      
+      <hr style="border:none;border-top:1px solid rgba(163,177,198,.25);margin:20px 0">
+      
+      <h3 class="section-title">Описание задачи</h3>
+      <div class="description">${esc(project.description)}</div>
+      
+      ${media && media.length > 0 ? `
+        <hr style="border:none;border-top:1px solid rgba(163,177,198,.25);margin:20px 0">
+        <h3 class="section-title">Прикреплённые файлы</h3>
+        <div class="gallery" id="gallery">
+          ${media.map(m => {
+            const url = sb.storage.from('project-files').getPublicUrl(m.file_path).data.publicUrl;
+            if(m.file_type === 'image'){
+              return `<div class="gallery-item" data-type="image" data-url="${url}"><img src="${url}" alt="${esc(m.file_name)}"></div>`;
+            } else if(m.file_type === 'video'){
+              return `<div class="gallery-item" data-type="video" data-url="${url}"><video src="${url}" muted></video></div>`;
+            } else {
+              return `
+                <a href="${url}" target="_blank" class="gallery-item" style="text-decoration:none">
+                  <div class="file-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>${esc(m.file_name || 'Документ')}</span>
+                  </div>
+                </a>
+              `;
+            }
+          }).join('')}
+        </div>
+      ` : ''}
+      
+      <hr style="border:none;border-top:1px solid rgba(163,177,198,.25);margin:20px 0">
+      
+      <h3 class="section-title">Заказчик</h3>
+      <div class="client-card">
+        <div class="client-avatar">${clientInitial}</div>
+        <div class="client-info">
+          <h4>${esc(clientName)}</h4>
+          ${client?.description ? `<p>${esc(client.description.slice(0, 100))}${client.description.length > 100 ? '...' : ''}</p>` : ''}
+        </div>
+      </div>
+      
+      ${project.status === 'active' && telegram ? `
+        <div class="cta-block">
+          <h3>Готовы взяться за проект?</h3>
+          <p>Напишите заказчику напрямую в Telegram, чтобы обсудить детали</p>
+          <a href="${telegram}" target="_blank" rel="noopener" class="btn telegram">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+            Написать в Telegram
+          </a>
+        </div>
+      ` : ''}
+      
+    </div>
+  `;
+  
+  container.innerHTML = html;
+  
+  // Лайтбокс
+  const lightbox = document.getElementById('lightbox');
+  const lightboxContent = document.getElementById('lightboxContent');
+  const lightboxClose = document.getElementById('lightboxClose');
+  
+  document.querySelectorAll('.gallery-item[data-type]').forEach(item => {
+    item.addEventListener('click', () => {
+      const type = item.dataset.type;
+      const url = item.dataset.url;
+      
+      if(type === 'image'){
+        lightboxContent.innerHTML = `<img src="${url}" alt="">`;
+      } else if(type === 'video'){
+        lightboxContent.innerHTML = `<video src="${url}" controls autoplay></video>`;
+      }
+      
+      lightbox.classList.add('open');
+    });
+  });
+  
+  lightboxClose.addEventListener('click', () => {
+    lightbox.classList.remove('open');
+    lightboxContent.innerHTML = '';
+  });
+  
+  lightbox.addEventListener('click', (e) => {
+    if(e.target === lightbox){
+      lightbox.classList.remove('open');
+      lightboxContent.innerHTML = '';
+    }
+  });
+  
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && lightbox.classList.contains('open')){
+      lightbox.classList.remove('open');
+      lightboxContent.innerHTML = '';
+    }
+  });
+  
+  // Увеличиваем счётчик просмотров
+  await sb.from('projects').update({ views_count: (project.views_count || 0) + 1 }).eq('id', projectId);
+  
+})();
+</script>
+
+<script src="/js/mobile-menu.js?v=20260104c1"></script>
+</body>
+</html>
+

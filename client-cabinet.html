@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Кабинет заказчика — AI-Биржа</title>
+  <meta property="og:title" content="Кабинет заказчика — AI-Биржа">
+  <meta property="og:description" content="Размещайте проекты и находите исполнителей">
+  <link rel="shortcut icon" href="images/tildafavicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/tilda-grid-3.0.min.css" type="text/css" media="all">
+  <link rel="stylesheet" type="text/css" href="css/custom.css?t=1767535575">
+  <link rel="stylesheet" href="css/fonts-tildasans.css" type="text/css" media="all">
+  
+  <script>
+window.AI_BIRZHA = {
+  SUPABASE_URL: "https://orxzpefskbkcyuoobkol.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_fj9X3SDLjXiL0v3pajtMwA_fTYhN3us",
+  LOCAL_URL: "http://project13172919-.test",
+  PRODUCTION_URL: "https://e45318ft.beget.tech",
+  ENVIRONMENT: "auto",
+  AUTH_PATH: "/auth",
+  APPLY_PATH: "/apply",
+  ADD_PATH: "/add",
+  EXPERTS_PATH: "/experts",
+  CLIENT_CABINET_PATH: "/client-cabinet",
+  PROJECTS_PATH: "/projects"
+};
+
+(function() {
+  const config = window.AI_BIRZHA;
+  if (config.ENVIRONMENT === "auto") {
+    const isLocal = /localhost|\.test|127\.0\.0\.1/.test(location.hostname);
+    config.PUBLIC_ORIGIN = isLocal ? config.LOCAL_URL : config.PRODUCTION_URL;
+  } else if (config.ENVIRONMENT === "local") {
+    config.PUBLIC_ORIGIN = config.LOCAL_URL;
+  } else if (config.ENVIRONMENT === "production") {
+    config.PUBLIC_ORIGIN = config.PRODUCTION_URL;
+  } else {
+    config.PUBLIC_ORIGIN = location.origin;
+  }
+})();
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+(function initSupabase(){
+  function tryInit(){
+    if(!window.AI_BIRZHA) return;
+    if(window.AI_BIRZHA.sb) return;
+    if(window.supabase && typeof window.supabase.createClient === "function"){
+      window.AI_BIRZHA.sb = window.supabase.createClient(
+        window.AI_BIRZHA.SUPABASE_URL,
+        window.AI_BIRZHA.SUPABASE_ANON_KEY
+      );
+      return;
+    }
+    setTimeout(tryInit, 80);
+  }
+  tryInit();
+})();
+</script>
+
+<style id="ai-logo-css">
+  .nav a.brand{
+    display:flex !important;
+    align-items:center !important;
+    gap:10px !important;
+    text-decoration:none !important;
+  }
+  .nav a.brand .logo{
+    width: 36px !important;
+    height: 36px !important;
+    flex: 0 0 auto !important;
+    border-radius: 999px !important;
+    background:
+      url("/images/ai-logo.png") center / cover no-repeat,
+      linear-gradient(135deg, #1E78FF 0%, #00B7FF 100%) !important;
+  }
+  @media (max-width: 560px){
+    .nav a.brand{ flex: 0 0 auto !important; min-width: auto !important; }
+    .nav a.brand span:not(.logo){display:block !important;font-size:12px !important;font-weight:700 !important;white-space:nowrap !important;}
+    .nav a.brand .logo{ width: 34px !important; height: 34px !important; }
+    .nav .nav-cta{ flex-wrap: wrap !important; justify-content: flex-end; }
+  }
+</style>
+
+<style>
+/* ====== AI-Биржа • Neumorphism Light Theme ====== */
+:root{
+  --bg:#EEF3FA;
+  --surface:#EEF3FA;
+  --surface2:#F6F9FF;
+  --text:#13233F;
+  --muted:#5B6C86;
+  --radius:22px;
+  --radius-sm:16px;
+  --max:1120px;
+  --shadow-dark: rgba(163,177,198,.55);
+  --shadow-light: rgba(255,255,255,.92);
+  --stroke: rgba(255,255,255,.65);
+  --accent1:#1E78FF;
+  --accent2:#00B7FF;
+  --accent-grad: linear-gradient(135deg, var(--accent1) 0%, var(--accent2) 100%);
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;padding:0;
+  background: radial-gradient(1200px 700px at 15% -10%, rgba(30,120,255,.18), transparent 60%),
+              radial-gradient(900px 600px at 90% 0%, rgba(0,183,255,.12), transparent 55%),
+              var(--bg) !important;
+  color:var(--text) !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.container{max-width:var(--max);margin:0 auto;padding:0 18px}
+
+/* навбар */
+.nav{
+  position:sticky;top:0;z-index:50;
+  background: rgba(238,243,250,.75) !important;
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255,255,255,.55);
+  box-shadow: 10px 10px 22px rgba(163,177,198,.35);
+}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0;}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.2px}
+.logo{
+  width:34px;height:34px;border-radius:14px;
+  background: var(--accent-grad);
+  box-shadow: 10px 10px 20px rgba(163,177,198,.45), -10px -10px 20px rgba(255,255,255,.85);
+}
+.nav-links{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.nav-links a{padding:10px 12px;border-radius:16px;color:var(--muted) !important;background: transparent;}
+.nav-links a:hover{color:var(--text) !important;background: var(--surface);box-shadow: 8px 8px 18px rgba(163,177,198,.35), -8px -8px 18px rgba(255,255,255,.9);}
+
+/* кнопки */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:12px 16px;border-radius:18px;
+  border:1px solid var(--stroke);
+  background: var(--surface);
+  color:var(--text);
+  cursor:pointer;
+  transition: .15s transform ease, .15s box-shadow ease, .15s filter ease;
+  box-shadow: 10px 10px 22px rgba(163,177,198,.45), -10px -10px 22px rgba(255,255,255,.9);
+  font-size: 14px;
+  font-weight: 600;
+}
+.btn:hover{transform: translateY(-1px); filter:saturate(1.05)}
+.btn:active{transform: translateY(0);box-shadow: inset 10px 10px 22px rgba(163,177,198,.45), inset -10px -10px 22px rgba(255,255,255,.9);}
+.btn.primary{background: var(--accent-grad);border-color: rgba(30,120,255,.18);color:#fff !important;box-shadow: 12px 12px 26px rgba(30,120,255,.28), -10px -10px 22px rgba(255,255,255,.75);}
+.btn.primary:hover{filter:saturate(1.1) brightness(1.02)}
+.btn.secondary{background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);border-color: rgba(255,107,53,.18);color:#fff !important;}
+.btn.danger{background: linear-gradient(135deg, #FF4757 0%, #FF6B81 100%);border-color: rgba(255,71,87,.18);color:#fff !important;}
+
+/* карточки */
+.h-card,.card{
+  background: linear-gradient(145deg, #F8FBFF, #E7EDF7) !important;
+  border:1px solid rgba(255,255,255,.65);
+  border-radius: var(--radius);
+  box-shadow: 14px 14px 28px rgba(163,177,198,.45), -14px -14px 28px rgba(255,255,255,.92);
+}
+.h-card{padding:26px}
+.card{padding:16px;transition:.15s transform ease, .15s box-shadow ease}
+.card:hover{transform: translateY(-2px);box-shadow: 18px 18px 34px rgba(163,177,198,.42), -18px -18px 34px rgba(255,255,255,.94);}
+
+/* заголовки */
+.h-eyebrow{color:var(--muted);font-weight:700;letter-spacing:.2px;font-size:13px}
+.h-title{
+  font-size:32px;line-height:1.1;margin:8px 0 12px;font-weight:900;
+  background: var(--accent-grad);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.section-title{font-size:20px;margin:0 0 12px;font-weight:900;background: var(--accent-grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.h-sub,.section-sub{color:var(--muted);line-height:1.55}
+
+/* формы */
+input,select,textarea{
+  width:100%;
+  padding:14px 16px;border-radius:16px;
+  border:1px solid rgba(255,255,255,.7);
+  background: var(--surface);
+  color: var(--text);
+  outline:none;
+  font-size: 15px;
+  box-shadow: inset 10px 10px 22px rgba(163,177,198,.40), inset -10px -10px 22px rgba(255,255,255,.92);
+}
+input:focus,select:focus,textarea:focus{
+  border-color: var(--accent1);
+  box-shadow: inset 10px 10px 22px rgba(163,177,198,.40), inset -10px -10px 22px rgba(255,255,255,.92), 0 0 0 3px rgba(30,120,255,.15);
+}
+label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+.field{margin-bottom:16px}
+textarea{resize:vertical;min-height:100px}
+
+/* секции */
+.section{padding:26px 0}
+.footer{padding:34px 0;color:var(--muted);border-top:1px solid rgba(163,177,198,.35);margin-top:34px;}
+.footer a{color:var(--muted)}.footer a:hover{color:var(--text)}
+@media (max-width: 900px){.nav-links{display:none}}
+
+/* Сообщения */
+.msg{padding:12px 16px;border-radius:12px;margin:12px 0;font-size:14px}
+.msg.success{background:rgba(16,185,129,.12);color:#059669;border:1px solid rgba(16,185,129,.25)}
+.msg.error{background:rgba(239,68,68,.12);color:#dc2626;border:1px solid rgba(239,68,68,.25)}
+.msg.info{background:rgba(59,130,246,.12);color:#2563eb;border:1px solid rgba(59,130,246,.25)}
+
+/* Переключатель роли */
+.role-switcher{
+  display:inline-flex;
+  gap:4px;
+  padding:4px;
+  border-radius:20px;
+  background: var(--surface);
+  box-shadow: inset 8px 8px 16px rgba(163,177,198,.35), inset -8px -8px 16px rgba(255,255,255,.9);
+}
+.role-switcher a{
+  padding:10px 18px;
+  border-radius:16px;
+  font-size:13px;
+  font-weight:700;
+  color:var(--muted);
+  transition:.2s all;
+}
+.role-switcher a:hover{color:var(--text)}
+.role-switcher a.active{
+  background: var(--accent-grad);
+  color:#fff !important;
+  box-shadow: 6px 6px 14px rgba(30,120,255,.25);
+}
+
+/* Список проектов */
+.projects-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap:16px;
+  margin-top:16px;
+}
+.project-card{
+  background: linear-gradient(145deg, #F8FBFF, #E7EDF7);
+  border:1px solid rgba(255,255,255,.65);
+  border-radius: var(--radius);
+  padding:20px;
+  box-shadow: 10px 10px 24px rgba(163,177,198,.4), -10px -10px 24px rgba(255,255,255,.9);
+  transition:.2s transform, .2s box-shadow;
+}
+.project-card:hover{
+  transform: translateY(-3px);
+  box-shadow: 14px 14px 30px rgba(163,177,198,.45), -14px -14px 30px rgba(255,255,255,.95);
+}
+.project-card h3{margin:0 0 8px;font-size:17px;font-weight:800;color:var(--text)}
+.project-card .desc{color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.project-card .meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.project-card .badge{
+  font-size:11px;
+  padding:5px 10px;
+  border-radius:999px;
+  background: var(--surface);
+  color: var(--muted);
+  border:1px solid rgba(255,255,255,.6);
+  box-shadow: inset 4px 4px 10px rgba(163,177,198,.25), inset -4px -4px 10px rgba(255,255,255,.9);
+}
+.project-card .badge.category{background: var(--accent-grad);color:#fff;border:none;box-shadow:none}
+.project-card .badge.active{background:rgba(16,185,129,.15);color:#059669}
+.project-card .badge.closed{background:rgba(107,114,128,.15);color:#6b7280}
+.project-card .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+/* Пустое состояние */
+.empty-state{
+  text-align:center;
+  padding:48px 24px;
+  color:var(--muted);
+}
+.empty-state svg{
+  width:80px;height:80px;
+  stroke:var(--muted);
+  opacity:.4;
+  margin-bottom:16px;
+}
+.empty-state h3{margin:0 0 8px;color:var(--text);font-size:20px}
+.empty-state p{margin:0 0 20px}
+
+/* Loading */
+.loading{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px;
+  color:var(--muted);
+}
+.spinner{
+  width:24px;height:24px;
+  border:3px solid var(--surface);
+  border-top-color:var(--accent1);
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin-right:12px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+
+<link rel="stylesheet" href="/css/mobile-menu.css?v=20260104c1">
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="/index.html">
+        <span class="logo" aria-hidden="true"></span>
+        <span>Маркетплейс ИИ услуг</span>
+      </a>
+      <nav class="nav-links" aria-label="Навигация">
+        <a href="/page103811056.html">Исполнители</a>
+        <a href="/projects.html">Проекты</a>
+        <a href="/gallery.html">Галерея работ</a>
+        <a href="/page103811816.html">FAQ</a>
+      </nav>
+      <div class="nav-cta">
+        <a class="btn" href="/projects.html">Найти проект</a>
+        <a class="btn primary" href="/create-project.html">Создать проект</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        
+        <!-- Переключатель роли -->
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+          <div class="role-switcher">
+            <a href="/add.html">Исполнитель</a>
+            <a href="/client-cabinet.html" class="active">Заказчик</a>
+          </div>
+          <button class="btn" id="logoutBtn" style="font-size:13px;padding:10px 14px">Выйти</button>
+        </div>
+
+        <!-- Профиль заказчика -->
+        <div class="h-card" id="profileCard">
+          <div class="h-eyebrow">Кабинет заказчика</div>
+          <h1 class="h-title">Мой профиль</h1>
+          <p class="h-sub">Заполни информацию о себе, чтобы исполнители видели, кто размещает проекты.</p>
+          
+          <form id="profileForm" style="margin-top:20px">
+            <div class="field">
+              <label for="f_name">Имя / Название компании *</label>
+              <input type="text" id="f_name" placeholder="Иван Иванов или ООО Компания" required>
+            </div>
+            
+            <div class="field">
+              <label for="f_desc">О себе / О компании</label>
+              <textarea id="f_desc" placeholder="Расскажите немного о себе или своей компании..."></textarea>
+            </div>
+            
+            <div class="field">
+              <label for="f_telegram">Telegram (для связи) *</label>
+              <input type="text" id="f_telegram" placeholder="@username или https://t.me/username" required>
+            </div>
+            
+            <div class="field">
+              <label for="f_website">Сайт (опционально)</label>
+              <input type="text" id="f_website" placeholder="https://example.com">
+            </div>
+            
+            <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+              <button type="submit" class="btn primary">Сохранить профиль</button>
+              <span id="profileMsg" class="msg" style="display:none"></span>
+            </div>
+          </form>
+        </div>
+
+        <!-- Мои проекты -->
+        <div class="h-card" style="margin-top:20px">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+            <div>
+              <h2 class="section-title" style="margin:0">Мои проекты</h2>
+              <p class="section-sub" style="margin:4px 0 0">Задания, которые вы разместили</p>
+            </div>
+            <a href="/create-project.html" class="btn primary">+ Создать проект</a>
+          </div>
+          
+          <div id="projectsContainer">
+            <div class="loading">
+              <div class="spinner"></div>
+              Загрузка проектов...
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span class="logo" style="width:28px;height:28px;border-radius:10px"></span>
+        <strong>AI-Биржа</strong>
+      </div>
+      <div>Каталог AI-специалистов. Без оплат на сайте. Договорённости напрямую.</div>
+      <div class="small" style="margin-top:10px">© 2025</div>
+    </div>
+  </footer>
+
+  <script>
+(async function(){
+  const AUTH_PATH = window.AI_BIRZHA?.AUTH_PATH || '/auth';
+  
+  // Ждём Supabase
+  async function waitSb(){
+    for(let i=0;i<80;i++){
+      if(window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r=>setTimeout(r,100));
+    }
+    return null;
+  }
+  
+  const sb = await waitSb();
+  if(!sb){
+    document.getElementById('profileMsg').textContent = 'Ошибка: Supabase не подключен';
+    document.getElementById('profileMsg').className = 'msg error';
+    document.getElementById('profileMsg').style.display = 'block';
+    return;
+  }
+  
+  // Проверяем авторизацию
+  const { data: authData } = await sb.auth.getUser();
+  const user = authData?.user;
+  
+  if(!user){
+    // Не авторизован — редирект на авторизацию
+    const redirect = encodeURIComponent(location.pathname);
+    location.href = AUTH_PATH + '?redirect=' + redirect;
+    return;
+  }
+  
+  // Хелперы
+  function esc(s){ return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  
+  function extractTgUsername(v){
+    v = String(v||'').trim();
+    if(!v) return '';
+    const m = v.match(/(?:t\.me|telegram\.me)\/([A-Za-z0-9_]{3,})/i);
+    if(m && m[1]) return m[1];
+    return v.replace(/^@+/, '').trim();
+  }
+  
+  function formatTgLink(v){
+    const nick = extractTgUsername(v);
+    return nick ? 'https://t.me/' + nick : '';
+  }
+  
+  const categoryNames = {
+    video: 'Видео',
+    design: 'Дизайн',
+    bots: 'Боты',
+    marketplaces: 'Маркетплейсы',
+    sites: 'Сайты'
+  };
+  
+  // UI элементы
+  const profileForm = document.getElementById('profileForm');
+  const profileMsg = document.getElementById('profileMsg');
+  const projectsContainer = document.getElementById('projectsContainer');
+  const logoutBtn = document.getElementById('logoutBtn');
+  
+  // Загрузка профиля
+  let myClient = null;
+  
+  async function loadProfile(){
+    const { data, error } = await sb
+      .from('clients')
+      .select('*')
+      .eq('user_id', user.id)
+      .limit(1);
+    
+    if(error){
+      showMsg('Ошибка загрузки профиля: ' + error.message, 'error');
+      return;
+    }
+    
+    myClient = data && data[0] ? data[0] : null;
+    
+    if(myClient){
+      document.getElementById('f_name').value = myClient.name || '';
+      document.getElementById('f_desc').value = myClient.description || '';
+      document.getElementById('f_telegram').value = extractTgUsername(myClient.telegram) || '';
+      document.getElementById('f_website').value = myClient.website || '';
+    }
+  }
+  
+  // Сохранение профиля
+  profileForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const name = document.getElementById('f_name').value.trim();
+    const description = document.getElementById('f_desc').value.trim();
+    const telegram = formatTgLink(document.getElementById('f_telegram').value);
+    const website = document.getElementById('f_website').value.trim();
+    
+    if(!name){
+      showMsg('Укажите имя', 'error');
+      return;
+    }
+    if(!telegram){
+      showMsg('Укажите Telegram для связи', 'error');
+      return;
+    }
+    
+    showMsg('Сохраняю...', 'info');
+    
+    const payload = {
+      user_id: user.id,
+      name,
+      description,
+      telegram,
+      website: website || null
+    };
+    
+    let result;
+    if(myClient){
+      result = await sb.from('clients').update(payload).eq('id', myClient.id).select();
+    } else {
+      result = await sb.from('clients').insert(payload).select();
+    }
+    
+    if(result.error){
+      showMsg('Ошибка: ' + result.error.message, 'error');
+      return;
+    }
+    
+    myClient = result.data[0];
+    showMsg('Профиль сохранён ✓', 'success');
+    
+    // Обновляем роль
+    await sb.from('user_roles').upsert({ user_id: user.id, active_role: 'client' });
+  });
+  
+  // Загрузка проектов
+  async function loadProjects(){
+    if(!myClient){
+      projectsContainer.innerHTML = `
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+          </svg>
+          <h3>Сначала заполните профиль</h3>
+          <p>Чтобы создавать проекты, нужно сохранить профиль заказчика</p>
+        </div>
+      `;
+      return;
+    }
+    
+    const { data: projects, error } = await sb
+      .from('projects')
+      .select('*')
+      .eq('client_id', myClient.id)
+      .order('created_at', { ascending: false });
+    
+    if(error){
+      projectsContainer.innerHTML = '<div class="msg error">Ошибка загрузки проектов: ' + esc(error.message) + '</div>';
+      return;
+    }
+    
+    if(!projects || projects.length === 0){
+      projectsContainer.innerHTML = `
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/>
+          </svg>
+          <h3>Пока нет проектов</h3>
+          <p>Создайте первый проект, чтобы найти исполнителей</p>
+          <a href="/create-project.html" class="btn primary">Создать проект</a>
+        </div>
+      `;
+      return;
+    }
+    
+    let html = '<div class="projects-grid">';
+    for(const p of projects){
+      const statusClass = p.status === 'active' ? 'active' : 'closed';
+      const statusText = p.status === 'active' ? 'Активный' : (p.status === 'closed' ? 'Закрыт' : p.status);
+      const budget = p.budget_from || p.budget_to 
+        ? (p.budget_from && p.budget_to ? `${p.budget_from.toLocaleString()} — ${p.budget_to.toLocaleString()} ₽` : (p.budget_from ? `от ${p.budget_from.toLocaleString()} ₽` : `до ${p.budget_to.toLocaleString()} ₽`))
+        : 'Бюджет не указан';
+      
+      html += `
+        <div class="project-card" data-id="${p.id}">
+          <h3>${esc(p.title)}</h3>
+          <div class="desc">${esc(p.description)}</div>
+          <div class="meta">
+            <span class="badge category">${categoryNames[p.category] || p.category}</span>
+            <span class="badge ${statusClass}">${statusText}</span>
+            <span class="badge">${budget}</span>
+          </div>
+          <div class="actions">
+            <a href="/project-detail.html?id=${p.id}" class="btn" style="font-size:13px;padding:8px 14px">Открыть</a>
+            <button class="btn ${p.status === 'active' ? 'secondary' : 'primary'}" data-toggle-status="${p.id}" data-current="${p.status}" style="font-size:13px;padding:8px 14px">
+              ${p.status === 'active' ? 'Закрыть' : 'Активировать'}
+            </button>
+            <button class="btn danger" data-delete="${p.id}" style="font-size:13px;padding:8px 14px">Удалить</button>
+          </div>
+        </div>
+      `;
+    }
+    html += '</div>';
+    projectsContainer.innerHTML = html;
+    
+    // Обработчики кнопок
+    projectsContainer.querySelectorAll('[data-toggle-status]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.toggleStatus;
+        const current = btn.dataset.current;
+        const newStatus = current === 'active' ? 'closed' : 'active';
+        
+        const { error } = await sb.from('projects').update({ status: newStatus }).eq('id', id);
+        if(error){
+          alert('Ошибка: ' + error.message);
+          return;
+        }
+        loadProjects();
+      });
+    });
+    
+    projectsContainer.querySelectorAll('[data-delete]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if(!confirm('Удалить проект? Это действие нельзя отменить.')) return;
+        
+        const id = btn.dataset.delete;
+        const { error } = await sb.from('projects').delete().eq('id', id);
+        if(error){
+          alert('Ошибка: ' + error.message);
+          return;
+        }
+        loadProjects();
+      });
+    });
+  }
+  
+  // Показ сообщений
+  function showMsg(text, type){
+    profileMsg.textContent = text;
+    profileMsg.className = 'msg ' + type;
+    profileMsg.style.display = 'inline-block';
+  }
+  
+  // Выход
+  logoutBtn.addEventListener('click', async () => {
+    await sb.auth.signOut();
+    location.href = '/';
+  });
+  
+  // Инициализация
+  await loadProfile();
+  await loadProjects();
+  
+})();
+</script>
+
+<script src="/js/mobile-menu.js?v=20260104c1"></script>
+</body>
+</html>
+
