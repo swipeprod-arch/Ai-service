@@ -2201,66 +2201,70 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
   } 
 }
 
-/* Внутри альбомов */
+/* ===== Альбомы - медиа элементы ===== */
 #pMedia.ai-albums .media-item{
   position: relative;
-  display: block;
+  display: flex !important;
+  flex-direction: column;
   width: 100%;
   border-radius: 16px;
   overflow: hidden;
+  background: var(--surface);
 }
-/* Медиа с описанием - preview ограничен */
-#pMedia.ai-albums .media-item.has-info .media-item__preview{
-  max-height: 400px;
-}
-/* Медиа без описания - показываем полностью по aspect-ratio */
-#pMedia.ai-albums .media-item:not(.has-info){
-  /* aspect-ratio из JS */
-}
-/* Safari/iOS fix - предотвращаем перекрытие */
-@media (max-width: 560px){
-  #pMedia.ai-albums .media-item{
-    flex-shrink: 0;
-    height: auto;
-    min-height: auto;
-  }
-  /* Отступ для последнего элемента чтобы описание не обрезалось */
-  #pMedia.ai-albums .media-item:last-child{
-    margin-bottom: 80px;
-  }
-}
+
+/* Preview контейнер */
 #pMedia.ai-albums .media-item__preview{
-  /* высота по контенту - Safari fix */
-  min-height: 0;
+  width: 100%;
   overflow: hidden;
-  display: block;
-  position: relative;
   border-radius: 16px 16px 0 0;
+  background: linear-gradient(145deg, rgba(238,243,250,.6), rgba(230,237,247,.8));
 }
-#pMedia.ai-albums .media-item img,
-#pMedia.ai-albums .media-item video,
+
+/* Изображения и видео внутри preview */
 #pMedia.ai-albums .media-item__preview img,
 #pMedia.ai-albums .media-item__preview video{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center center;
-  background: linear-gradient(145deg, rgba(238,243,250,.6), rgba(230,237,247,.8));
+  width: 100% !important;
+  height: auto !important;
   display: block;
-}
-/* Для медиа БЕЗ описания - показываем полностью */
-#pMedia.ai-albums .media-item:not(.has-info) img,
-#pMedia.ai-albums .media-item:not(.has-info) video{
   object-fit: contain;
 }
-/* info блок внутри альбомов */
+
+/* Медиа БЕЗ описания - показываем полностью */
+#pMedia.ai-albums .media-item:not(.has-info){
+  aspect-ratio: unset !important;
+}
+#pMedia.ai-albums .media-item:not(.has-info) .media-item__preview{
+  border-radius: 16px;
+}
+
+/* Медиа С описанием */
 #pMedia.ai-albums .media-item.has-info{
   aspect-ratio: unset !important;
 }
+#pMedia.ai-albums .media-item.has-info .media-item__preview img,
+#pMedia.ai-albums .media-item.has-info .media-item__preview video{
+  max-height: 450px;
+  object-fit: contain;
+}
+
+/* Info блок */
 #pMedia.ai-albums .media-item__info{
-  flex-shrink:0;
-  position:relative;
-  z-index:1;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  background: rgba(255,255,255,.95);
+  border-radius: 0 0 16px 16px;
+}
+
+/* Мобильный фикс */
+@media (max-width: 560px){
+  #pMedia.ai-albums .media-item{
+    flex-shrink: 0;
+  }
+  /* Отступ для последнего элемента */
+  #pMedia.ai-albums .ai-album:last-child .media-item:last-child{
+    margin-bottom: 100px;
+  }
 }
 
 /* ===== Lightbox (фикс чёрного экрана + свайп/стрелки/тап по половинам) ===== */
@@ -2908,24 +2912,20 @@ window.addEventListener('DOMContentLoaded', async function () {
   pMsg.textContent = "";
 });
 
-// Ставит правильный aspect-ratio для карточек (вертикальные остаются вертикальными, горизонтальные — горизонтальными)
+// Определяет ориентацию медиа (для стилей)
 function applyMediaAspectRatios(root){
   if(!root) return;
   const items = Array.from(root.querySelectorAll('.media-item'));
   items.forEach((item) => {
     const img = item.querySelector('img');
     const video = item.querySelector('video');
-    const hasInfo = item.classList.contains('has-info');
 
     const apply = (w, h) => {
       const ww = Number(w) || 0;
       const hh = Number(h) || 0;
       if(!ww || !hh) return;
       item.dataset.orient = (hh > ww) ? 'portrait' : (ww > hh) ? 'landscape' : 'square';
-      // Если есть описание — НЕ ставим aspect-ratio, высота определяется max-height
-      if(!hasInfo){
-        item.style.aspectRatio = `${ww} / ${hh}`;
-      }
+      // НЕ ставим aspect-ratio - пусть изображения определяют высоту сами
     };
 
     if(img){
