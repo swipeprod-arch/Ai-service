@@ -2091,6 +2091,8 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
   display:none;
   flex-direction:column;
   background: rgba(0,0,0,.78);
+  touch-action: none; /* Разрешаем JS обрабатывать свайпы */
+  -webkit-overflow-scrolling: touch;
 }
 .ai-lb.open{ display:flex; }
 
@@ -2334,21 +2336,67 @@ window.addEventListener('DOMContentLoaded', async function () {
       if(e.key === 'ArrowRight') goNext();
     });
 
-    // свайп
-    let down=false, sx=0, sy=0;
-    stage.addEventListener('pointerdown', (e)=>{
-      down=true; sx=e.clientX; sy=e.clientY;
-    }, {passive:true});
-    stage.addEventListener('pointerup', (e)=>{
-      if(!down) return;
-      down=false;
-      const dx = e.clientX - sx;
-      const dy = e.clientY - sy;
-      if(Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)){
+    // свайп (горизонтальный - листание, вертикальный - закрытие)
+    let touchStartX = 0, touchStartY = 0, isSwiping = false;
+    
+    // Touch события для мобильных
+    lb.addEventListener('touchstart', (e) => {
+      if(e.touches.length === 1){
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        isSwiping = true;
+      }
+    }, {passive: true});
+    
+    // Предотвращаем скролл страницы под лайтбоксом при свайпе
+    lb.addEventListener('touchmove', (e) => {
+      if(isSwiping && lb.classList.contains('open')){
+        e.preventDefault();
+      }
+    }, {passive: false});
+    
+    lb.addEventListener('touchend', (e) => {
+      if(!isSwiping) return;
+      isSwiping = false;
+      
+      const touch = e.changedTouches[0];
+      const dx = touch.clientX - touchStartX;
+      const dy = touch.clientY - touchStartY;
+      const adx = Math.abs(dx);
+      const ady = Math.abs(dy);
+      
+      // Вертикальный свайп - закрытие (вверх или вниз)
+      if(ady > 50 && ady > adx){
+        close();
+        return;
+      }
+      // Горизонтальный свайп - листание
+      if(adx > 40 && adx > ady){
         dx < 0 ? goNext() : goPrev();
       }
-    }, {passive:true});
-    stage.addEventListener('pointercancel', ()=>{ down=false; }, {passive:true});
+    }, {passive: true});
+    
+    lb.addEventListener('touchcancel', () => { isSwiping = false; }, {passive: true});
+    
+    // Pointer события для десктопа (мышь)
+    let mouseDown = false, mouseX = 0, mouseY = 0;
+    stage.addEventListener('pointerdown', (e) => {
+      if(e.pointerType === 'mouse'){
+        mouseDown = true;
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      }
+    }, {passive: true});
+    stage.addEventListener('pointerup', (e) => {
+      if(!mouseDown || e.pointerType !== 'mouse') return;
+      mouseDown = false;
+      const dx = e.clientX - mouseX;
+      const adx = Math.abs(dx);
+      if(adx > 40){
+        dx < 0 ? goNext() : goPrev();
+      }
+    }, {passive: true});
+    stage.addEventListener('pointercancel', () => { mouseDown = false; }, {passive: true});
 
     // ✅ моб: тап по правой/левой половине (кроме кнопок/видео)
     stage.addEventListener('click', (e)=>{
