@@ -2262,6 +2262,38 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
   #pMedia.ai-albums .media-item{
     flex-shrink: 0;
   }
+  
+  /* ✅ Фикс обрезки вертикальных медиа на мобильной версии */
+  #pMedia.ai-albums .media-item img,
+  #pMedia.ai-albums .media-item video,
+  #pMedia.ai-albums .media-item__preview img,
+  #pMedia.ai-albums .media-item__preview video,
+  .ai-album .media-item img,
+  .ai-album .media-item video,
+  .ai-album .media-item__preview img,
+  .ai-album .media-item__preview video{
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    object-fit: contain !important;
+    aspect-ratio: unset !important;
+  }
+  
+  /* Контейнер preview тоже не должен ограничивать высоту */
+  #pMedia.ai-albums .media-item__preview,
+  .ai-album .media-item__preview{
+    height: auto !important;
+    max-height: none !important;
+    aspect-ratio: unset !important;
+  }
+  
+  /* Сам media-item не ограничиваем по высоте */
+  #pMedia.ai-albums .media-item,
+  .ai-album .media-item{
+    height: auto !important;
+    max-height: none !important;
+  }
+  
   /* Отступ для последнего элемента */
   #pMedia.ai-albums .ai-album:last-child .media-item:last-child{
     margin-bottom: 100px;
