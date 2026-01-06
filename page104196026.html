@@ -141,6 +141,11 @@ a{color:inherit;text-decoration:none}
   box-shadow: 14px 14px 28px rgba(163,177,198,.45), -14px -14px 28px rgba(255,255,255,.92);
 }
 .h-card{padding:26px}
+/* Отступ снизу для нижней навигации на мобильных */
+@media (max-width: 900px) {
+  body { padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px)) !important; }
+  main { padding-bottom: 20px; }
+}
 .card{padding:16px;transition:.15s transform ease, .15s box-shadow ease}
 .card:hover{
   transform: translateY(-2px);
@@ -2184,19 +2189,40 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
   display:grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap:12px;
+  grid-auto-rows: auto;
 }
 @media (max-width: 900px){ .ai-album.open .ai-album__grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 560px){ .ai-album.open .ai-album__grid{ grid-template-columns: 1fr; } }
+@media (max-width: 560px){ 
+  .ai-album.open .ai-album__grid{ 
+    grid-template-columns: 1fr; 
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  } 
+}
 
 /* Внутри альбомов убираем фиксированную высоту и используем aspect-ratio (из JS) */
 #pMedia.ai-albums .media-item{
   aspect-ratio: unset; /* дефолт, пока не подтянулись размеры */
+  position: relative;
+  display: block;
+  width: 100%;
+}
+/* Safari/iOS fix - предотвращаем перекрытие */
+@media (max-width: 560px){
+  #pMedia.ai-albums .media-item{
+    flex-shrink: 0;
+    height: auto;
+    min-height: auto;
+  }
 }
 #pMedia.ai-albums .media-item__preview{
-  /* высота по контенту */
+  /* высота по контенту - Safari fix */
   min-height: 0;
   max-height: 450px;
   overflow: hidden;
+  display: block;
+  position: relative;
 }
 #pMedia.ai-albums .media-item img,
 #pMedia.ai-albums .media-item video,
