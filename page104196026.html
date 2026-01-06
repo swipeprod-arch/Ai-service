@@ -2230,9 +2230,11 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
 #pMedia.ai-albums .media-item__preview video{
   width:100%;
   height:auto;
-  object-fit:cover;
-  object-position:center top;
+  max-height: 70vh;
+  object-fit:contain;
+  object-position:center center;
   background: linear-gradient(145deg, rgba(238,243,250,.6), rgba(230,237,247,.8));
+  display: block;
 }
 /* info блок внутри альбомов */
 #pMedia.ai-albums .media-item.has-info{
@@ -2800,7 +2802,7 @@ window.addEventListener('DOMContentLoaded', async function () {
         <div class="media-item ${hasInfo ? 'has-info' : ''}" data-idx="${idx}" role="button" tabindex="0" data-full="${escAttr(u)}">
           <div class="media-item__preview">
             ${type==="video"
-              ? `<video src="${escAttr(u)}" muted playsinline preload="metadata" onloadeddata="this.classList.add('loaded')"></video>`
+              ? `<video src="${escAttr(u)}" muted playsinline autoplay loop preload="auto" onloadeddata="this.classList.add('loaded')" oncanplay="this.classList.add('loaded')"></video>`
               : `<img src="${escAttr(thumbUrl)}" alt="" loading="lazy" onload="this.classList.add('loaded')">`
             }
           </div>
