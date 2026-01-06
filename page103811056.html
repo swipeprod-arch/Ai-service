@@ -1566,11 +1566,10 @@ window.addEventListener('DOMContentLoaded', function () {
   }
   function escAttr(s){ return esc(s).replace(/"/g, "&quot;"); }
 
-  // Функция для создания URL превью (уменьшенная версия через Supabase Transform)
-  function getThumbUrl(originalUrl, width = 400) {
-    if(!originalUrl) return originalUrl;
-    const separator = originalUrl.includes('?') ? '&' : '?';
-    return originalUrl + separator + `width=${width}&quality=75&resize=contain`;
+  // Supabase Storage не поддерживает трансформацию для signed URLs
+  // Оставляем функцию для совместимости, но возвращаем оригинальный URL
+  function getThumbUrl(originalUrl, width) {
+    return originalUrl || '';
   }
 
   async function waitSb(){
@@ -1745,6 +1744,11 @@ window.addEventListener('DOMContentLoaded', function () {
   object-fit:contain; /* НЕ режем вертикальные */
   display:block;
   background: linear-gradient(135deg, rgba(30,120,255,.10), rgba(0,183,255,.08));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.mc-item img.loaded, .mc-item video.loaded{
+  opacity: 1;
 }
 
 /* чтобы кнопки точно были кликабельны */
@@ -1838,6 +1842,7 @@ window.addEventListener('DOMContentLoaded', function () {
         v.muted = true;
         v.playsInline = true;
         v.preload = "metadata";
+        v.onloadeddata = function(){ this.classList.add('loaded'); coverEl.style.animation = 'none'; };
         // тап по видео = play/pause (и не открывать карточку)
         v.addEventListener("click", (e)=>{ e.stopPropagation(); try{ v.paused ? v.play() : v.pause(); }catch(_){} }, true);
         wrap.appendChild(v);
@@ -1845,6 +1850,10 @@ window.addEventListener('DOMContentLoaded', function () {
         const img = document.createElement("img");
         img.src = s.url;
         img.alt = "";
+        img.loading = "lazy";
+        img.onload = function(){ this.classList.add('loaded'); coverEl.style.animation = 'none'; };
+        // Если изображение уже в кеше
+        if(img.complete) img.classList.add('loaded');
         wrap.appendChild(img);
       }
 
@@ -2006,6 +2015,24 @@ window.addEventListener('DOMContentLoaded', function () {
       }
     }
   });
+  
+  // Обработка уже загруженных (кешированных) изображений
+  setTimeout(() => {
+    document.querySelectorAll('.expert-cover img, .mc-item img').forEach(img => {
+      if(img.complete && img.naturalHeight > 0 && !img.classList.contains('loaded')){
+        img.classList.add('loaded');
+        const cover = img.closest('.expert-cover');
+        if(cover) cover.style.animation = 'none';
+      }
+    });
+    document.querySelectorAll('.expert-cover video, .mc-item video').forEach(v => {
+      if(v.readyState >= 2 && !v.classList.contains('loaded')){
+        v.classList.add('loaded');
+        const cover = v.closest('.expert-cover');
+        if(cover) cover.style.animation = 'none';
+      }
+    });
+  }, 100);
 })();
 </script> <!-- ====== END PAGE ====== --> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords--> <!-- Tilda copyright. Don't remove this line --><div class="t-tildalabel " id="tildacopy" data-tilda-sign="13172919#103811056"><a href="https://tilda.cc/" class="t-tildalabel__link"><div class="t-tildalabel__wrapper"><div class="t-tildalabel__txtleft">Made on </div><div class="t-tildalabel__wrapimg"><img src="images/tildacopy.png" class="t-tildalabel__img" fetchpriority="low" alt=""></div><div class="t-tildalabel__txtright">Tilda</div></div></a></div> <!-- Stat --> <script type="text/javascript">if(!window.mainTracker) {window.mainTracker='tilda';}
 window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.getElementsByTagName(o)[0],s=d.createElement(o),f=function(){n.parentNode.insertBefore(s,n);};s.type="text/javascript";s.async=true;s.key=k;s.id="tildastatscript";s.src=g;if(w.opera=="[object Opera]") {d.addEventListener("DOMContentLoaded",f,false);} else {f();}})(document,window,'b3e5db9cfc6c4460a026f51ee207b27b','script','js/tilda-stat-1.0.min.js');},2000);</script>
@@ -2418,7 +2445,7 @@ window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.
   
   function esc(s) { return String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
   function escA(s) { return esc(s).replace(/"/g, '&quot;'); }
-  function getThumbUrl(u, w) { if(!u) return u; return u + (u.includes('?') ? '&' : '?') + 'width=' + (w||400) + '&quality=75&resize=contain'; }
+  function getThumbUrl(u, w) { return u || ''; }
   function buildTgLink(raw) { if(!raw) return null; const t=raw.trim(); if(!t) return null; if(t.startsWith('@')) return 'https://t.me/'+t.slice(1); if(t.includes('t.me/')) return t; return 'https://t.me/'+t; }
   function getWordEnding(c) { const l2=c%100,l1=c%10; if(l2>=11&&l2<=14)return'ей'; if(l1===1)return'ь'; if(l1>=2&&l1<=4)return'я'; return'ей'; }
   

@@ -2597,12 +2597,10 @@ window.addEventListener('DOMContentLoaded', async function () {
     pMedia.classList.add('ai-albums');
   }
 
-  // Функция для создания URL превью (уменьшенная версия через Supabase Transform)
-  function getThumbUrl(originalUrl, width = 400) {
-    if(!originalUrl) return originalUrl;
-    // Supabase signed URL поддерживает параметры трансформации
-    const separator = originalUrl.includes('?') ? '&' : '?';
-    return originalUrl + separator + `width=${width}&quality=75&resize=contain`;
+  // Supabase Storage не поддерживает трансформацию для signed URLs
+  // Возвращаем оригинальный URL
+  function getThumbUrl(originalUrl, width) {
+    return originalUrl || '';
   }
 
   function renderAlbumBlock(title, list){
