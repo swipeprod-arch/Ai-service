@@ -1645,7 +1645,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     let q = sb
       .from("experts")
-      .select("id, category, name, role, short_info, price_from, delivery_time, telegram, cover_path, cover_type, status, created_at")
+      .select("id, user_id, category, name, role, short_info, price_from, delivery_time, telegram, cover_path, cover_type, status, created_at")
       .eq("status", "approved")
       .order("created_at", { ascending:false })
       .limit(200);
@@ -1732,6 +1732,61 @@ window.addEventListener('DOMContentLoaded', function () {
     }));
 
     msg.textContent = "";
+    
+    // Загружаем аватарки после рендера карточек
+    loadAvatarsForCards();
+  }
+  
+  // === Загрузка аватарок для карточек ===
+  async function loadAvatarsForCards(){
+    const avatarEls = document.querySelectorAll('.expert-avatar[data-avatar-user]');
+    if(!avatarEls.length) return;
+    
+    const sb = await waitSb();
+    if(!sb) return;
+    
+    const userIds = Array.from(avatarEls)
+      .map(el => el.dataset.avatarUser)
+      .filter(Boolean);
+    
+    if(!userIds.length) return;
+    
+    const uniqIds = [...new Set(userIds)];
+    
+    try {
+      const { data: avatars } = await sb
+        .from('user_avatars')
+        .select('user_id, avatar_path')
+        .in('user_id', uniqIds);
+      
+      if(!avatars?.length) return;
+      
+      const paths = avatars.map(a => a.avatar_path).filter(Boolean);
+      if(!paths.length) return;
+      
+      const { data: urls } = await sb.storage.from(BUCKET).createSignedUrls(paths, 3600);
+      const urlByPath = new Map();
+      (urls||[]).forEach(u => { if(u?.path && u?.signedUrl) urlByPath.set(u.path, u.signedUrl); });
+      
+      avatars.forEach(av => {
+        const url = urlByPath.get(av.avatar_path);
+        if(!url) return;
+        
+        document.querySelectorAll(`.expert-avatar[data-avatar-user="${av.user_id}"]`).forEach(el => {
+          const placeholder = el.querySelector('.avatar-placeholder');
+          if(placeholder) placeholder.style.display = 'none';
+          
+          // Удаляем старую картинку если есть
+          const oldImg = el.querySelector('img');
+          if(oldImg) oldImg.remove();
+          
+          const img = document.createElement('img');
+          img.src = url;
+          img.alt = 'Аватар';
+          el.appendChild(img);
+        });
+      });
+    } catch(e){ console.warn('Avatars load error:', e); }
   }
 
   // фильтр
@@ -2152,51 +2207,6 @@ window.addEventListener('DOMContentLoaded', function () {
       }
     });
   }, 100);
-
-  // === Загрузка аватарок ===
-  (async function loadAvatars(){
-    const avatarEls = document.querySelectorAll('.expert-avatar[data-avatar-user]');
-    if(!avatarEls.length) return;
-    
-    const userIds = Array.from(avatarEls)
-      .map(el => el.dataset.avatarUser)
-      .filter(Boolean);
-    
-    if(!userIds.length) return;
-    
-    const uniqIds = [...new Set(userIds)];
-    
-    try {
-      const { data: avatars } = await sb
-        .from('user_avatars')
-        .select('user_id, avatar_path')
-        .in('user_id', uniqIds);
-      
-      if(!avatars?.length) return;
-      
-      const paths = avatars.map(a => a.avatar_path).filter(Boolean);
-      if(!paths.length) return;
-      
-      const { data: urls } = await sb.storage.from(BUCKET).createSignedUrls(paths, 3600);
-      const urlByPath = new Map();
-      (urls||[]).forEach(u => { if(u?.path && u?.signedUrl) urlByPath.set(u.path, u.signedUrl); });
-      
-      avatars.forEach(av => {
-        const url = urlByPath.get(av.avatar_path);
-        if(!url) return;
-        
-        document.querySelectorAll(`.expert-avatar[data-avatar-user="${av.user_id}"]`).forEach(el => {
-          const placeholder = el.querySelector('.avatar-placeholder');
-          if(placeholder) placeholder.style.display = 'none';
-          
-          const img = document.createElement('img');
-          img.src = url;
-          img.alt = 'Аватар';
-          el.appendChild(img);
-        });
-      });
-    } catch(e){ console.warn('Avatars load error:', e); }
-  })();
 })();
 </script> <!-- ====== END PAGE ====== --> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords--> <!-- Tilda copyright. Don't remove this line --><div class="t-tildalabel " id="tildacopy" data-tilda-sign="13172919#103811056"><a href="https://tilda.cc/" class="t-tildalabel__link"><div class="t-tildalabel__wrapper"><div class="t-tildalabel__txtleft">Made on </div><div class="t-tildalabel__wrapimg"><img src="images/tildacopy.png" class="t-tildalabel__img" fetchpriority="low" alt=""></div><div class="t-tildalabel__txtright">Tilda</div></div></a></div> <!-- Stat --> <script type="text/javascript">if(!window.mainTracker) {window.mainTracker='tilda';}
 window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.getElementsByTagName(o)[0],s=d.createElement(o),f=function(){n.parentNode.insertBefore(s,n);};s.type="text/javascript";s.async=true;s.key=k;s.id="tildastatscript";s.src=g;if(w.opera=="[object Opera]") {d.addEventListener("DOMContentLoaded",f,false);} else {f();}})(document,window,'b3e5db9cfc6c4460a026f51ee207b27b','script','js/tilda-stat-1.0.min.js');},2000);</script>

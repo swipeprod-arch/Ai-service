@@ -3527,8 +3527,8 @@ window.addEventListener('DOMContentLoaded', async function(){
       // Сжимаем
       const compressed = await compressAvatar(file);
       
-      // Путь для хранения
-      const path = `avatars/${user.id}/avatar_${Date.now()}.jpg`;
+      // Путь для хранения (user_id должен быть ПЕРВОЙ частью пути для RLS политики Storage)
+      const path = `${user.id}/avatars/avatar_${Date.now()}.jpg`;
       
       // Удаляем старую аватарку если есть
       if(currentAvatarPath){
