@@ -5,7 +5,7 @@
 (function() {
   'use strict';
 
-  const MOBILE_MENU_VERSION = '20260104a1';
+  const MOBILE_MENU_VERSION = '20260104c1';
   const MOBILE_MENU_CSS_URL = `/css/mobile-menu.css?v=${MOBILE_MENU_VERSION}`;
   window.AI_MOBILE_MENU_VERSION = MOBILE_MENU_VERSION;
 

@@ -329,14 +329,24 @@ window.addEventListener('DOMContentLoaded', function () {
   /* 2) Настрой адрес страницы заявки (если у тебя не /apply — поменяй) */
   const APPLY_PATH = '/apply';
 
-  /* 3) Поиск на главной: ведёт на заявку и подставляет текст */
+  /* 3) Поиск на главной: открывает модальное окно умного поиска */
   const sform = document.querySelector('form[data-search]');
   if (sform) {
     sform.addEventListener('submit', function (e) {
       e.preventDefault();
       const input = sform.querySelector('input[name="q"]');
       const q = input ? input.value.trim() : '';
-      location.href = APPLY_PATH + '?q=' + encodeURIComponent(q);
+      if (!q) {
+        alert('Введите запрос для поиска');
+        return;
+      }
+      // Открываем модальное окно умного поиска
+      if (typeof window.openSearchModal === 'function') {
+        window.openSearchModal(q);
+      } else {
+        // Fallback: если модальное окно ещё не загружено
+        location.href = APPLY_PATH + '?q=' + encodeURIComponent(q);
+      }
     });
   }
 
@@ -1519,7 +1529,7 @@ html[data-ai-page="card"] .ab-gallery-item video{
   setTimeout(init, 1700);
 })();
 </script> <!-- nominify end --><script type="text/javascript">window.dataLayer=window.dataLayer||[];</script> <script type="text/javascript">(function() {if((/bot|google|yandex|baidu|bing|msn|duckduckbot|teoma|slurp|crawler|spider|robot|crawling|facebook/i.test(navigator.userAgent))===false&&typeof(sessionStorage)!='undefined'&&sessionStorage.getItem('visited')!=='y'&&document.visibilityState){var style=document.createElement('style');style.type='text/css';style.innerHTML='@media screen and (min-width: 980px) {.t-records {opacity: 0;}.t-records_animated {-webkit-transition: opacity ease-in-out .2s;-moz-transition: opacity ease-in-out .2s;-o-transition: opacity ease-in-out .2s;transition: opacity ease-in-out .2s;}.t-records.t-records_visible {opacity: 1;}}';document.getElementsByTagName('head')[0].appendChild(style);function t_setvisRecs(){var alr=document.querySelectorAll('.t-records');Array.prototype.forEach.call(alr,function(el) {el.classList.add("t-records_animated");});setTimeout(function() {Array.prototype.forEach.call(alr,function(el) {el.classList.add("t-records_visible");});sessionStorage.setItem("visited","y");},400);}
-document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><link rel="stylesheet" href="/css/mobile-menu.css?v=20260104b1">
+document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><link rel="stylesheet" href="/css/mobile-menu.css?v=20260104c1">
 </head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="13172919" data-tilda-page-id="103804766" data-tilda-formskey="77f9e6caf19eb935e0f8ff1513172919" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-page-headcode="yes" data-tilda-project-country="RU"> <div id="rec1689407041" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!doctype html> <html lang="ru"> <head> <meta charset="utf-8"/> <meta name="viewport" content="width=device-width, initial-scale=1"/> <title>AI-Биржа — каталог AI-услуг (MVP)</title> <meta name="description" content="Каталог AI-услуг: видео, дизайн, боты, WB/Ozon, сайты."/> <link rel="stylesheet" href="/assets/styles.css"/> </head> <body> <header class="nav"> <div class="container nav-inner"> <a class="brand" href="/index.html"> <span class="logo" aria-hidden="true"></span> <span>Маркетплейс ИИ услуг</span> </a> <nav class="nav-links" aria-label="Навигация"> <a href="/page103811056.html">Исполнители</a> <a href="/gallery.html">Галерея работ</a> <a href="/page103811576.html">Как это работает</a> <a href="/page103811816.html">FAQ</a> </nav> <div class="nav-cta"> <a class="btn" href="/add.html">Разместить услугу</a> <a class="btn primary" href="/apply.html">Оставить заявку</a> </div> </div> </header> <main> <section class="hero"> <div class="container hero-grid"> <div class="h-card"> <div class="h-eyebrow">Информативный маркетплейс (без оплат)</div> <h1 class="h-title">Каталог ИИ специалистов для вашего бизнеса</h1> <p class="h-sub">Смотри портфолио и кейсы, пиши напрямую исполнителям</p> <div class="searchbox"> <form data-search style="display:flex;gap:10px;flex:1;flex-wrap:wrap"> <input name="q" placeholder="Например: 10 reels для стоматологии / карточка WB / бот в Telegram" /> <button class="btn green" type="submit">Подобрать исполнителя</button> </form> </div> <div class="h-actions"> <a class="btn primary" href="/services.html">Выбрать категорию</a> <a class="btn" href="/apply.html">Оставить заявку</a> </div> <div class="note">Без оплат на сайте. Заявка уходит исполнителю и в админку.</div> </div> <div class="h-card"> <div class="badge purple">MVP</div> <h2 style="margin:12px 0 8px;font-weight:900">Что внутри</h2> <ul class="list"> <li>5 направлений услуг</li> <li>Каталог исполнителей + портфолио</li> <li>Кейсы и пакеты работ</li> <li>Единая заявка клиента</li> </ul> <div class="kpis"> <div class="kpi"><div class="n">5</div><div class="t">категорий</div></div> <div class="kpi"><div class="n">∞</div><div class="t">исполнителей (добавишь)</div></div> <div class="kpi"><div class="n">1</div><div class="t">форма заявки</div></div> </div> </div> </div> </section> <section class="section"> <div class="container"> <h2 class="section-title">5 направлений</h2> <p class="section-sub">Выбирай категорию — смотри пакеты, портфолио и оставляй заявку.</p> <div class="grid"> <a class="card" href="/video.html"> <h3>AI-Видео</h3> <p>Reels, реклама, монтаж, субтитры, озвучка. Сериями под площадки.</p> <div class="tagrow"><span class="tag">Reels/Ads</span><span class="tag">Субтитры</span><span class="tag">Озвучка</span></div> <div style="margin-top:12px"><span class="btn">Открыть</span></div> </a> <a class="card" href="/design.html"> <h3>AI-Дизайн</h3> <p>Креативы для рекламы, соцсети, быстрый брендинг, презентации.</p> <div class="tagrow"><span class="tag">A/B</span><span class="tag">Figma/PSD</span><span class="tag">Серии</span></div> <div style="margin-top:12px"><span class="btn">Открыть</span></div> </a> <a class="card" href="/bots.html"> <h3>AI-Боты и автоматизация</h3> <p>Telegram/сайт. Заявки, поддержка, интеграции CRM/Sheets.</p> <div class="tagrow"><span class="tag">Telegram</span><span class="tag">CRM</span><span class="tag">Sheets</span></div> <div style="margin-top:12px"><span class="btn">Открыть</span></div> </a> <a class="card" href="/marketplaces.html"> <h3>WB/Ozon упаковка</h3> <p>Инфографика, SEO-тексты, A/B фото, видеообложки.</p> <div class="tagrow"><span class="tag">WB</span><span class="tag">Ozon</span><span class="tag">Инфографика</span></div> <div style="margin-top:12px"><span class="btn">Открыть</span></div> </a> <a class="card" href="/sites.html"> <h3>AI-Сайты/лендинги</h3> <p>Tilda/Framer/Webflow. Структура, тексты, дизайн, формы.</p> <div class="tagrow"><span class="tag">No-code</span><span class="tag">Тексты</span><span class="tag">Формы</span></div> <div style="margin-top:12px"><span class="btn">Открыть</span></div> </a> </div> </div> </section> <section class="section"> <div class="container"> <h2 class="section-title">Как это работает</h2> <p class="section-sub">В первой версии — просто и быстро: каталог → заявка → связь напрямую.</p> <div class="grid"> <div class="card"> <h3>1) Выбираешь услугу</h3> <p>Категория или поиск по запросу. Без лишней навигации.</p> </div> <div class="card"> <h3>2) Смотришь портфолио</h3> <p>Кейсы, примеры работ, пакеты и сроки — сразу на странице.</p> </div> <div class="card"> <h3>3) Оставляешь заявку</h3> <p>Исполнитель связывается, уточняет ТЗ и сроки. Оплата — напрямую.</p> </div> </div> </div> </section> <section class="section"> <div class="container"> <div class="h-card" style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between"> <div style="max-width:720px"> <h2 class="section-title" style="margin:0 0 6px">Оставь заявку — подберём исполнителя</h2> <p class="section-sub" style="margin:0">Обычно отвечаем в течение рабочего дня.</p> </div> <div style="display:flex;gap:10px;flex-wrap:wrap"> <a class="btn primary" href="/apply.html">Оставить заявку</a> <a class="btn" href="/experts.html">Смотреть исполнителей</a> </div> </div> </div> </section> </main> <script>
 window.addEventListener('DOMContentLoaded', async function () {
   const sb = window.AI_BIRZHA.sb;
@@ -2047,5 +2057,819 @@ window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.
 })();
 </script>
 
-<script src="/js/mobile-menu.js?v=20260104b1"></script>
+<!-- Модальное окно для результатов умного поиска -->
+<div id="searchModal" class="search-modal" style="display:none;">
+  <div class="search-modal-overlay"></div>
+  <div class="search-modal-content">
+    <button class="search-modal-close" id="closeSearchModal">&times;</button>
+    <div class="h-card">
+      <div class="h-eyebrow">🔍 Умный поиск</div>
+      <h2 class="h-title" style="font-size:28px" id="searchModalTitle">Ищем исполнителей...</h2>
+      <p class="h-sub" id="searchModalQuery"></p>
+      
+      <!-- Состояние загрузки -->
+      <div id="searchLoading" style="text-align:center;padding:40px 0;">
+        <div class="search-spinner"></div>
+        <p style="margin-top:16px;color:var(--muted)">Анализируем базу данных...</p>
+      </div>
+      
+      <!-- Результаты поиска -->
+      <div id="searchResults" style="display:none;"></div>
+      
+      <!-- Пустой результат -->
+      <div id="searchEmpty" style="display:none;text-align:center;padding:40px 0;">
+        <div style="font-size:48px;margin-bottom:16px;">🤷</div>
+        <h3 style="margin:0 0 8px;font-weight:700;">Ничего не найдено</h3>
+        <p class="section-sub">Попробуй изменить запрос или посмотри всех исполнителей</p>
+        <a href="/experts" class="btn primary" style="margin-top:16px;">Все исполнители</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Модальное окно поиска */
+.search-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 20px;
+  overflow-y: auto;
+}
+
+.search-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(19, 35, 63, 0.8);
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.3s ease;
+}
+
+.search-modal-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  width: 100%;
+  animation: slideUp 0.3s ease;
+}
+
+.search-modal-close {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-grad);
+  color: white;
+  border: none;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 8px 8px 18px rgba(163,177,198,.45), -8px -8px 18px rgba(255,255,255,.85);
+  transition: transform 0.2s ease;
+  z-index: 2;
+}
+
+.search-modal-close:hover {
+  transform: scale(1.1) rotate(90deg);
+}
+
+/* Спиннер загрузки */
+.search-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(30,120,255,.15);
+  border-top-color: var(--accent1);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Карточка результата поиска */
+.search-result-card {
+  background: linear-gradient(145deg, #F8FBFF, #E7EDF7);
+  border: 1px solid rgba(255,255,255,.65);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 10px 10px 22px rgba(163,177,198,.35), -10px -10px 22px rgba(255,255,255,.9);
+  transition: .25s all ease;
+  cursor: pointer;
+}
+
+.search-result-card:hover:not(.expanded) {
+  transform: translateY(-2px);
+  box-shadow: 14px 14px 28px rgba(163,177,198,.40), -14px -14px 28px rgba(255,255,255,.94);
+}
+
+/* Раскрытая карточка */
+.search-result-card.expanded {
+  cursor: default;
+  border: 2px solid var(--accent1);
+  box-shadow: 0 8px 32px rgba(30,120,255,.18);
+}
+
+.search-result-card .expand-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #fff;
+  font-weight: 700;
+  margin-top: 12px;
+  padding: 10px 20px;
+  background: var(--accent-grad);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all .2s ease;
+  box-shadow: 0 4px 12px rgba(30,120,255,.25);
+}
+
+.search-result-card .expand-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(30,120,255,.35);
+}
+
+.search-result-card .expand-toggle::after {
+  content: '▼';
+  font-size: 11px;
+  transition: transform .2s;
+}
+
+.search-result-card.expanded .expand-toggle {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.search-result-card.expanded .expand-toggle::after {
+  transform: rotate(180deg);
+}
+
+/* Скрытый контент */
+.search-result-details {
+  display: none;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(30,120,255,.12);
+  animation: slideDown .3s ease;
+}
+
+.search-result-card.expanded .search-result-details {
+  display: block;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Полное описание */
+.search-detail-description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+/* Галерея в раскрытой карточке */
+.search-detail-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.search-detail-gallery-item {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(30,120,255,.08), rgba(0,183,255,.06));
+  cursor: pointer;
+  transition: transform .2s;
+}
+
+.search-detail-gallery-item:hover {
+  transform: scale(1.03);
+}
+
+.search-detail-gallery-item img,
+.search-detail-gallery-item video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Альбомы */
+.search-detail-albums {
+  margin-bottom: 16px;
+}
+
+.search-detail-albums-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.search-detail-album {
+  display: inline-block;
+  padding: 6px 12px;
+  margin: 0 6px 6px 0;
+  background: rgba(30,120,255,.08);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent1);
+}
+
+/* Инфо-блоки */
+.search-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.search-detail-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.search-detail-meta-item strong {
+  color: var(--text);
+}
+
+/* Кнопки действий для раскрытой карточки */
+.search-detail-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid rgba(30,120,255,.08);
+}
+
+.search-detail-actions .btn {
+  padding: 12px 20px;
+  font-size: 14px;
+}
+
+/* Загрузка деталей */
+.search-detail-loading {
+  text-align: center;
+  padding: 20px;
+  color: var(--muted);
+}
+
+.search-detail-loading .mini-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(30,120,255,.15);
+  border-top-color: var(--accent1);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  margin: 0 auto 8px;
+}
+
+/* Свернуть кнопка */
+.search-collapse-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background .15s;
+}
+
+.search-collapse-btn:hover {
+  background: rgba(30,120,255,.06);
+  color: var(--accent1);
+}
+
+.search-result-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.search-result-cover {
+  width: 100px;
+  height: 70px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(30,120,255,.12), rgba(0,183,255,.10));
+  flex-shrink: 0;
+}
+
+.search-result-cover img,
+.search-result-cover video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.search-result-cover .placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 24px;
+}
+
+.search-result-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.search-result-name {
+  font-weight: 900;
+  font-size: 17px;
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.search-result-category {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.search-result-relevance {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: var(--accent-grad);
+  color: #fff;
+}
+
+.search-result-short {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 6px 0;
+}
+
+.search-result-matches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.search-match-tag {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(30,120,255,.12);
+  color: var(--accent1);
+  font-weight: 600;
+}
+
+.search-result-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.search-result-actions .btn {
+  padding: 8px 14px;
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  .search-result-header {
+    flex-direction: column;
+  }
+  .search-result-cover {
+    width: 100%;
+    height: 120px;
+  }
+  .search-modal {
+    padding: 20px 12px;
+  }
+}
+</style>
+
+<script>
+// Умный ИИ-поиск исполнителей
+(function() {
+  const BUCKET = "experts-media";
+  const CARD_PATH = "/card";
+  
+  const CAT_LABELS = {
+    video: "AI-Видео",
+    design: "AI-Дизайн",
+    bots: "AI-Боты",
+    marketplaces: "WB/Ozon",
+    sites: "AI-Сайты"
+  };
+  
+  // DOM элементы модального окна
+  const modal = document.getElementById('searchModal');
+  const closeBtn = document.getElementById('closeSearchModal');
+  const overlay = modal ? modal.querySelector('.search-modal-overlay') : null;
+  const titleEl = document.getElementById('searchModalTitle');
+  const queryEl = document.getElementById('searchModalQuery');
+  const loadingEl = document.getElementById('searchLoading');
+  const resultsEl = document.getElementById('searchResults');
+  const emptyEl = document.getElementById('searchEmpty');
+  
+  // Открытие модального окна
+  function openSearchModal(query) {
+    if (!modal) return;
+    
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+    titleEl.textContent = 'Ищем исполнителей...';
+    queryEl.textContent = 'Запрос: «' + query + '»';
+    
+    loadingEl.style.display = '';
+    resultsEl.style.display = 'none';
+    emptyEl.style.display = 'none';
+    resultsEl.innerHTML = '';
+    
+    // Запускаем поиск
+    performSearch(query);
+  }
+  
+  // Закрытие модального окна
+  function closeSearchModal() {
+    if (!modal) return;
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  
+  // Глобальная функция для открытия
+  window.openSearchModal = openSearchModal;
+  window.closeSearchModal = closeSearchModal;
+  
+  // Функция раскрытия/сворачивания карточки
+  window.toggleExpertCard = async function(cardEl) {
+    if (!cardEl) return;
+    
+    const isExpanded = cardEl.classList.contains('expanded');
+    
+    if (isExpanded) {
+      // Сворачиваем
+      cardEl.classList.remove('expanded');
+      return;
+    }
+    
+    // Сворачиваем все остальные карточки
+    document.querySelectorAll('.search-result-card.expanded').forEach(c => {
+      c.classList.remove('expanded');
+    });
+    
+    // Раскрываем текущую
+    cardEl.classList.add('expanded');
+    
+    // Загружаем детали если еще не загружены
+    const detailsEl = cardEl.querySelector('.search-result-details');
+    if (detailsEl && detailsEl.dataset.loaded === 'false') {
+      await loadExpertDetails(cardEl);
+    }
+    
+    // Плавно скроллим к карточке
+    setTimeout(() => {
+      cardEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+  
+  // Загрузка полных данных исполнителя
+  async function loadExpertDetails(cardEl) {
+    const expertId = cardEl.dataset.expertId;
+    const detailsEl = cardEl.querySelector('.search-result-details');
+    const actionsEl = cardEl.querySelector('.search-result-actions');
+    
+    if (!expertId || !detailsEl) return;
+    
+    const sb = await waitSbForSearch();
+    if (!sb) {
+      detailsEl.innerHTML = '<div class="search-detail-loading">Ошибка загрузки</div>';
+      return;
+    }
+    
+    try {
+      // Загружаем данные исполнителя, альбомы и медиа параллельно
+      const [expertRes, albumsRes, mediaRes] = await Promise.all([
+        sb.from('experts').select('*').eq('id', expertId).single(),
+        sb.from('expert_albums').select('*').eq('expert_id', expertId).order('created_at', { ascending: false }),
+        sb.from('expert_media').select('*').eq('expert_id', expertId).order('created_at', { ascending: false }).limit(12)
+      ]);
+      
+      const expert = expertRes.data;
+      const albums = albumsRes.data || [];
+      const mediaItems = mediaRes.data || [];
+      
+      if (!expert) {
+        detailsEl.innerHTML = '<div class="search-detail-loading">Данные не найдены</div>';
+        return;
+      }
+      
+      // Получаем signed URLs для медиа
+      const mediaPaths = mediaItems.map(m => m.path).filter(Boolean);
+      const mediaUrlByPath = {};
+      
+      if (mediaPaths.length > 0) {
+        const { data: signedData } = await sb.storage.from(BUCKET).createSignedUrls(mediaPaths, 3600);
+        (signedData || []).forEach(item => {
+          if (item?.path && item?.signedUrl) {
+            mediaUrlByPath[item.path] = item.signedUrl;
+          }
+        });
+      }
+      
+      // Формируем HTML
+      let html = '';
+      
+      // Полное описание
+      if (expert.description) {
+        html += '<div class="search-detail-description">' + escapeHtml(expert.description) + '</div>';
+      }
+      
+      // Мета-информация
+      html += '<div class="search-detail-meta">';
+      if (expert.price_from) {
+        html += '<div class="search-detail-meta-item">💰 <strong>' + escapeHtml(expert.price_from) + '</strong></div>';
+      }
+      if (expert.delivery_time) {
+        html += '<div class="search-detail-meta-item">⏱ <strong>' + escapeHtml(expert.delivery_time) + '</strong></div>';
+      }
+      html += '</div>';
+      
+      // Альбомы
+      if (albums.length > 0) {
+        html += '<div class="search-detail-albums">';
+        html += '<div class="search-detail-albums-title">📁 Альбомы:</div>';
+        albums.forEach(album => {
+          html += '<span class="search-detail-album">' + escapeHtml(album.title) + '</span>';
+        });
+        html += '</div>';
+      }
+      
+      // Галерея
+      if (mediaItems.length > 0) {
+        html += '<div class="search-detail-gallery">';
+        mediaItems.slice(0, 8).forEach(media => {
+          const mediaUrl = media.path ? (mediaUrlByPath[media.path] || '') : '';
+          if (mediaUrl) {
+            const isVideo = String(media.type || '').toLowerCase() === 'video';
+            if (isVideo) {
+              html += '<div class="search-detail-gallery-item"><video src="' + escapeAttr(mediaUrl) + '" muted preload="metadata"></video></div>';
+            } else {
+              html += '<div class="search-detail-gallery-item"><img src="' + escapeAttr(mediaUrl) + '" alt=""></div>';
+            }
+          }
+        });
+        html += '</div>';
+      }
+      
+      // Кнопка свернуть
+      html += '<div class="search-collapse-btn" onclick="window.toggleExpertCard(this.closest(\'.search-result-card\'))">▲ Свернуть</div>';
+      
+      detailsEl.innerHTML = html;
+      detailsEl.dataset.loaded = 'true';
+      
+      // Обновляем кнопки действий
+      const tgLink = buildTelegramLink(expert.telegram);
+      const profileHref = CARD_PATH + '?id=' + encodeURIComponent(expertId);
+      
+      let actionsHtml = '<a class="btn primary" href="' + escapeAttr(profileHref) + '">Полный профиль →</a>';
+      if (tgLink) {
+        actionsHtml += '<a class="btn" href="' + escapeAttr(tgLink) + '" target="_blank" rel="noopener">💬 Написать в Telegram</a>';
+      }
+      actionsEl.innerHTML = actionsHtml;
+      
+    } catch (err) {
+      console.error('Ошибка загрузки деталей:', err);
+      detailsEl.innerHTML = '<div class="search-detail-loading">Ошибка загрузки данных</div>';
+    }
+  }
+  
+  // Обработчики закрытия
+  if (closeBtn) closeBtn.addEventListener('click', closeSearchModal);
+  if (overlay) overlay.addEventListener('click', closeSearchModal);
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal && modal.style.display === 'flex') {
+      closeSearchModal();
+    }
+  });
+  
+  // Ждём Supabase
+  async function waitSbForSearch() {
+    for (let i = 0; i < 60; i++) {
+      if (window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r => setTimeout(r, 100));
+    }
+    return null;
+  }
+  
+  // Функция поиска
+  async function performSearch(query) {
+    const sb = await waitSbForSearch();
+    if (!sb) {
+      loadingEl.style.display = 'none';
+      emptyEl.style.display = '';
+      console.error('Supabase не подключен');
+      return;
+    }
+    
+    try {
+      // Вызываем функцию поиска
+      const { data, error } = await sb.rpc('search_experts', {
+        query_text: query
+      });
+      
+      if (error) {
+        console.error('Ошибка поиска:', error);
+        loadingEl.style.display = 'none';
+        emptyEl.style.display = '';
+        return;
+      }
+      
+      if (!data || data.length === 0) {
+        loadingEl.style.display = 'none';
+        emptyEl.style.display = '';
+        titleEl.textContent = 'Ничего не найдено';
+        return;
+      }
+      
+      // Получаем signed URLs для обложек
+      const paths = data.map(x => x.cover_path).filter(Boolean);
+      const urlByPath = {};
+      
+      if (paths.length > 0) {
+        const { data: signedData } = await sb.storage.from(BUCKET).createSignedUrls(paths, 3600);
+        (signedData || []).forEach(item => {
+          if (item?.path && item?.signedUrl) {
+            urlByPath[item.path] = item.signedUrl;
+          }
+        });
+      }
+      
+      // Рендерим результаты
+      loadingEl.style.display = 'none';
+      resultsEl.style.display = '';
+      titleEl.textContent = 'Найдено: ' + data.length + ' исполнител' + getWordEnding(data.length);
+      
+      resultsEl.innerHTML = data.map(expert => {
+        const coverUrl = expert.cover_path ? (urlByPath[expert.cover_path] || '') : '';
+        const coverType = String(expert.cover_type || '').toLowerCase();
+        const expertId = expert.id;
+        const relevancePercent = Math.min(100, Math.round(expert.relevance));
+        const catLabel = CAT_LABELS[expert.category] || expert.category;
+        
+        // Формируем теги совпадений
+        const matchesHtml = (expert.matched_in || [])
+          .filter(m => m)
+          .slice(0, 4)
+          .map(m => '<span class="search-match-tag">✓ ' + escapeHtml(m) + '</span>')
+          .join('');
+        
+        // Обложка
+        let coverHtml;
+        if (coverUrl) {
+          if (coverType === 'video') {
+            coverHtml = '<video src="' + escapeAttr(coverUrl) + '" muted preload="metadata"></video>';
+          } else {
+            coverHtml = '<img src="' + escapeAttr(coverUrl) + '" alt="">';
+          }
+        } else {
+          coverHtml = '<div class="placeholder">👤</div>';
+        }
+        
+        // Telegram ссылка
+        const tgLink = buildTelegramLink(expert.telegram);
+        const tgBtnHtml = tgLink 
+          ? '<a class="btn tg-link" href="' + escapeAttr(tgLink) + '" target="_blank" rel="noopener">💬 Написать</a>'
+          : '';
+        
+        return `
+          <div class="search-result-card" data-expert-id="${escapeAttr(expertId)}">
+            <div class="search-result-header">
+              <div class="search-result-cover">${coverHtml}</div>
+              <div class="search-result-info">
+                <h3 class="search-result-name">
+                  ${escapeHtml(expert.name)}
+                  <span class="search-result-relevance">${relevancePercent}%</span>
+                </h3>
+                <div class="search-result-category">${escapeHtml(catLabel)} • ${escapeHtml(expert.role || '')}</div>
+                <p class="search-result-short">${escapeHtml(expert.short_info || '—')}</p>
+              </div>
+            </div>
+            ${matchesHtml ? '<div class="search-result-matches">' + matchesHtml + '</div>' : ''}
+            <div class="expand-toggle">Подробнее</div>
+            <div class="search-result-details" data-loaded="false">
+              <div class="search-detail-loading">
+                <div class="mini-spinner"></div>
+                <div>Загружаем портфолио...</div>
+              </div>
+            </div>
+            <div class="search-result-actions">
+              ${tgBtnHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      // Добавляем обработчики событий для раскрытия карточек
+      resultsEl.querySelectorAll('.search-result-card').forEach(card => {
+        // Клик на всю карточку кроме кнопок
+        card.addEventListener('click', function(e) {
+          // Не срабатывать на ссылках и кнопках
+          if (e.target.closest('a, button')) return;
+          window.toggleExpertCard(card);
+        });
+      });
+      
+    } catch (err) {
+      console.error('Ошибка поиска:', err);
+      loadingEl.style.display = 'none';
+      emptyEl.style.display = '';
+    }
+  }
+  
+  // Хелперы
+  function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, m => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    }[m]));
+  }
+  
+  function escapeAttr(str) {
+    return escapeHtml(str).replace(/"/g, '&quot;');
+  }
+  
+  function buildTelegramLink(raw) {
+    if (!raw) return null;
+    const t = raw.trim();
+    if (!t) return null;
+    if (t.startsWith('@')) return 'https://t.me/' + t.slice(1);
+    if (t.includes('t.me/')) return t;
+    return 'https://t.me/' + t;
+  }
+  
+  function getWordEnding(count) {
+    const lastTwo = count % 100;
+    const lastOne = count % 10;
+    if (lastTwo >= 11 && lastTwo <= 14) return 'ей';
+    if (lastOne === 1) return 'ь';
+    if (lastOne >= 2 && lastOne <= 4) return 'я';
+    return 'ей';
+  }
+  
+  // Перехватываем форму поиска на главной странице
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchForms = document.querySelectorAll('form[data-search]');
+    
+    searchForms.forEach(function(form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const input = form.querySelector('input[name="q"]');
+        const query = input ? input.value.trim() : '';
+        
+        if (!query) {
+          alert('Введите запрос для поиска');
+          return;
+        }
+        
+        // Открываем модальное окно с поиском
+        openSearchModal(query);
+      });
+    });
+  });
+})();
+</script>
+
+<script src="/js/mobile-menu.js?v=20260104c1"></script>
 </body> </html>

@@ -293,14 +293,23 @@ window.addEventListener('DOMContentLoaded', function () {
   /* 2) Настрой адрес страницы заявки (если у тебя не /apply — поменяй) */
   const APPLY_PATH = '/apply';
 
-  /* 3) Поиск на главной: ведёт на заявку и подставляет текст */
+  /* 3) Поиск на главной: открывает модальное окно умного поиска */
   const sform = document.querySelector('form[data-search]');
   if (sform) {
     sform.addEventListener('submit', function (e) {
       e.preventDefault();
       const input = sform.querySelector('input[name="q"]');
       const q = input ? input.value.trim() : '';
-      location.href = APPLY_PATH + '?q=' + encodeURIComponent(q);
+      if (!q) {
+        alert('Введите запрос для поиска');
+        return;
+      }
+      // Открываем модальное окно умного поиска
+      if (typeof window.openSearchModal === 'function') {
+        window.openSearchModal(q);
+      } else {
+        location.href = APPLY_PATH + '?q=' + encodeURIComponent(q);
+      }
     });
   }
 
@@ -1675,14 +1684,23 @@ window.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // поиск -> /apply?q=
-  const sform = document.querySelector('form[data-search]');
-  if (sform) {
-    sform.addEventListener('submit', function (e) {
+  // поиск -> открывает модальное окно умного поиска
+  const sform2 = document.querySelector('form[data-search]');
+  if (sform2 && !sform2.dataset.searchBound) {
+    sform2.dataset.searchBound = '1';
+    sform2.addEventListener('submit', function (e) {
       e.preventDefault();
-      const input = sform.querySelector('input[name="q"]');
+      const input = sform2.querySelector('input[name="q"]');
       const q = input ? input.value.trim() : '';
-      location.href = "/apply?q=" + encodeURIComponent(q);
+      if (!q) {
+        alert('Введите запрос для поиска');
+        return;
+      }
+      if (typeof window.openSearchModal === 'function') {
+        window.openSearchModal(q);
+      } else {
+        location.href = "/apply?q=" + encodeURIComponent(q);
+      }
     });
   }
 
@@ -2031,5 +2049,367 @@ window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.
 })();
 </script>
 
-<script src="/js/mobile-menu.js?v=20260104b1"></script>
+<!-- Модальное окно для результатов умного поиска -->
+<div id="searchModal" class="search-modal" style="display:none;">
+  <div class="search-modal-overlay"></div>
+  <div class="search-modal-content">
+    <button class="search-modal-close" id="closeSearchModal">&times;</button>
+    <div class="h-card">
+      <div class="h-eyebrow">🔍 Умный поиск</div>
+      <h2 class="h-title" style="font-size:28px" id="searchModalTitle">Ищем исполнителей...</h2>
+      <p class="h-sub" id="searchModalQuery"></p>
+      
+      <div id="searchLoading" style="text-align:center;padding:40px 0;">
+        <div class="search-spinner"></div>
+        <p style="margin-top:16px;color:var(--muted)">Анализируем базу данных...</p>
+      </div>
+      
+      <div id="searchResults" style="display:none;"></div>
+      
+      <div id="searchEmpty" style="display:none;text-align:center;padding:40px 0;">
+        <div style="font-size:48px;margin-bottom:16px;">🤷</div>
+        <h3 style="margin:0 0 8px;font-weight:700;">Ничего не найдено</h3>
+        <p class="section-sub">Попробуй изменить запрос или посмотри всех исполнителей</p>
+        <button class="btn primary" style="margin-top:16px;" onclick="window.closeSearchModal();">Показать всех</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.search-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 20px;
+  overflow-y: auto;
+}
+.search-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(19, 35, 63, 0.8);
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.3s ease;
+}
+.search-modal-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  width: 100%;
+  animation: slideUp 0.3s ease;
+}
+.search-modal-close {
+  position: absolute;
+  top: -10px; right: -10px;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--accent-grad);
+  color: white;
+  border: none;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 8px 8px 18px rgba(163,177,198,.45), -8px -8px 18px rgba(255,255,255,.85);
+  transition: transform 0.2s ease;
+  z-index: 2;
+}
+.search-modal-close:hover { transform: scale(1.1) rotate(90deg); }
+
+.search-spinner {
+  width: 48px; height: 48px;
+  border: 4px solid rgba(30,120,255,.15);
+  border-top-color: var(--accent1);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+.search-result-card {
+  background: linear-gradient(145deg, #F8FBFF, #E7EDF7);
+  border: 1px solid rgba(255,255,255,.65);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 10px 10px 22px rgba(163,177,198,.35), -10px -10px 22px rgba(255,255,255,.9);
+  transition: .25s all ease;
+  cursor: pointer;
+}
+.search-result-card:hover:not(.expanded) {
+  transform: translateY(-2px);
+  box-shadow: 14px 14px 28px rgba(163,177,198,.40), -14px -14px 28px rgba(255,255,255,.94);
+}
+.search-result-card.expanded { cursor: default; border: 2px solid var(--accent1); box-shadow: 0 8px 32px rgba(30,120,255,.18); }
+.search-result-card .expand-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; color: #fff; font-weight: 700; margin-top: 12px; padding: 10px 20px; background: var(--accent-grad); border-radius: 10px; cursor: pointer; transition: all .2s ease; box-shadow: 0 4px 12px rgba(30,120,255,.25); }
+.search-result-card .expand-toggle:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(30,120,255,.35); }
+.search-result-card .expand-toggle::after { content: '▼'; font-size: 11px; transition: transform .2s; }
+.search-result-card.expanded .expand-toggle { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.search-result-card.expanded .expand-toggle::after { transform: rotate(180deg); }
+.search-result-details { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(30,120,255,.12); animation: slideDown .3s ease; }
+.search-result-card.expanded .search-result-details { display: block; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+.search-detail-description { font-size: 14px; line-height: 1.6; color: var(--text); margin-bottom: 16px; }
+.search-detail-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.search-detail-gallery-item { aspect-ratio: 1; border-radius: 12px; overflow: hidden; background: linear-gradient(135deg, rgba(30,120,255,.08), rgba(0,183,255,.06)); cursor: pointer; transition: transform .2s; }
+.search-detail-gallery-item:hover { transform: scale(1.03); }
+.search-detail-gallery-item img, .search-detail-gallery-item video { width: 100%; height: 100%; object-fit: cover; }
+.search-detail-albums { margin-bottom: 16px; }
+.search-detail-albums-title { font-size: 13px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+.search-detail-album { display: inline-block; padding: 6px 12px; margin: 0 6px 6px 0; background: rgba(30,120,255,.08); border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--accent1); }
+.search-detail-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+.search-detail-meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.search-detail-meta-item strong { color: var(--text); }
+.search-detail-actions { display: flex; gap: 12px; flex-wrap: wrap; padding-top: 12px; border-top: 1px solid rgba(30,120,255,.08); }
+.search-detail-actions .btn { padding: 12px 20px; font-size: 14px; }
+.search-detail-loading { text-align: center; padding: 20px; color: var(--muted); }
+.search-detail-loading .mini-spinner { width: 24px; height: 24px; border: 3px solid rgba(30,120,255,.15); border-top-color: var(--accent1); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 8px; }
+.search-collapse-btn { display: block; width: 100%; text-align: center; padding: 10px; margin-top: 12px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; border-radius: 8px; transition: background .15s; }
+.search-collapse-btn:hover { background: rgba(30,120,255,.06); color: var(--accent1); }
+
+.search-result-header { display: flex; align-items: flex-start; gap: 14px; }
+.search-result-cover {
+  width: 100px; height: 70px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(30,120,255,.12), rgba(0,183,255,.10));
+  flex-shrink: 0;
+}
+.search-result-cover img, .search-result-cover video { width: 100%; height: 100%; object-fit: cover; }
+.search-result-cover .placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 24px; }
+.search-result-info { flex: 1; min-width: 0; }
+.search-result-name { font-weight: 900; font-size: 17px; margin: 0 0 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.search-result-category { font-size: 12px; color: var(--muted); font-weight: 600; }
+.search-result-relevance { font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 8px; background: var(--accent-grad); color: #fff; }
+.search-result-short { color: var(--muted); font-size: 14px; line-height: 1.4; margin: 6px 0; }
+.search-result-matches { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.search-match-tag { font-size: 11px; padding: 4px 10px; border-radius: 999px; background: rgba(30,120,255,.12); color: var(--accent1); font-weight: 600; }
+.search-result-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.search-result-actions .btn { padding: 8px 14px; font-size: 13px; }
+
+@media (max-width: 600px) {
+  .search-result-header { flex-direction: column; }
+  .search-result-cover { width: 100%; height: 120px; }
+  .search-modal { padding: 20px 12px; }
+}
+</style>
+
+<script>
+(function() {
+  const BUCKET = "experts-media";
+  const CARD_PATH = "/card";
+  const CAT_LABELS = { video: "AI-Видео", design: "AI-Дизайн", bots: "AI-Боты", marketplaces: "WB/Ozon", sites: "AI-Сайты" };
+  
+  const modal = document.getElementById('searchModal');
+  const closeBtn = document.getElementById('closeSearchModal');
+  const overlay = modal ? modal.querySelector('.search-modal-overlay') : null;
+  const titleEl = document.getElementById('searchModalTitle');
+  const queryEl = document.getElementById('searchModalQuery');
+  const loadingEl = document.getElementById('searchLoading');
+  const resultsEl = document.getElementById('searchResults');
+  const emptyEl = document.getElementById('searchEmpty');
+  
+  function openSearchModal(query) {
+    if (!modal) return;
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    titleEl.textContent = 'Ищем исполнителей...';
+    queryEl.textContent = 'Запрос: «' + query + '»';
+    loadingEl.style.display = '';
+    resultsEl.style.display = 'none';
+    emptyEl.style.display = 'none';
+    resultsEl.innerHTML = '';
+    performSearch(query);
+  }
+  
+  function closeSearchModal() {
+    if (!modal) return;
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  
+  window.openSearchModal = openSearchModal;
+  window.closeSearchModal = closeSearchModal;
+  
+  // Функция раскрытия/сворачивания карточки
+  window.toggleExpertCard = async function(cardEl) {
+    if (!cardEl) return;
+    const isExpanded = cardEl.classList.contains('expanded');
+    if (isExpanded) { cardEl.classList.remove('expanded'); return; }
+    document.querySelectorAll('.search-result-card.expanded').forEach(c => c.classList.remove('expanded'));
+    cardEl.classList.add('expanded');
+    const detailsEl = cardEl.querySelector('.search-result-details');
+    if (detailsEl && detailsEl.dataset.loaded === 'false') await loadExpertDetails(cardEl);
+    setTimeout(() => cardEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  };
+  
+  async function loadExpertDetails(cardEl) {
+    const expertId = cardEl.dataset.expertId;
+    const detailsEl = cardEl.querySelector('.search-result-details');
+    const actionsEl = cardEl.querySelector('.search-result-actions');
+    if (!expertId || !detailsEl) return;
+    const sb = await waitSbForSearch();
+    if (!sb) { detailsEl.innerHTML = '<div class="search-detail-loading">Ошибка загрузки</div>'; return; }
+    try {
+      const [expertRes, albumsRes, mediaRes] = await Promise.all([
+        sb.from('experts').select('*').eq('id', expertId).single(),
+        sb.from('expert_albums').select('*').eq('expert_id', expertId).order('created_at', { ascending: false }),
+        sb.from('expert_media').select('*').eq('expert_id', expertId).order('created_at', { ascending: false }).limit(12)
+      ]);
+      const expert = expertRes.data, albums = albumsRes.data || [], mediaItems = mediaRes.data || [];
+      if (!expert) { detailsEl.innerHTML = '<div class="search-detail-loading">Данные не найдены</div>'; return; }
+      const mediaPaths = mediaItems.map(m => m.path).filter(Boolean), mediaUrlByPath = {};
+      if (mediaPaths.length > 0) {
+        const { data: signedData } = await sb.storage.from(BUCKET).createSignedUrls(mediaPaths, 3600);
+        (signedData || []).forEach(item => { if (item?.path && item?.signedUrl) mediaUrlByPath[item.path] = item.signedUrl; });
+      }
+      let html = '';
+      if (expert.description) html += '<div class="search-detail-description">' + esc(expert.description) + '</div>';
+      html += '<div class="search-detail-meta">';
+      if (expert.price_from) html += '<div class="search-detail-meta-item">💰 <strong>' + esc(expert.price_from) + '</strong></div>';
+      if (expert.delivery_time) html += '<div class="search-detail-meta-item">⏱ <strong>' + esc(expert.delivery_time) + '</strong></div>';
+      html += '</div>';
+      if (albums.length > 0) {
+        html += '<div class="search-detail-albums"><div class="search-detail-albums-title">📁 Альбомы:</div>';
+        albums.forEach(album => html += '<span class="search-detail-album">' + esc(album.title) + '</span>');
+        html += '</div>';
+      }
+      if (mediaItems.length > 0) {
+        html += '<div class="search-detail-gallery">';
+        mediaItems.slice(0, 8).forEach(media => {
+          const mediaUrl = media.path ? (mediaUrlByPath[media.path] || '') : '';
+          if (mediaUrl) {
+            const isVideo = String(media.type || '').toLowerCase() === 'video';
+            html += isVideo 
+              ? '<div class="search-detail-gallery-item"><video src="' + escA(mediaUrl) + '" muted preload="metadata"></video></div>'
+              : '<div class="search-detail-gallery-item"><img src="' + escA(mediaUrl) + '" alt=""></div>';
+          }
+        });
+        html += '</div>';
+      }
+      html += '<div class="search-collapse-btn" onclick="window.toggleExpertCard(this.closest(\'.search-result-card\'))">▲ Свернуть</div>';
+      detailsEl.innerHTML = html;
+      detailsEl.dataset.loaded = 'true';
+      const tgLink = buildTgLink(expert.telegram), profileHref = CARD_PATH + '?id=' + encodeURIComponent(expertId);
+      let actionsHtml = '<a class="btn primary" href="' + escA(profileHref) + '">Полный профиль →</a>';
+      if (tgLink) actionsHtml += '<a class="btn" href="' + escA(tgLink) + '" target="_blank" rel="noopener">💬 Написать в Telegram</a>';
+      actionsEl.innerHTML = actionsHtml;
+    } catch (err) { console.error('Ошибка загрузки деталей:', err); detailsEl.innerHTML = '<div class="search-detail-loading">Ошибка загрузки данных</div>'; }
+  }
+  
+  if (closeBtn) closeBtn.addEventListener('click', closeSearchModal);
+  if (overlay) overlay.addEventListener('click', closeSearchModal);
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal && modal.style.display === 'flex') closeSearchModal();
+  });
+  
+  // Ждём Supabase
+  async function waitSbForSearch() {
+    for (let i = 0; i < 60; i++) {
+      if (window.AI_BIRZHA && window.AI_BIRZHA.sb) return window.AI_BIRZHA.sb;
+      await new Promise(r => setTimeout(r, 100));
+    }
+    return null;
+  }
+  
+  async function performSearch(query) {
+    const sb = await waitSbForSearch();
+    if (!sb) { loadingEl.style.display = 'none'; emptyEl.style.display = ''; console.error('Supabase не подключен'); return; }
+    
+    try {
+      const { data, error } = await sb.rpc('search_experts', { query_text: query });
+      
+      if (error || !data || data.length === 0) {
+        loadingEl.style.display = 'none';
+        emptyEl.style.display = '';
+        titleEl.textContent = 'Ничего не найдено';
+        return;
+      }
+      
+      const paths = data.map(x => x.cover_path).filter(Boolean);
+      const urlByPath = {};
+      if (paths.length > 0) {
+        const { data: signedData } = await sb.storage.from(BUCKET).createSignedUrls(paths, 3600);
+        (signedData || []).forEach(item => { if (item?.path && item?.signedUrl) urlByPath[item.path] = item.signedUrl; });
+      }
+      
+      loadingEl.style.display = 'none';
+      resultsEl.style.display = '';
+      titleEl.textContent = 'Найдено: ' + data.length + ' исполнител' + getWordEnding(data.length);
+      
+      resultsEl.innerHTML = data.map(expert => {
+        const coverUrl = expert.cover_path ? (urlByPath[expert.cover_path] || '') : '';
+        const coverType = String(expert.cover_type || '').toLowerCase();
+        const expertId = expert.id;
+        const relevancePercent = Math.min(100, Math.round(expert.relevance));
+        const catLabel = CAT_LABELS[expert.category] || expert.category;
+        
+        const matchesHtml = (expert.matched_in || []).filter(m => m).slice(0, 4)
+          .map(m => '<span class="search-match-tag">✓ ' + esc(m) + '</span>').join('');
+        
+        let coverHtml = coverUrl 
+          ? (coverType === 'video' ? '<video src="' + escA(coverUrl) + '" muted preload="metadata"></video>' : '<img src="' + escA(coverUrl) + '" alt="">')
+          : '<div class="placeholder">👤</div>';
+        
+        const tgLink = buildTgLink(expert.telegram);
+        const tgBtnHtml = tgLink ? '<a class="btn tg-link" href="' + escA(tgLink) + '" target="_blank" rel="noopener">💬 Написать</a>' : '';
+        
+        return `
+          <div class="search-result-card" data-expert-id="${escA(expertId)}">
+            <div class="search-result-header">
+              <div class="search-result-cover">${coverHtml}</div>
+              <div class="search-result-info">
+                <h3 class="search-result-name">${esc(expert.name)} <span class="search-result-relevance">${relevancePercent}%</span></h3>
+                <div class="search-result-category">${esc(catLabel)} • ${esc(expert.role || '')}</div>
+                <p class="search-result-short">${esc(expert.short_info || '—')}</p>
+              </div>
+            </div>
+            ${matchesHtml ? '<div class="search-result-matches">' + matchesHtml + '</div>' : ''}
+            <div class="expand-toggle">Подробнее</div>
+            <div class="search-result-details" data-loaded="false">
+              <div class="search-detail-loading"><div class="mini-spinner"></div><div>Загружаем портфолио...</div></div>
+            </div>
+            <div class="search-result-actions">${tgBtnHtml}</div>
+          </div>
+        `;
+      }).join('');
+      
+      // Добавляем обработчики событий
+      resultsEl.querySelectorAll('.search-result-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+          if (e.target.closest('a, button')) return;
+          window.toggleExpertCard(card);
+        });
+      });
+    } catch (err) {
+      console.error('Ошибка поиска:', err);
+      loadingEl.style.display = 'none';
+      emptyEl.style.display = '';
+    }
+  }
+  
+  function esc(s) { return String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+  function escA(s) { return esc(s).replace(/"/g, '&quot;'); }
+  function buildTgLink(raw) { if(!raw) return null; const t=raw.trim(); if(!t) return null; if(t.startsWith('@')) return 'https://t.me/'+t.slice(1); if(t.includes('t.me/')) return t; return 'https://t.me/'+t; }
+  function getWordEnding(c) { const l2=c%100,l1=c%10; if(l2>=11&&l2<=14)return'ей'; if(l1===1)return'ь'; if(l1>=2&&l1<=4)return'я'; return'ей'; }
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('form[data-search]').forEach(function(form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const input = form.querySelector('input[name="q"]');
+        const query = input ? input.value.trim() : '';
+        if (!query) { alert('Введите запрос для поиска'); return; }
+        openSearchModal(query);
+      });
+    });
+  });
+})();
+</script>
+
+<script src="/js/mobile-menu.js?v=20260104c1"></script>
 </body> </html>
