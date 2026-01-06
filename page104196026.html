@@ -2201,12 +2201,21 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
   } 
 }
 
-/* Внутри альбомов убираем фиксированную высоту и используем aspect-ratio (из JS) */
+/* Внутри альбомов */
 #pMedia.ai-albums .media-item{
-  aspect-ratio: unset; /* дефолт, пока не подтянулись размеры */
   position: relative;
   display: block;
   width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+}
+/* Медиа с описанием - preview ограничен */
+#pMedia.ai-albums .media-item.has-info .media-item__preview{
+  max-height: 400px;
+}
+/* Медиа без описания - показываем полностью по aspect-ratio */
+#pMedia.ai-albums .media-item:not(.has-info){
+  /* aspect-ratio из JS */
 }
 /* Safari/iOS fix - предотвращаем перекрытие */
 @media (max-width: 560px){
@@ -2215,26 +2224,34 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
     height: auto;
     min-height: auto;
   }
+  /* Отступ для последнего элемента чтобы описание не обрезалось */
+  #pMedia.ai-albums .media-item:last-child{
+    margin-bottom: 80px;
+  }
 }
 #pMedia.ai-albums .media-item__preview{
   /* высота по контенту - Safari fix */
   min-height: 0;
-  max-height: 450px;
   overflow: hidden;
   display: block;
   position: relative;
+  border-radius: 16px 16px 0 0;
 }
 #pMedia.ai-albums .media-item img,
 #pMedia.ai-albums .media-item video,
 #pMedia.ai-albums .media-item__preview img,
 #pMedia.ai-albums .media-item__preview video{
   width:100%;
-  height:auto;
-  max-height: 70vh;
-  object-fit:contain;
+  height:100%;
+  object-fit:cover;
   object-position:center center;
   background: linear-gradient(145deg, rgba(238,243,250,.6), rgba(230,237,247,.8));
   display: block;
+}
+/* Для медиа БЕЗ описания - показываем полностью */
+#pMedia.ai-albums .media-item:not(.has-info) img,
+#pMedia.ai-albums .media-item:not(.has-info) video{
+  object-fit: contain;
 }
 /* info блок внутри альбомов */
 #pMedia.ai-albums .media-item.has-info{
