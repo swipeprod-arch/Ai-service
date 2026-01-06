@@ -2055,11 +2055,13 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
 .media-item img, .media-item video,
 .media-item__preview img, .media-item__preview video{
   width:100%;
-  height:260px;
-  object-fit:cover;
+  height:auto;
+  max-height:500px;
+  object-fit:contain;
   display:block;
   opacity: 0;
   transition: opacity 0.3s ease;
+  background: linear-gradient(145deg, rgba(238,243,250,.6), rgba(230,237,247,.8));
 }
 .media-item img.loaded, .media-item video.loaded{
   opacity: 1;
@@ -2183,14 +2185,16 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script><scrip
   aspect-ratio: unset; /* дефолт, пока не подтянулись размеры */
 }
 #pMedia.ai-albums .media-item__preview{
-  aspect-ratio: 4 / 3;
+  aspect-ratio: unset; /* берём из родителя */
+  min-height: 200px;
 }
 #pMedia.ai-albums .media-item img,
 #pMedia.ai-albums .media-item video,
 #pMedia.ai-albums .media-item__preview img,
 #pMedia.ai-albums .media-item__preview video{
   height:100% !important;
-  object-fit:cover;
+  object-fit:contain;
+  background: linear-gradient(145deg, rgba(238,243,250,.6), rgba(230,237,247,.8));
 }
 
 /* ===== Lightbox (фикс чёрного экрана + свайп/стрелки/тап по половинам) ===== */
