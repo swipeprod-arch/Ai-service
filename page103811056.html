@@ -1734,10 +1734,19 @@ window.addEventListener('DOMContentLoaded', function () {
 .expert-cover[data-mc="1"]{ cursor:grab; }
 .expert-cover[data-mc="1"]:active{ cursor:grabbing; }
 
-.mc{ position:absolute; inset:0; z-index:2; }
-.mc-track{ position:absolute; inset:0; z-index:1; }
-.mc-item{ position:absolute; inset:0; opacity:0; transition:opacity .18s ease; }
-.mc-item.active{ opacity:1; }
+.mc{ position:absolute; inset:0; z-index:2; overflow:hidden; touch-action:pan-y pinch-zoom; }
+.mc-track{ 
+  position:absolute; inset:0;
+  display:flex;
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.mc-track.no-transition{ transition: none !important; }
+.mc-item{ 
+  flex: 0 0 100%;
+  width:100%;
+  height:100%;
+  position:relative;
+}
 
 .mc-item img, .mc-item video{
   width:100%; height:100%;
@@ -1825,16 +1834,19 @@ window.addEventListener('DOMContentLoaded', function () {
       <div class="mc"> <div class="mc-track"></div> <button class="mc-btn mc-prev" type="button" aria-label="Назад">‹</button> <button class="mc-btn mc-next" type="button" aria-label="Вперёд">›</button> <div class="mc-dots"></div> </div>
     `;
 
+    const mc = coverEl.querySelector(".mc");
     const track = coverEl.querySelector(".mc-track");
     const prevB = coverEl.querySelector(".mc-prev");
     const nextB = coverEl.querySelector(".mc-next");
     const dots  = coverEl.querySelector(".mc-dots");
 
     let idx = 0;
+    const total = slides.length;
+    let swipeOffset = 0;
 
     const items = slides.map((s, i) => {
       const wrap = document.createElement("div");
-      wrap.className = "mc-item" + (i===0 ? " active" : "");
+      wrap.className = "mc-item";
 
       if(String(s.type).toLowerCase() === "video"){
         const v = document.createElement("video");
@@ -1843,7 +1855,6 @@ window.addEventListener('DOMContentLoaded', function () {
         v.playsInline = true;
         v.preload = "metadata";
         v.onloadeddata = function(){ this.classList.add('loaded'); coverEl.style.animation = 'none'; };
-        // тап по видео = play/pause (и не открывать карточку)
         v.addEventListener("click", (e)=>{ e.stopPropagation(); try{ v.paused ? v.play() : v.pause(); }catch(_){} }, true);
         wrap.appendChild(v);
       }else{
@@ -1852,7 +1863,6 @@ window.addEventListener('DOMContentLoaded', function () {
         img.alt = "";
         img.loading = "lazy";
         img.onload = function(){ this.classList.add('loaded'); coverEl.style.animation = 'none'; };
-        // Если изображение уже в кеше
         if(img.complete) img.classList.add('loaded');
         wrap.appendChild(img);
       }
@@ -1861,78 +1871,146 @@ window.addEventListener('DOMContentLoaded', function () {
 
       const d = document.createElement("div");
       d.className = "mc-dot" + (i===0 ? " active" : "");
-      d.addEventListener("click", (e)=>{ e.stopPropagation(); go(i); }, true);
+      d.addEventListener("click", (e)=>{ e.stopPropagation(); goTo(i); }, true);
       dots.appendChild(d);
 
       return wrap;
     });
 
-    function go(next){
-      if(next === idx) return;
-      pauseAllVideos(track);
-      items[idx].classList.remove("active");
-      dots.children[idx].classList.remove("active");
-
-      idx = (next + items.length) % items.length;
-
-      items[idx].classList.add("active");
-      dots.children[idx].classList.add("active");
+    // Обновляем позицию трека
+    function setTrackPosition(extraOffset = 0){
+      const base = -idx * 100;
+      const offsetPercent = (extraOffset / mc.offsetWidth) * 100;
+      track.style.transform = `translateX(${base + offsetPercent}%)`;
     }
-    const next = ()=>go(idx+1);
-    const prev = ()=>go(idx-1);
+    setTrackPosition();
+
+    function goTo(newIdx, animate = true){
+      const targetIdx = ((newIdx % total) + total) % total;
+      if(targetIdx === idx && animate) return;
+      
+      pauseAllVideos(track);
+      dots.children[idx]?.classList.remove("active");
+      idx = targetIdx;
+      dots.children[idx]?.classList.add("active");
+      
+      if(!animate) track.classList.add('no-transition');
+      setTrackPosition();
+      if(!animate) {
+        // Force reflow
+        track.offsetHeight;
+        track.classList.remove('no-transition');
+      }
+    }
 
     // ФИКС: стрелки 100% кликабельны (ПК)
     ["pointerdown","click"].forEach(evt=>{
-      prevB.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); prev(); }, true);
-      nextB.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); next(); }, true);
+      prevB.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); goTo(idx - 1); }, true);
+      nextB.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); goTo(idx + 1); }, true);
     });
 
-    // swipe (touch + pointer для всех устройств)
-    let sx=0, sy=0, swiping=false;
+    // Свайп с анимацией
+    let startX = 0, startY = 0, isSwiping = false, swipeStarted = false;
     
-    function handleStart(x, y){
-      swiping = true;
-      sx = x;
-      sy = y;
+    function onStart(x, y){
+      startX = x;
+      startY = y;
+      swipeOffset = 0;
+      isSwiping = true;
+      swipeStarted = false;
+      track.classList.add('no-transition');
     }
-    function handleEnd(x, y){
-      if(!swiping) return;
-      swiping = false;
-      const dx = x - sx;
-      const dy = y - sy;
-      if(Math.abs(dx) > 30 && Math.abs(dx) > Math.abs(dy)){
-        dx < 0 ? next() : prev();
+    
+    function onMove(x, y){
+      if(!isSwiping) return;
+      
+      const dx = x - startX;
+      const dy = y - startY;
+      
+      // Определяем направление свайпа только один раз
+      if(!swipeStarted && (Math.abs(dx) > 10 || Math.abs(dy) > 10)){
+        swipeStarted = true;
+        // Если вертикальный свайп - отменяем
+        if(Math.abs(dy) > Math.abs(dx)){
+          isSwiping = false;
+          track.classList.remove('no-transition');
+          return;
+        }
       }
+      
+      if(swipeStarted){
+        swipeOffset = dx;
+        setTrackPosition(swipeOffset);
+      }
+    }
+    
+    function onEnd(){
+      if(!isSwiping) return;
+      isSwiping = false;
+      track.classList.remove('no-transition');
+      
+      const threshold = mc.offsetWidth * 0.2; // 20% ширины
+      
+      if(Math.abs(swipeOffset) > threshold){
+        if(swipeOffset < 0){
+          goTo(idx + 1);
+        } else {
+          goTo(idx - 1);
+        }
+      } else {
+        setTrackPosition(); // Вернуться на место
+      }
+      swipeOffset = 0;
     }
     
     // Touch events (мобильные)
-    coverEl.addEventListener("touchstart", (e)=>{
+    mc.addEventListener("touchstart", (e)=>{
       if(e.touches.length === 1){
-        handleStart(e.touches[0].clientX, e.touches[0].clientY);
-      }
-    }, {passive:true});
-    coverEl.addEventListener("touchend", (e)=>{
-      if(e.changedTouches.length === 1){
-        handleEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+        onStart(e.touches[0].clientX, e.touches[0].clientY);
       }
     }, {passive:true});
     
+    mc.addEventListener("touchmove", (e)=>{
+      if(e.touches.length === 1 && isSwiping){
+        onMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, {passive:true});
+    
+    mc.addEventListener("touchend", onEnd, {passive:true});
+    mc.addEventListener("touchcancel", ()=>{ 
+      isSwiping = false; 
+      track.classList.remove('no-transition');
+      setTrackPosition();
+    }, {passive:true});
+    
     // Pointer events (ПК, stylus)
-    coverEl.addEventListener("pointerdown", (e)=>{
-      if(e.pointerType !== "touch") handleStart(e.clientX, e.clientY);
-    }, {passive:true});
-    coverEl.addEventListener("pointerup", (e)=>{
-      if(e.pointerType !== "touch") handleEnd(e.clientX, e.clientY);
-    }, {passive:true});
+    mc.addEventListener("pointerdown", (e)=>{
+      if(e.pointerType !== "touch"){
+        onStart(e.clientX, e.clientY);
+        mc.setPointerCapture(e.pointerId);
+      }
+    });
+    mc.addEventListener("pointermove", (e)=>{
+      if(e.pointerType !== "touch" && isSwiping){
+        onMove(e.clientX, e.clientY);
+      }
+    });
+    mc.addEventListener("pointerup", (e)=>{
+      if(e.pointerType !== "touch") onEnd();
+    });
+    mc.addEventListener("pointercancel", ()=>{ 
+      isSwiping = false; 
+      track.classList.remove('no-transition');
+      setTrackPosition();
+    });
 
-    coverEl.addEventListener("pointercancel", ()=>{ down=false; }, {passive:true});
-
-    // Моб: тап по левой/правой половине превью (кроме кнопок/точек/видео)
-    coverEl.addEventListener("click", (e)=>{
+    // Тап по левой/правой половине превью (кроме кнопок/точек/видео)
+    mc.addEventListener("click", (e)=>{
       if(e.target.closest(".mc-btn, .mc-dots, video")) return;
-      const r = coverEl.getBoundingClientRect();
+      if(swipeStarted) return; // Был свайп, не тап
+      const r = mc.getBoundingClientRect();
       const x = e.clientX - r.left;
-      (x < r.width/2) ? prev() : next();
+      (x < r.width/2) ? goTo(idx - 1) : goTo(idx + 1);
     }, true);
   }
 
