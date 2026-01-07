@@ -1,4 +1,10 @@
+# Robots.txt для ИИспециалисты.рф
+# Маркетплейс AI-специалистов
+
 User-Agent: *
+Allow: /
+
+# Служебные страницы Tilda
 Disallow: /tilda/form*
 Disallow: /tilda/rec*
 Disallow: /tilda/click*
@@ -7,7 +13,31 @@ Disallow: /tilda/popup*
 Disallow: /tilda/cart*
 Disallow: /tilda/product*
 Disallow: /tilda/event*
-Disallow:
 
+# Служебные страницы
+Disallow: /auth
+Disallow: /add
+Disallow: /card
+Disallow: /client-cabinet
+Disallow: /create-project
+Disallow: /project-detail
+Disallow: /seed-*
+Disallow: /test-*
 
-Sitemap: http://project13172919.tilda.ws/sitemap.xml
+# Технические файлы
+Disallow: /page*.html
+Disallow: /*.txt$
+Disallow: /*.md$
+
+# Разрешаем основные страницы явно
+Allow: /index.html
+Allow: /experts.html
+Allow: /apply.html
+Allow: /gallery.html
+Allow: /projects.html
+
+# Карта сайта
+Sitemap: https://ииспециалисты.рф/sitemap.xml
+
+# Задержка между запросами (для бережного сканирования)
+Crawl-delay: 1

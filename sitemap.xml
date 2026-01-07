@@ -1,79 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+	<!-- Главная -->
 	<url>
-		<loc>http://project13172919.tilda.ws/</loc>
-		<lastmod>2025-12-16T12:32:53+00:00</lastmod>
+		<loc>https://ииспециалисты.рф/</loc>
+		<lastmod>2025-01-07T12:00:00+00:00</lastmod>
+		<changefreq>daily</changefreq>
+		<priority>1.0</priority>
+	</url>
+	
+	<!-- Основные страницы -->
+	<url>
+		<loc>https://ииспециалисты.рф/experts</loc>
+		<lastmod>2025-01-07T12:00:00+00:00</lastmod>
+		<changefreq>daily</changefreq>
+		<priority>0.9</priority>
 	</url>
 	<url>
-		<loc>http://project13172919.tilda.ws/apply</loc>
-		<lastmod>2025-12-16T08:14:36+00:00</lastmod>
+		<loc>https://ииспециалисты.рф/apply</loc>
+		<lastmod>2025-01-07T12:00:00+00:00</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.9</priority>
 	</url>
 	<url>
-		<loc>http://project13172919.tilda.ws/services</loc>
-		<lastmod>2025-12-16T08:14:36+00:00</lastmod>
+		<loc>https://ииспециалисты.рф/services</loc>
+		<lastmod>2025-01-07T12:00:00+00:00</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.8</priority>
 	</url>
 	<url>
-		<loc>http://project13172919.tilda.ws/experts</loc>
-		<lastmod>2025-12-16T09:03:46+00:00</lastmod>
+		<loc>https://ииспециалисты.рф/gallery</loc>
+		<lastmod>2025-01-07T12:00:00+00:00</lastmod>
+		<changefreq>daily</changefreq>
+		<priority>0.8</priority>
 	</url>
 	<url>
-		<loc>http://project13172919.tilda.ws/cases</loc>
-		<lastmod>2025-12-16T08:14:37+00:00</lastmod>
+		<loc>https://ииспециалисты.рф/projects</loc>
+		<lastmod>2025-01-07T12:00:00+00:00</lastmod>
+		<changefreq>daily</changefreq>
+		<priority>0.8</priority>
+	</url>
+	
+	<!-- Категории услуг -->
+	<url>
+		<loc>https://ииспециалисты.рф/video</loc>
+		<lastmod>2025-01-07T12:00:00+00:00</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.8</priority>
 	</url>
 	<url>
-		<loc>http://project13172919.tilda.ws/how</loc>
-		<lastmod>2025-12-16T08:14:37+00:00</lastmod>
+		<loc>https://ииспециалисты.рф/design</loc>
+		<lastmod>2025-01-07T12:00:00+00:00</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.8</priority>
 	</url>
 	<url>
-		<loc>http://project13172919.tilda.ws/faq</loc>
-		<lastmod>2025-12-16T08:14:37+00:00</lastmod>
+		<loc>https://ииспециалисты.рф/bots</loc>
+		<lastmod>2025-01-07T12:00:00+00:00</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.8</priority>
 	</url>
 	<url>
-		<loc>http://project13172919.tilda.ws/add</loc>
-		<lastmod>2025-12-16T13:33:30+00:00</lastmod>
+		<loc>https://ииспециалисты.рф/marketplaces</loc>
+		<lastmod>2025-01-07T12:00:00+00:00</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.8</priority>
 	</url>
 	<url>
-		<loc>http://project13172919.tilda.ws/privacy</loc>
-		<lastmod>2025-12-16T08:14:37+00:00</lastmod>
+		<loc>https://ииспециалисты.рф/sites</loc>
+		<lastmod>2025-01-07T12:00:00+00:00</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.8</priority>
+	</url>
+	
+	<!-- Информационные страницы -->
+	<url>
+		<loc>https://ииспециалисты.рф/how</loc>
+		<lastmod>2025-01-07T12:00:00+00:00</lastmod>
+		<changefreq>monthly</changefreq>
+		<priority>0.6</priority>
 	</url>
 	<url>
-		<loc>http://project13172919.tilda.ws/terms</loc>
-		<lastmod>2025-12-16T08:14:37+00:00</lastmod>
+		<loc>https://ииспециалисты.рф/faq</loc>
+		<lastmod>2025-01-07T12:00:00+00:00</lastmod>
+		<changefreq>monthly</changefreq>
+		<priority>0.6</priority>
 	</url>
 	<url>
-		<loc>http://project13172919.tilda.ws/video</loc>
-		<lastmod>2025-12-16T08:14:37+00:00</lastmod>
+		<loc>https://ииспециалисты.рф/cases</loc>
+		<lastmod>2025-01-07T12:00:00+00:00</lastmod>
+		<changefreq>weekly</changefreq>
+		<priority>0.7</priority>
+	</url>
+	
+	<!-- Юридические страницы -->
+	<url>
+		<loc>https://ииспециалисты.рф/privacy</loc>
+		<lastmod>2025-01-07T12:00:00+00:00</lastmod>
+		<changefreq>yearly</changefreq>
+		<priority>0.3</priority>
 	</url>
 	<url>
-		<loc>http://project13172919.tilda.ws/expert-template</loc>
-		<lastmod>2025-12-16T08:14:38+00:00</lastmod>
-	</url>
-	<url>
-		<loc>http://project13172919.tilda.ws/case-template</loc>
-		<lastmod>2025-12-16T08:14:38+00:00</lastmod>
-	</url>
-	<url>
-		<loc>http://project13172919.tilda.ws/bots</loc>
-		<lastmod>2025-12-16T08:14:38+00:00</lastmod>
-	</url>
-	<url>
-		<loc>http://project13172919.tilda.ws/design</loc>
-		<lastmod>2025-12-16T08:14:38+00:00</lastmod>
-	</url>
-	<url>
-		<loc>http://project13172919.tilda.ws/marketplaces</loc>
-		<lastmod>2025-12-16T08:14:38+00:00</lastmod>
-	</url>
-	<url>
-		<loc>http://project13172919.tilda.ws/sites</loc>
-		<lastmod>2025-12-16T08:14:38+00:00</lastmod>
-	</url>
-	<url>
-		<loc>http://project13172919.tilda.ws/auth</loc>
-		<lastmod>2025-12-16T11:55:15+00:00</lastmod>
-	</url>
-	<url>
-		<loc>http://project13172919.tilda.ws/card</loc>
-		<lastmod>2025-12-16T14:51:34+00:00</lastmod>
+		<loc>https://ииспециалисты.рф/terms</loc>
+		<lastmod>2025-01-07T12:00:00+00:00</lastmod>
+		<changefreq>yearly</changefreq>
+		<priority>0.3</priority>
 	</url>
 </urlset>
